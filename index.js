@@ -36,7 +36,7 @@ try {
 
   var SDKBundle = webpack(
     {
-      mode: "development",
+      mode: "production",
       entry: path.join(__dirname, "public/sdk/mod.ts"),
       module: {
         rules: [

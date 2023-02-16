@@ -1,4 +1,5 @@
 console.log("Battery component loaded");
+
 function calculateBatWid(life) {
 	// turn percent into an integer
 	const _numDecimal = parseFloat(life) / 100;
@@ -23,7 +24,7 @@ navigator.getBattery().then(battery => {
 				bar.style.fill = "#ff4040";
 				xen.notification.dispatch(
 					"Low Battery",
-					"Your devices battery is running low."
+					"Your devices battery is running low.", "lowbat"
 				);
 			} else {
 				bar.style.width = calculateBatWid(xen.system.battery());
@@ -36,7 +37,7 @@ navigator.getBattery().then(battery => {
 					bar.style.fill = "#ff4040";
 					xen.notification.dispatch(
 						"Low Battery",
-						"Your devices battery is running low."
+						"Your devices battery is running low.", "lowbat"
 					);
 				} else {
 					bar.style.width = calculateBatWid(xen.system.battery());

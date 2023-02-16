@@ -6,7 +6,7 @@ import modal from "./fs.ts";
 // Internal
 import apps from "./apps.ts";
 
-export default {
+const SDK = {
     fs: fs,
     proxy: proxy,
     open: open,
@@ -14,3 +14,7 @@ export default {
     model: modal,
     apps:  apps,
 };
+
+window.__XEN_BUNDLE_SDK = SDK;
+
+export default SDK;

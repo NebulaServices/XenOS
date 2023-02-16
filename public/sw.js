@@ -7,12 +7,14 @@ self.addEventListener("fetch", event => {
 		(async () => {
 			const path = new URL(req.url).pathname;
 
+      console.log(path)
+
 			const cacheResp = await caches.match(path, {
 				cacheName: "apps",
 			});
 
 			if (cacheResp && path.startsWith("/apps/")) {
-				const body = await cacheResp.text();
+				var body = await cacheResp.blob();
 
 				// Setup jail
 				if (
@@ -20,29 +22,39 @@ self.addEventListener("fetch", event => {
 						.get("content-type")
 						.match(/^(?:text|application)\/javascript/g)
 				) {
-					console.log({ ...cacheResp.headers });
+
+          body = await body.text()
 
 					return new Response(
-						`
-// SDK
-// TODO: Have fallbacks for non module scripts
-import xen from "./bundle.sdk.js";
-
-// Jail
-/*((globalThis, parent) => { ${body} })(null, null);*/
-${body}
-`,
+            body,
 						{
 							headers: {
 								"content-type": getContentType(req.url),
 							},
 						}
 					);
-				}
+				} else if (
+          cacheResp.headers
+            .get("content-type")
+            .match(/^(?:text)\/html/g)
+        ) {
+          body = await body.text();
+
+          body = `<head><base href="${location.origin+path}"><script src="/rsc/web/webcommunicator.js"></head></script>${body}`;
+
+          return new Response(
+            body,
+            {
+              headers: {
+                "content-type": getContentType(req.url),
+              },
+            }
+          )
+        }
 
 				return new Response(body, {
 					headers: {
-						"content-type": getContentType(req.url),
+            ...Object.fromEntries(cacheResp.headers)
 					},
 				});
 			}
@@ -64,37 +76,61 @@ self.addEventListener("message", async event => {
 var _xen = window.xen;
 var _import_xen = _xen.apps.loader;
 var { window: BrowserWindow } = _import_xen;
-(function(xen) {
-  xen.BrowserWindow = class BROWIN extends _import_xen.window {
-    constructor(...args) {
-      super(...args, name, path);
+
+import('/sdk.bundle.js').then(e => {
+// e is undefined no output from module
+  var listeners = []
+  var xen = { 
+    BrowserWindow,
+    on(event, callback) {
+      listeners.push([event, callback]);
+    },
+    emit(event, ...data) {
+      listeners.filter(e=>e[0]==event).forEach(e=>e[1](...data));
+    },
+    quit(force = true) {
+      if (force) {
+        Object.values(window.xen.windowManager.windows).forEach(win => {
+          win.el.remove();
+        });
+
+        window.xen.dock.quit(name);
+      }
     }
-  }
-  ${content}
-})({BrowserWindow});
+  };
+  
+  (function(xen) {
+    xen.BrowserWindow = class BROWIN extends _import_xen.window {
+      constructor(...args) {
+        super(...args, name, path, xen);
+      }
+    }
+    ${await content.text()}
+  })(xen);
+});
     `
   }
-
-	console.log(event.data);
 
 	const url = `/apps/${info.author}/${info.project}/${file}`;
 
 	caches.open("apps").then(cache => {
-		cache.put(url, new Response(content));
+		cache.put(url, new Response(content, {headers: {'Content-Type': getContentType(file), 'Content-Length': content.size||content.length, 'accept-range': 'bytes', 'cache-control': 'public, max-age=0'}}));
 	});
 
 	// Notify that the file has been installed
-	event.source.postMessage(url);
+	if (event.data.log) event.source.postMessage(url);
 });
 
 // Immediately apply updates
 self.addEventListener("install", event => self.skipWaiting());
 
+self.addEventListener('activate', event => event.waitUntil(clients.claim()));
+
 function getContentType(file) {
-	console.log(file);
 	if (file.endsWith(".html")) return "text/html";
 	if (file.endsWith(".css")) return "text/css";
 	if (file.endsWith(".js")) return "application/javascript";
+  if (file.endsWith(".png")) return "image/png";
 	// TODO: Add more types
 	return "text/plain";
 }

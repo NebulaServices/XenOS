@@ -1,5 +1,38 @@
+var { parse, serialize } = require('parse5');
+const walk = require('walk-parse5');
+
+function rewritePage(html) {
+  var parsed = parse(html);
+   
+  walk(parsed, node => {
+    console.log(node);
+  });
+
+  return html;
+}
+
+window.__XEN_WEBPACK.winRaw = [];
+
 var _window = class WIN {
-	constructor(options = {}, name, path) {
+  listeners = [];
+  registerMessages(win) {
+    var that = this;
+    
+    window.addEventListener('message', function(data, origin) {
+      if (data.source==win) {
+        that.emit(data.data.message, ...data.data.data);
+      }
+    });
+  }
+
+  winClosed(event) {
+    if (this.opts.allCloseQuit&&event.detail.text==this.name) {
+      return this.xen.quit();
+    } 
+  }
+  
+	constructor(options = {}, name, path, _xen) {
+    window.__XEN_WEBPACK.winRaw.push(this);
 		this.opts = Object.assign(
 			{
 				frame: true,
@@ -11,30 +44,60 @@ var _window = class WIN {
 				show: true,
 				x: 10,
 				y: 10,
+        allCloseQuit: true,
 			},
 			options
 		);
 
 		this.name = name;
     this.path = path;
-
-		console.log(options);
-
-		xen.system.register(
+    this.xen = _xen;
+    
+		var el = xen.system.register(
 			name,
 			options.x + "",
 			options.y + "",
 			undefined,
 			false
 		);
+
+    this.el = el;
+
+    this.registerMessages(el.querySelector('iframe').contentWindow);
+
+    el.style.width = options.width+'px';
+    el.style.height = options.height+'px';
 	}
+  on(event, callback) {
+    this.listeners.push([event, callback]);
+  }
+  emit(event, ...data) {
+    this.listeners.filter(e=>e[0]==event).forEach(e=>e[1](...data));
+  }
+  once(event, callback) {
+    callback = new Proxy(callback, {
+      
+    });
+    
+    this.listeners.push([event, callback]);
+  }
 
 	loadURL(url) {
 		document.getElementById(this.name).querySelector("iframe").src = url;
 	}
-
 	loadFile(url) {
-    document.getElementById(this.name).querySelector("iframe").src = this.path+'/'+url;
+    var path = this.path+'/'+url
+    fetch(path).then(e=>e.text()).then(e=>{
+      document.getElementById(this.name).querySelector("iframe").src = path;
+    });
+  }
+  requestFileSystem(){
+      const flag = this.name+'_permission_filesystem';
+  }
+  executeJavascript(code = '') {
+    this.el.querySelector('iframe').contentWindow.postMessage({message: '__XEN_LISTENER_CONNECTION_MANAGER', data: {type: 'executeJS', code}});
+
+    
   }
   requestDispatchNotification(notificationName, body) {
     const flag = this.name+'_permission_notify';
@@ -85,7 +148,13 @@ _window.getAllWindows = function () {
 
 window.__XEN_WEBPACK.core.AppLoaderComponent = class ALC {
 	window = _window;
-	constructor() {}
+	constructor() {
+    document.addEventListener('WindowClose', function() {
+      window.__XEN_WEBPACK.winRaw.forEach(e=>{
+        
+      })
+    });
+  }
 
 	load(name, script = "", path) {
 		{

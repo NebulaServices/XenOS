@@ -54,6 +54,9 @@ window.__XEN_WEBPACK.core.System = class System {
 		console.log("Registering windowManager");
 		console.log("Inserting DefaultWindow");
 
+    document.querySelector('.os-preload').style.transition = '1s ease-in-out';
+    document.querySelector('.os-setup').style.transition = '1s ease-in-out';
+
 		const os_desk = document.getElementById("os-desktop");
 
 		xen.system.register(
@@ -91,7 +94,7 @@ window.__XEN_WEBPACK.core.System = class System {
     document.dispatchEvent(
 			new CustomEvent("WindowClose", {
 			  window: thisAppName,
-			  detail: { text: thisAppName },
+			  detail: { text: "${appName}" },
 			})
 		  );`;
 					let miniCode = `
@@ -160,8 +163,11 @@ window.__XEN_WEBPACK.core.System = class System {
 						posX,
 						"location_y",
 						posY,
-						native
+						native, 
+           
 					);
+
+          return master;
 				} catch (e) {
 					console.log("Xen Registration Error: \n" + e);
 				}
@@ -320,11 +326,20 @@ window.__XEN_WEBPACK.core.NotificationComponent = class NotificationComponent {
 			notiWrap.setAttribute("ondblclick", `this.style.display='none';this.remove();`);
 			notiWrap.appendChild(iconWrap);
 			iconWrap.classList.add("os-notification-icon");
-			iconWrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="447" height="112" viewBox="0 0 447 112" fill="none">
+			if(icon == 'lowbat'){
+        iconWrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="447" height="112" viewBox="0 0 447 112" fill="none">
 <rect x="243.5" y="39.5" width="18" height="34" rx="6.5" stroke="#F0F0F0" stroke-width="5"></rect>
 <rect x="4" y="4" width="239" height="104" rx="26" stroke="white" stroke-width="8"></rect>
 <rect x="15" y="17" rx="16" fill="white" style="width: 50px; fill: rgb(255, 255, 255);"></rect>
 </svg>`;
+      } else {
+        iconWrap.innerHTML = `<img src='https://xenos-dev.greenworldia.repl.co/media?imageUrl=https://media.discordapp.net/attachments/1062938122666639360/1075175423631163402/XOS.png' style='    width: 47px;
+    height: 53px;
+    position: absolute;
+    top: -17px;
+    left: 6px;
+    border-radius: 13px;'>`
+      }
 
 			notiWrap.appendChild(notiTitle);
 			notiTitle.innerText = name;
@@ -360,12 +375,12 @@ window.__XEN_WEBPACK.core.OS = class OS {
 		this.apps = new window.__XEN_WEBPACK.core.AppManagerComponent();
     this.logger = new window.__XEN_WEBPACK.core.LoggerComponent();
 		this.apps.loader = new window.__XEN_WEBPACK.core.AppLoaderComponent();
-		if (localStorage.getItem("bg-debug"))
-			document.querySelector(".os-body").style.background =
-				"url(/rsc/img/bg2.jpg)";
-	}
-};
+    this.dock = new window.__XEN_WEBPACK.core.DockComponent(this.fs);
+		this.settings = new window.__XEN_WEBPACK.core.SettingsComponent()
 
+    this.dock.loadNative();
+};
+}
 Object.defineProperty(window, "xen", {
 	configurable: false,
 	value: new window.__XEN_WEBPACK.core.OS(),

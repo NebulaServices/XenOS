@@ -52,10 +52,10 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 		};
 	}
 
-	async #install(author, proj, file, content, entry) {
+	async #install(author, proj, file, content, entry, log) {
 		navigator.serviceWorker.addEventListener("message", async event => {
 			//console.log(event.data);
-			console.log("Installed!");
+			if (log) console.log("Installed!");
 		});
 
 		navigator.serviceWorker.ready.then(registration =>
@@ -66,15 +66,19 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
           entry: entry,
 				},
 				file: file,
+        log: log||false,
 				content: content,
-			})
+      })
 		);
 	}
 
 	async install(
 		pkg,
-		repo = "https://xenos-app-repository.enderkingj.repl.co"
+		repo = "https://xenos-app-repository.enderkingj.repl.co",
+    log = true
 	) {
+    if (!repo) repo = "https://xenos-app-repository.enderkingj.repl.co";
+    
 		const [author, project] = pkg.split("/");
 
 		var percent = 0;
@@ -82,7 +86,7 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 		// prefetch app details
 		percent += 1;
     clearIntervals()
-    loaderBegin('FETCHING META: ', '1')
+    if (log) loaderBegin('FETCHING META: ', '1')
 
 
 		var metaBody = {
@@ -97,7 +101,7 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 		).json();
 		percent += 19;
 	 clearIntervals()
-    loaderBegin(`SUCCESS: ${meta.name}`, '2')
+    if (log) loaderBegin(`SUCCESS: ${meta.name}`, '2')
 
 
 		metaBody.session = meta.session;
@@ -109,7 +113,7 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 			metaBody.asset = asset;
 
      clearIntervals()
-    loaderBegin(`FETCH: ${meta.name}/${asset}`, '3')
+     if (log) loaderBegin(`FETCH: ${meta.name}/${asset}`, '3')
 			
 
 			percent += Math.floor(per);
@@ -119,15 +123,15 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 				body: JSON.stringify(metaBody),
 			});
 
-			var body = await resp.text();
+			var body = await resp.blob();
 clearIntervals()
-    loaderBegin(`SUCCESS: ${meta.name}/${asset}`, '4')
+    if (log) loaderBegin(`SUCCESS: ${meta.name}/${asset}`, '4')
 		
-			await this.#install(author, project, asset, body, meta.entry);
+			await this.#install(author, project, asset, body, meta.entry, log);
 		}
 
    clearIntervals()
-    loaderBegin(`FETCH: SESSION_CLEAR (END_SESS)`, '5')
+    if (log) loaderBegin(`FETCH: SESSION_CLEAR (END_SESS)`, '5')
 		
 
 		var resp = await fetch(repo + "/clear", {
@@ -138,17 +142,22 @@ clearIntervals()
 		percent += 20;
 
     clearIntervals()
-    loaderBegin(`SUCCESS: SESSION_CLEAR (SUSSEND)`, '6')
+    if (log) loaderBegin(`SUCCESS: SESSION_CLEAR (SUSSEND)`, '6')
 		
 
         clearIntervals()
-    loaderBegin(`SUCCESS: ${meta.name} DOWNLOADED`, '7')
+    if (log) loaderBegin(`SUCCESS: ${meta.name} DOWNLOADED`, '7')
  clearIntervals()
 	}
 
 	async launch(pkg, callbackFunc, openType) {
+    
 		const path = "/apps/" + pkg;
 		const meta = await (await fetch(path + "/manifest.json")).json();
+
+    xen.dock.opened(pkg);
+
+    // document.querySelector(`#_Dock_${meta.name} .os-dock-item-indic`).style.opacity = '1';
 
 		if (meta.type === "app") {
 			

@@ -13,10 +13,19 @@ document.addEventListener("DOMContentLoaded", function () {
 	function updateTime() {
 		timeText.innerText = getCurrentTime();
 	}
-  
 
-xen.apps.install('Xen/notes')
-  
+Element.prototype.insertAfter = function (element, reference) {
+  this.insertBefore(element, reference.nextSibling);
+};
+
+/*xen.apps.update('Xen/notes');
+xen.apps.update('Xen/Store');
+xen.apps.update('Xen/Testflight');
+  */
+xen.apps.install('Xen/notes', undefined, false);
+xen.apps.install('Xen/Store', undefined, false);
+xen.apps.install('Xen/Testflight', undefined, false);
+
 	setInterval(updateTime, 1000);
 	// XEN INIT
 	xen.system.begin();
