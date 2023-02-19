@@ -7,8 +7,6 @@ self.addEventListener("fetch", event => {
 		(async () => {
 			const path = new URL(req.url).pathname;
 
-      console.log(path)
-
 			const cacheResp = await caches.match(path, {
 				cacheName: "apps",
 			});
@@ -59,10 +57,14 @@ self.addEventListener("fetch", event => {
 				});
 			}
 
+      try {
+        returnValue = await fetch(event.request)
+
+        //if (req.method=="GET"&&new URL(req.url).protocol.startsWith('http')) (await caches.open('apps')).put(req, returnValue);
+      } catch(e) {}
+
 			// Offline support
-			return await fetch(req).catch(err => {
-				return caches.match(req);
-			});
+			return returnValue;
 		})()
 	);
 });
@@ -94,9 +96,12 @@ import('/sdk.bundle.js').then(e => {
           win.el.remove();
         });
 
-        window.xen.dock.quit(name);
+        window.xen.dock.quit(_name);
       }
-    }
+    },
+    setIcon(url) {
+      window.xen.dock.icon(_name, url);
+    },
   };
   
   (function(xen) {

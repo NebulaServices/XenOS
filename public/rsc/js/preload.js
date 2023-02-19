@@ -46,11 +46,43 @@ navigator.serviceWorker.addEventListener("message", function (event) {
 	console.log(event.data.log);
 });
 
-setTimeout(() => {
-	preloader.style.opacity = 0;
-	desk.style.transition = "all .5s ease 0s;";
-}, 3000);
+var start = new Date().getTime();
 
-setTimeout(() => {
-	preloader.style.display = "none";
-}, 4000);
+console.log('Start LOAD: '+start);
+console.log('Start TIME: '+(start - start)+'ms');
+
+setTimeout(async () => {
+  await xen.apps.update('Xen/notes', undefined, false);
+  await xen.apps.update('Xen/Store', undefined, false);
+  await xen.apps.update('Xen/Testflight', undefined, false);
+  await xen.apps.update('Xen/Welcome', undefined, false);
+  await xen.apps.update('Xen/Settings', undefined, false);
+  await xen.apps.update('Velocity/Velocity', undefined, false);
+
+  await window.xen.dock.loadNative();
+
+  var core = new Date().getTime();
+
+  await window.xen.apps.launch('Xen/Welcome');
+  
+  console.log('Core LOAD: '+core);
+  console.log('Core TIME: '+(core - start)+'ms');
+  
+  setTimeout(async () => {
+    
+  	preloader.style.opacity = 0;
+    
+  	desk.style.transition = "all .5s ease 0s;";
+
+    setTimeout(() => {
+    	preloader.style.display = "none";
+
+      var finish = new Date().getTime();
+      
+      console.log('Finish LOAD: '+finish);
+      console.log('Finish TIME: '+(finish - start)+'ms');
+      
+    }, 1000);
+
+  }, 1300);
+}, 500);

@@ -39,15 +39,6 @@
    }
 }
 
-@keyframes minimize {
-   0% {
-      transform: scale(1) translate(0, 0);
-   }
-   100% {
-      transform: scale(0) translate(0, 100%);
-   }
-}
-
 body {
    overflow: hidden;
    cursor: auto;
@@ -507,9 +498,6 @@ iframe {
    transition: 0.1s;
    user-select: none;
 }
-.os-dock-item:active {
-   filter: brightness(0.5);
-}
 
 .os-dock-item img {
    width: 45px;
@@ -517,7 +505,7 @@ iframe {
    border-radius: 9px;
    -webkit-box-shadow: -3px 7px 26px 4px rgb(0 0 0 / 30%);
    box-shadow: -3px 7px 26px 4px rgb(0 0 0 / 30%);
-   background: #fff;
+   background: transparent;
 }
 .os-dock-item img .nobg {
    width: 49px;

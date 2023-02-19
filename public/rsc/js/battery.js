@@ -14,6 +14,8 @@ function batToNum(life) {
 	const batLifeNum = _numDecimal * 100;
 	return batLifeNum;
 }
+
+if (navigator.getBattery)
 navigator.getBattery().then(battery => {
 	const bar = document.getElementById("os-battery-bar");
 	const widget = document.getElementById("battery");
@@ -53,4 +55,7 @@ navigator.getBattery().then(battery => {
 		);
 		bar.style.fill = "#ff4040";
 	}
-});
+}); else {
+  const bar = document.getElementById("os-battery-bar");
+  bar.remove();
+}

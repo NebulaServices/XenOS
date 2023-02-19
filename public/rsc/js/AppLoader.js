@@ -1,16 +1,3 @@
-var { parse, serialize } = require('parse5');
-const walk = require('walk-parse5');
-
-function rewritePage(html) {
-  var parsed = parse(html);
-   
-  walk(parsed, node => {
-    console.log(node);
-  });
-
-  return html;
-}
-
 window.__XEN_WEBPACK.winRaw = [];
 
 var _window = class WIN {
@@ -26,8 +13,9 @@ var _window = class WIN {
   }
 
   winClosed(event) {
+    console.log(event)
     if (this.opts.allCloseQuit&&event.detail.text==this.name) {
-      return this.xen.quit();
+      return this.xen.quit(this._name);
     } 
   }
   
@@ -44,7 +32,7 @@ var _window = class WIN {
 				show: true,
 				x: 10,
 				y: 10,
-        allCloseQuit: true,
+        allCloseQuit: false,
 			},
 			options
 		);
@@ -55,8 +43,8 @@ var _window = class WIN {
     
 		var el = xen.system.register(
 			name,
-			options.x + "",
-			options.y + "",
+			this.opts.x + "px",
+			this.opts.y + "px",
 			undefined,
 			false
 		);
@@ -149,19 +137,19 @@ _window.getAllWindows = function () {
 window.__XEN_WEBPACK.core.AppLoaderComponent = class ALC {
 	window = _window;
 	constructor() {
-    document.addEventListener('WindowClose', function() {
+    document.addEventListener('WindowClose', function(ev) {
       window.__XEN_WEBPACK.winRaw.forEach(e=>{
-        
-      })
+        if (e.winClosed) e.winClosed(ev);
+      });
     });
   }
 
-	load(name, script = "", path) {
+	load(name, script = "", path, _name = "") {
 		{
 			eval(`
-(function(name, path) {
+(function(name, path, _name) {
   ${script}
-})("${name}", "${path}");
+})("${name}", "${path}", "${_name}");
       `);
 		}
 	}
