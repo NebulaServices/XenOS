@@ -1,61 +1,66 @@
 console.log("Battery component loaded");
 
-function calculateBatWid(life) {
-	// turn percent into an integer
-	const _numDecimal = parseFloat(life) / 100;
-	const batLifeNum = _numDecimal * 100;
-	const batLife_nonPol = batLifeNum * 2;
-	const batLife = batLife_nonPol + 10;
-	return batLife;
+function calculateBatWid(per) {
+	const dec = parseFloat(per) / 100;
+	const num = dec * 100;
+	const numNonPol = num * 2;
+	const life = numNonPol + 10;
+	return life;
 }
 
 function batToNum(life) {
-	const _numDecimal = parseFloat(life) / 100;
-	const batLifeNum = _numDecimal * 100;
-	return batLifeNum;
+	const dec = parseFloat(life) / 100;
+	const num = dec * 100;
+	return num;
 }
 
 if (navigator.getBattery)
-navigator.getBattery().then(battery => {
-	const bar = document.getElementById("os-battery-bar");
-	const widget = document.getElementById("battery");
-	try {
-		addEventListener("DOMContentLoaded", event => {
-			if (batToNum(xen.system.battery()) < 15) {
-				bar.style.width = calculateBatWid(xen.system.battery());
-				bar.style.fill = "#ff4040";
-				xen.notification.dispatch(
-					"Low Battery",
-					"Your devices battery is running low.", "lowbat"
-				);
-			} else {
-				bar.style.width = calculateBatWid(xen.system.battery());
-				bar.style.fill = "#fff";
-			}
+	navigator.getBattery().then(battery => {
+		const bar = document.getElementById("os-battery-bar");
 
-			battery.onlevelchange = event => {
+		try {
+			addEventListener("DOMContentLoaded", event => {
 				if (batToNum(xen.system.battery()) < 15) {
 					bar.style.width = calculateBatWid(xen.system.battery());
 					bar.style.fill = "#ff4040";
+
 					xen.notification.dispatch(
 						"Low Battery",
-						"Your devices battery is running low.", "lowbat"
+						"The device's battery is running low.",
+						"lowbat"
 					);
 				} else {
 					bar.style.width = calculateBatWid(xen.system.battery());
 					bar.style.fill = "#fff";
 				}
-			};
-		});
-		batteryIsCharging = battery.charging;
-		xen.system.battery = () => `${battery.level * 100}%`;
-	} catch (e) {
-		console.error(
-			"An error occured while trying to get battery readings: \n" + e
-		);
-		bar.style.fill = "#ff4040";
-	}
-}); else {
-  const bar = document.getElementById("os-battery-bar");
-  bar.remove();
+
+				battery.onlevelchange = event => {
+					if (batToNum(xen.system.battery()) < 15) {
+						bar.style.width = calculateBatWid(xen.system.battery());
+						bar.style.fill = "#ff4040";
+						xen.notification.dispatch(
+							"Low Battery",
+							"Your devices battery is running low.",
+							"lowbat"
+						);
+					} else {
+						bar.style.width = calculateBatWid(xen.system.battery());
+						bar.style.fill = "#fff";
+					}
+				};
+			});
+
+			xen.system.battery = () => `${battery.level * 100}%`;
+		} catch (err) {
+			console.error(
+				"An error occured while trying to get battery readings: \n" +
+					err
+			);
+			bar.style.fill = "#ff4040";
+		}
+	});
+else {
+	// Remove icon
+	const bar = document.getElementById("os-battery-bar");
+	bar.remove();
 }

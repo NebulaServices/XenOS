@@ -1,1 +1,1 @@
-export default parent.xen.apps
+export default parent.xen.apps;

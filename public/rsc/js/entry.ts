@@ -2,14 +2,21 @@
 
 window.__XEN_WEBPACK = { core: {}, html: {} };
 
-var PreloadComponent = require("./preload.js");
+// Core
 var FileSystemComponent = require("./vfs.ts");
-var SettingsComponent = require("./settings.js");
-var AppManagerComponent = require("./AppManager.js");
-var AppLoaderComponent = require("./AppLoader.js");
+var SettingsComponent = require("./settings.ts");
 var DockComponent = require("./dock.js");
-var LoggerSystemComponent = require("./logger.js");
+var LoggerSystemComponent = require("./core/logger.js");
+var AppManagerComponent = require("./core/AppManager.js");
+var AppLoaderComponent = require("./core/AppLoader.js");
+var BrowserTool = require("./core/BrowserTool.js");
+var NotificationComponent = require("./core/NotificationComponent.js");
+var NotificationComponent = require("./core/System.js");
+var WindowManager = require("./core/WindowManager.js");
 var MotherBoardComponent = require("./core.js");
+
+// After
+var PreloadComponent = require("./preload.js");
 var LeaderComponent = require("./index.js");
 var SetupComponent = require("./setup.js");
 var MarkupOrganizer = require("./markup.js");
@@ -20,10 +27,10 @@ navigator.serviceWorker.register("/sw.js", {
 	scope: "/",
 });
 
-window.onbeforeunload = function(event) {
-  console.log('Attempted Close');
-  
-  event.preventDefault();
-  event.returnValue = false;
-  return false;
-}
+window.onbeforeunload = event => {
+	console.log("Attempted Close");
+
+	event.preventDefault();
+	event.returnValue = false;
+	return false;
+};

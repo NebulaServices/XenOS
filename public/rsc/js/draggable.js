@@ -19,11 +19,13 @@ document.addEventListener("mousemove", function (e) {
 					try {
 						const activeWindow =
 							document.getElementById(activeWindowName);
-						activeWindow.style.top = "29px";
+						activeWindow.style.top = "30px";
+
+						// Don't drag
 						e.preventDefault();
 						e.stopPropagation();
-					} catch (e) {
-						console.log(e);
+					} catch (err) {
+						console.log(err);
 					}
 				}
 			}

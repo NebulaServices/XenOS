@@ -7,12 +7,12 @@ import modal from "./fs.ts";
 import apps from "./apps.ts";
 
 const SDK = {
-    fs: fs,
-    proxy: proxy,
-    open: open,
-    widget: widget,
-    model: modal,
-    apps:  apps,
+	fs: fs,
+	proxy: proxy,
+	open: open,
+	widget: widget,
+	model: modal,
+	apps: apps,
 };
 
 window.__XEN_BUNDLE_SDK = SDK;

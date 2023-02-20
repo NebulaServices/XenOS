@@ -3,7 +3,7 @@ const webpack = require("webpack");
 const path = require("path");
 const request = require("request");
 
-console.log("XENOS");
+console.log("Welcome to XenOS Server");
 
 try {
   var Bundle = webpack(

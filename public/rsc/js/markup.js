@@ -1,4 +1,4 @@
-document.querySelector('.os-battery-container').innerHTML = `	
+document.querySelector(".os-battery-container").innerHTML = `	
 <svg
   class="os-header-items os-battery"
   xmlns="http://www.w3.org/2000/svg"
@@ -32,9 +32,11 @@ document.querySelector('.os-battery-container').innerHTML = `
     rx="16"
     fill="white"
   />
-</svg>`
+</svg>`;
 
-document.querySelector('.os-header-items-wrap').insertAdjacentHTML('afterbegin', `
+document.querySelector(".os-header-items-wrap").insertAdjacentHTML(
+	"afterbegin",
+	`
 <svg
   style="width: 26px; height: 27px; margin-right: 6px"
   xmlns="http://www.w3.org/2000/svg"
@@ -160,4 +162,5 @@ document.querySelector('.os-header-items-wrap').insertAdjacentHTML('afterbegin',
       />
     </filter>
   </defs>
-</svg>`)
+</svg>`
+);

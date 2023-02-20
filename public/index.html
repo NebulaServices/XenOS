@@ -1,118 +1,185 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link href="./rsc/styles/index.css" rel="stylesheet" type="text/css" />
-    <link rel="icon" type="image/x-icon" href="./rsc/img/logo-small.png" />
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>XenOS</title>
-    <!-- Primary Meta Tags -->
-    <title>XenOS | Highly advanced Web OS</title>
-    <meta name="title" content="XenOS | Highly advanced Web OS" />
-    <meta name="description" content="XenOS is a highly advanced Web operating system by Nebula Services. With a built in Browser, proxy service, VSCode, and Virtual File System " />
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://XenOS-dev.greenworldia.repl.co" />
-    <meta property="og:title" content="XenOS | Highly advanced Web OS" />
-    <meta property="og:description" content="XenOS is a highly advanced Web operating system by Nebula Services. With a built in Browser, proxy service, VSCode, and Virtual File System " />
-    <meta property="og:image" content="https://XenOS-dev.greenworldia.repl.co/rsc/img/image-1.png" />
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://XenOS-dev.greenworldia.repl.co" />
-    <meta property="twitter:title" content="XenOS | Highly advanced Web OS" />
-    <meta property="twitter:description" content="XenOS is a highly advanced Web operating system by Nebula Services. With a built in Browser, proxy service, VSCode, and Virtual File System " />
-    <meta property="twitter:image" content="https://XenOS-dev.greenworldia.repl.co/rsc/img/image-1.png" />
-    <link rel="manifest" href="./manifest.json" />
-    <!-- Dynamic Stylesheets -->
-    <style id="dynamic-style" disabled="false">
-      .os-dock-item:active {
-         filter: brightness(0.5);
-      }
-    </style>
-    <style id="dynamic-style2" disabled="true">
-      .os-dock-tooltip:active {
-         filter: brightness(0.5);
-      }
-    </style>
-  </head>
-  <body>
-
-
-
-    
-    <!-- Head Bar -->
-    <div class="os-header" id="os-header">
-      <img class="os-header-logo" src="./rsc/img/logo-small.png" />
-      <p class="os-header-text" id="osActiveApp">XenOS</p>
-      <div class="os-header-items-wrap">
-        <!-- SVG CODE HERE -->
-        <!-- SVG CODE END -->
-        <div class="os-battery-container"></div>
-        <p id="timeIndicator"></p>
-      </div>
-    </div>
-    <!--  OS preload -->
-    <div id="os-pre" class="os-preload">
-      <p id="os-pre-text">Hang Tight...</p>
-    </div>
-    <div class="os-preload" style="display: none">
-      <p>Hang on</p>
-      <br />
-      <p>Your screen isn't big enough.</p>
-    </div>
-     <!--  OS Setup  -->
-    <div class="os-setup" id="SetupWrapper" style="display: none">
-      <div class="os-setup-wrapper">
-        <p id="SetupText" class="os-setup-p">Welcome to XenOS</p>
-        <div class="os-setup-choiceWrap" id="passWordButtonChoice" style="display: none">
-          <div id="keybinds" style="display: none">
-            <p class="os-setup-keybind-p">
-              <code>CTRL + Shift + P </code>(Panic Mode)
-            </p>
-            <p class="os-setup-keybind-p">
-              <code>CTRL + Shift + C</code> (Cloak Web Window)
-            </p>
-            <p class="os-setup-keybind-p">
-              <code>CTRL + Shift + F</code> (Fullscreen Mode)
-            </p>
-            <p class="os-setup-keybind-p"> You can <code>double click</code> a window drag bar to maximize it. </p>
-            <p class="os-setup-keybind-p">
-              <code>Click</code> any notification to dismiss it.
-            </p>
-            <button class="os-setup-button" id="doneButtonFinal"> Done </button>
-          </div>
-          <button disabled class="os-setup-button" id="yesButton"> Yes, please. </button>
-          <button class="os-setup-button" id="noButton"> No, thanks. </button>
-          <input type="password" id="passWordInput" style="display: none" />
-          <svg id="pwSubmit" style="display: none" xmlns="http://www.w3.org/2000/svg" width="331" height="245" viewBox="0 0 331 245" fill="none">
-            <rect x="37" y="115" width="242" height="13" rx="6.5" fill="black" />
-            <path d="M280.5 114.706C286.5 118.17 286.5 126.83 280.5 130.294L246.75 149.78C240.75 153.244 233.25 148.914 233.25 141.986L233.25 103.014C233.25 96.0862 240.75 91.7561 246.75 95.2202L280.5 114.706Z" fill="black" />
-          </svg>
-        </div>
-      </div>
-    </div>
-     <!--  OS (Desktop) -->
-    <div class="os-body" id="os-desktop">
-     <!--  OS launchpad  -->
-      <div class="os-launchpad" id="launchpad-overlay" style="display: none">
-        <div class="os-launchpad-applet-wrapper">
-          <div class="os-launchpad-applet">
-            <img class="os-launchpad-applet-img" src="/media?imageUrl=https://media.discordapp.net/attachments/986016042847469659/1063271330578972702/Frame_1velocity_2.png" onclick="xen.system.register('Velocity', '10', '10', 'https://velocity.radon.games/')" />
-            <div class='os-launchpad-applet-title' )"> Velocity </div>
-          </div>
-          <div class="os-launchpad-applet">
-            <img class="os-launchpad-applet-img" src="/media?imageUrl=https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Visual_Studio_Code_1.35_icon.svg/2048px-Visual_Studio_Code_1.35_icon.svg.png" />
-            <div class="os-launchpad-applet-title">VSCode</div>
-          </div>
-        </div>
-      </div>
-      <!--  OS taskbar (Desktop) -->
-      <div class="os-taskbar-cont">
-        <div class="os-taskbar-under"></div>
-        <div class="os-dock">
-          <div class="os-dock-resize"></div>
-        </div>
-      </div>
-      <script src="./rsc/web/web.bundle.js"></script>
-  </body>
+	<head>
+		<link href="./rsc/styles/index.css" rel="stylesheet" type="text/css" />
+		<link rel="icon" type="image/x-icon" href="./rsc/img/logo-small.png" />
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>XenOS</title>
+		<!-- Primary Meta Tags -->
+		<title>XenOS | Highly advanced Web OS</title>
+		<meta name="title" content="XenOS | Highly advanced Web OS" />
+		<meta
+			name="description"
+			content="XenOS is a highly advanced Web operating system by Nebula Services. With a built in Browser, proxy service, VSCode, and Virtual File System "
+		/>
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta
+			property="og:url"
+			content="https://XenOS-dev.greenworldia.repl.co"
+		/>
+		<meta property="og:title" content="XenOS | Highly advanced Web OS" />
+		<meta
+			property="og:description"
+			content="XenOS is a highly advanced Web operating system by Nebula Services. With a built in Browser, proxy service, VSCode, and Virtual File System "
+		/>
+		<meta
+			property="og:image"
+			content="https://XenOS-dev.greenworldia.repl.co/rsc/img/image-1.png"
+		/>
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta
+			property="twitter:url"
+			content="https://XenOS-dev.greenworldia.repl.co"
+		/>
+		<meta
+			property="twitter:title"
+			content="XenOS | Highly advanced Web OS"
+		/>
+		<meta
+			property="twitter:description"
+			content="XenOS is a highly advanced Web operating system by Nebula Services. With a built in Browser, proxy service, VSCode, and Virtual File System "
+		/>
+		<meta
+			property="twitter:image"
+			content="https://XenOS-dev.greenworldia.repl.co/rsc/img/image-1.png"
+		/>
+		<link rel="manifest" href="./manifest.json" />
+		<!-- Dynamic Stylesheets -->
+		<style id="dynamic-style" disabled="false">
+			.os-dock-item:active {
+				filter: brightness(0.5);
+			}
+		</style>
+		<style id="dynamic-style2" disabled="true">
+			.os-dock-tooltip:active {
+				filter: brightness(0.5);
+			}
+		</style>
+	</head>
+	<body>
+		<!-- Head Bar -->
+		<div class="os-header" id="os-header">
+			<img class="os-header-logo" src="./rsc/img/logo-small.png" />
+			<p class="os-header-text" id="osActiveApp">XenOS</p>
+			<div class="os-header-items-wrap">
+				<!-- SVG CODE HERE -->
+				<!-- SVG CODE END -->
+				<div class="os-battery-container"></div>
+				<p id="timeIndicator"></p>
+			</div>
+		</div>
+		<!--  OS preload -->
+		<div id="os-pre" class="os-preload">
+			<p id="os-pre-text">Hang Tight...</p>
+		</div>
+		<div class="os-preload" style="display: none">
+			<p>Hang on</p>
+			<br />
+			<p>Your screen isn't big enough.</p>
+		</div>
+		<!--  OS Setup  -->
+		<div class="os-setup" id="SetupWrapper" style="display: none">
+			<div class="os-setup-wrapper">
+				<p id="SetupText" class="os-setup-p">Welcome to XenOS</p>
+				<div
+					class="os-setup-choiceWrap"
+					id="passWordButtonChoice"
+					style="display: none"
+				>
+					<div id="keybinds" style="display: none">
+						<p class="os-setup-keybind-p">
+							<code>CTRL + Shift + P </code>(Panic Mode)
+						</p>
+						<p class="os-setup-keybind-p">
+							<code>CTRL + Shift + C</code> (Cloak Web Window)
+						</p>
+						<p class="os-setup-keybind-p">
+							<code>CTRL + Shift + F</code> (Fullscreen Mode)
+						</p>
+						<p class="os-setup-keybind-p">
+							You can <code>double click</code> a window drag bar
+							to maximize it.
+						</p>
+						<p class="os-setup-keybind-p">
+							<code>Click</code> any notification to dismiss it.
+						</p>
+						<button class="os-setup-button" id="doneButtonFinal">
+							Done
+						</button>
+					</div>
+					<button disabled class="os-setup-button" id="yesButton">
+						Yes, please.
+					</button>
+					<button class="os-setup-button" id="noButton">
+						No, thanks.
+					</button>
+					<input
+						type="password"
+						id="passWordInput"
+						style="display: none"
+					/>
+					<svg
+						id="pwSubmit"
+						style="display: none"
+						xmlns="http://www.w3.org/2000/svg"
+						width="331"
+						height="245"
+						viewBox="0 0 331 245"
+						fill="none"
+					>
+						<rect
+							x="37"
+							y="115"
+							width="242"
+							height="13"
+							rx="6.5"
+							fill="black"
+						/>
+						<path
+							d="M280.5 114.706C286.5 118.17 286.5 126.83 280.5 130.294L246.75 149.78C240.75 153.244 233.25 148.914 233.25 141.986L233.25 103.014C233.25 96.0862 240.75 91.7561 246.75 95.2202L280.5 114.706Z"
+							fill="black"
+						/>
+					</svg>
+				</div>
+			</div>
+		</div>
+		<!--  OS (Desktop) -->
+		<div class="os-body" id="os-desktop">
+			<!--  OS launchpad  -->
+			<div
+				class="os-launchpad"
+				id="launchpad-overlay"
+				style="display: none"
+			>
+				<div class="os-launchpad-applet-wrapper">
+					<div class="os-launchpad-applet">
+						<img
+							class="os-launchpad-applet-img"
+							src="/media?imageUrl=https://media.discordapp.net/attachments/986016042847469659/1063271330578972702/Frame_1velocity_2.png"
+							onclick="xen.system.register('Velocity', '10', '10', 'https://velocity.radon.games/')"
+						/>
+						<div class='os-launchpad-applet-title' )"> Velocity
+					</div>
+				</div>
+				<div class="os-launchpad-applet">
+					<img
+						class="os-launchpad-applet-img"
+						src="/media?imageUrl=https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Visual_Studio_Code_1.35_icon.svg/2048px-Visual_Studio_Code_1.35_icon.svg.png"
+					/>
+					<div class="os-launchpad-applet-title">VSCode</div>
+				</div>
+			</div>
+		</div>
+		<!--  OS taskbar (Desktop) -->
+		<div class="os-taskbar-cont">
+			<div class="os-taskbar-under"></div>
+			<div class="os-dock">
+				<div class="os-dock-resize"></div>
+			</div>
+		</div>
+		<script src="./rsc/web/web.bundle.js"></script>
+	</body>
 </html>
