@@ -2,13 +2,16 @@ const express = require("express");
 const webpack = require("webpack");
 const path = require("path");
 const request = require("request");
+const http = require("node:http");
+const createBareServer = require("@tomphttp/bare-server-node");
+const PORT = '3000'
 
 console.log("Welcome to XenOS Server");
 
 try {
   var Bundle = webpack(
     {
-      mode: "development",
+      mode: "none",
       entry: path.join(__dirname, "public/rsc/js/entry.ts"),
       module: {
         rules: [
@@ -36,7 +39,7 @@ try {
 
   var SDKBundle = webpack(
     {
-      mode: "production",
+      mode: "none",
       entry: path.join(__dirname, "public/sdk/mod.ts"),
       module: {
         rules: [
@@ -65,7 +68,9 @@ try {
   console.log(e);
 }
 
-const app = express();
+const server = http.createServer();
+const app = express(server);
+const bareServer = createBareServer("/bare/");
 
 app.use((req, res, next) => {
   res.append("Service-Worker-Allowed", "/");
@@ -95,6 +100,26 @@ app.get("/media", (req, res) => {
   request(imageUrl).pipe(res);
 });
 
-app.listen(3000, () => {
-  console.log("server started");
+server.on("request", (req, res) => {
+  if (bareServer.shouldRoute(req)) {
+    bareServer.routeRequest(req, res);
+  } else {
+    app(req, res);
+  }
+});
+
+server.on("upgrade", (req, socket, head) => {
+  if (bareServer.shouldRoute(req)) {
+    bareServer.routeUpgrade(req, socket, head);
+  } else {
+    socket.end();
+  }
+});
+
+server.on("listening", () => {
+  console.log(`Server running at http://localhost:${PORT}/.`);
+});
+
+server.listen({
+  port: PORT
 });

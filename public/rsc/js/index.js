@@ -1,4 +1,5 @@
 // Commands
+// deprecated
 document.addEventListener("keydown", event => {
 	if (event.ctrlKey && event.altKey && event.key === "c") {
 		let commandValue = prompt(
@@ -72,10 +73,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	let focusedWin = null;
 	let xenHeader = document.getElementById("osActiveApp");
-	function handleWindowClick(win) {
+  
+	window.xen.windowManager.handleWindowClick = function handleWindowClick(win) {
+    if (!win) return;
 		if (focusedWin) {
 			focusedWin.style.zIndex = "1";
 			focusedWin.style.filter = "brightness(.8)";
+      focusedWin.querySelectorAll('iframe').forEach(e=>e.style.pointerEvents='none');
 		}
 		win.style.zIndex = "100";
 		win.style.filter = "brightness(1)";
@@ -104,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	function initWindow(_win) {
 		const win = document.getElementById(_win);
 		__uni_windows.push(win);
-		const iframes = document.querySelectorAll("iframe");
+		const iframes = win.querySelectorAll("iframe");
 		const navbar = win.querySelector(".box-header-title");
 		let startX, startY;
 
@@ -127,6 +131,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 
 		navbar.addEventListener("mouseup", e => {
+      if (e.target instanceof window.SVGSVGElement) return;
+      if (e.target instanceof window.SVGRectElement) return;
+      if (e.target.classList.contains('os-mini')) return;
+
+      console.log(e.target);
+      
 			iframes.forEach(function (iframe) {
 				iframe.style.pointerEvents = "auto";
 			});
@@ -156,9 +166,19 @@ document.addEventListener("DOMContentLoaded", () => {
 				win.style.transition = "";
 			}, 500);
 		});
-		win.addEventListener("click", () => {
-			handleWindowClick(win);
+		win.addEventListener("mousedown", () => {
+			window.xen.windowManager.handleWindowClick(win);
 		});
+
+    win.addEventListener("click", (e) => {
+      console.log('eee');
+
+      if (e.target instanceof window.SVGSVGElement) return;
+      if (e.target instanceof window.SVGRectElement) return;
+      if (e.target.classList.contains('os-mini')) return;
+      
+      iframes.forEach(e=>e.style.pointerEvents='auto');
+    });
 	}
 
 	const xenDesk = document.getElementById("os-desktop");

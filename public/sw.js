@@ -75,7 +75,8 @@ var _import_xen = _xen.apps.loader;
 var { window: BrowserWindow } = _import_xen;
 
 import('/sdk.bundle.js').then(e => {
-// e is undefined no output from module
+console.log(e);
+
   var listeners = []
   var xen = { 
     BrowserWindow,
@@ -88,7 +89,7 @@ import('/sdk.bundle.js').then(e => {
     quit(force = true) {
       if (force) {
         Object.values(window.xen.windowManager.windows).forEach(win => {
-          win.el.remove();
+          if (win.el.id==name) win.el.remove();
         });
 
         window.xen.dock.quit(_name);

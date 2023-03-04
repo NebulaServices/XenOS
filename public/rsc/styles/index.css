@@ -48,10 +48,11 @@ body {
 }
 
 iframe {
-	width: 98%;
-	height: 98%;
+	width: 100%;
+	height: 100%;
 	border-color: #ffffff00;
 	overflow: hidden;
+  border: 0;
 	user-select: none;
 }
 
@@ -238,7 +239,6 @@ iframe {
 
 .drag {
 	box-shadow: 0 8px 16px rgb(0 0 0/25%);
-	overflow: hidden;
 	width: 500px;
 	height: 300px;
 	border-radius: 5px 5px 12px 12px;
@@ -288,7 +288,7 @@ iframe {
 	color: #fff;
 	font-size: 12px;
 	overflow: hidden;
-	width: 101.5%;
+	width: 100%;
 }
 
 .os-launchpad {
@@ -670,4 +670,94 @@ iframe {
 	margin-inline-end: 0px;
 	padding-inline-start: 0px;
 	font-size: 13px;
+}
+
+.resize, .dresize {
+  opacity: 0;
+  user-select: none;
+}
+
+.resize {
+  opacity: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 99999999999999999999999999999999999999999999999999;
+}
+
+.leftResize, .rightResize {
+  height: calc(100% - 20px);
+  width: 6px;
+  background: blue;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.leftResize {
+  left: -5px;
+}
+
+.rightResize {
+  right: -5px;
+}
+
+.leftResize:hover, .rightResize:hover {
+  cursor: e-resize;
+}
+
+.topResize:hover, .bottomResize:hover {
+  cursor: n-resize;
+}
+
+.topResize, .bottomResize {
+  height: 6px;
+  width: calc(100% - 20px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.topResize {
+  top: -5px;
+}
+
+.bottomResize {
+  bottom: -8px;
+}
+
+.dresize {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+}
+
+.topLeftResize {
+  left: -6px;
+  top: -6px;
+}
+
+.topRightResize {
+  right: -6px;
+  top: -6px;
+}
+
+.bottomLeftResize {
+  left: -6px;
+  bottom: -9px;
+}
+
+.bottomRightResize {
+  right: -6px;
+  bottom: -9px;
+}
+
+.bottomRightResize, .bottomLeftResize {
+  height: 19px;
+  with: 19px;
+}
+
+.topLeftResize, .bottomRightResize {
+  cursor: nw-resize;
+}
+
+.bottomLeftResize, .topRightResize {
+  cursor: ne-resize;
 }

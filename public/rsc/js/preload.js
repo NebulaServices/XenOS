@@ -35,15 +35,17 @@ window.__XEN_WEBPACK.html.desk = desk;
 
 	// Welcome the user :)
 	await window.xen.apps.launch("Xen/Welcome");
+
+  setTimeout(() => {
+    preloader.style.transition = '1s ease-in-out';
+  	preloader.style.opacity = 0;
+  	desk.style.transition = "all .5s ease 0s;";
+  
+  	setTimeout(() => {
+  		preloader.style.display = "none";
+  	}, 1000);
+  }, 300);
+
 })();
 
 const preloader = document.getElementById("os-pre");
-
-setTimeout(() => {
-	preloader.style.opacity = 0;
-	desk.style.transition = "all .5s ease 0s;";
-
-	setTimeout(() => {
-		preloader.style.display = "none";
-	}, 1000);
-}, 1300);

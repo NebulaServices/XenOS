@@ -1,10 +1,10 @@
-import fs from "./fs.ts";
-import proxy from "./proxy.ts";
-import open from "./open.ts";
-import widget from "./widget.ts";
-import modal from "./fs.ts";
+import fs from "./fs";
+import proxy from "./proxy";
+import open from "./open";
+import widget from "./widget";
+import modal from "./fs";
 // Internal
-import apps from "./apps.ts";
+import apps from "./apps";
 
 const SDK = {
 	fs: fs,
@@ -15,6 +15,6 @@ const SDK = {
 	apps: apps,
 };
 
-window.__XEN_BUNDLE_SDK = SDK;
+//window.__XEN_BUNDLE_SDK = SDK;
 
 export default SDK;

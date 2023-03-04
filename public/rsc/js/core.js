@@ -12,6 +12,7 @@ window.__XEN_WEBPACK.core.OS = class OS {
 		this.apps.loader = new window.__XEN_WEBPACK.core.AppLoaderComponent();
 		this.dock = new window.__XEN_WEBPACK.core.DockComponent(this.fs);
 		this.settings = new window.__XEN_WEBPACK.core.SettingsComponent();
+    this.error = new window.__XEN_WEBPACK.core.ErrorComponent();
 	}
 };
 

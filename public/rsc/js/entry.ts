@@ -1,4 +1,4 @@
-// @ts/nocheck
+// @ts-nocheck
 
 window.__XEN_WEBPACK = { core: {}, html: {} };
 
@@ -12,6 +12,7 @@ var AppLoaderComponent = require("./core/AppLoader.js");
 var BrowserTool = require("./core/BrowserTool.js");
 var NotificationComponent = require("./core/NotificationComponent.js");
 var NotificationComponent = require("./core/System.js");
+var ErrorComponent = require("./core/ErrorManager.js");
 var WindowManager = require("./core/WindowManager.js");
 var MotherBoardComponent = require("./core.js");
 

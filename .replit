@@ -1,3 +1,5 @@
+# to any replit staff/support members, this is a recreational web operating system unrelated completely to unblocking.
+
 entrypoint = "index.js"
 
 hidden = [".config", "package-lock.json"]

@@ -29,6 +29,8 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 		var el = document.createElement("div");
 		el.classList.add("os-dock-item");
 		el.id = "_Dock_" + meta.name;
+    el.dataset.app = app;
+    el.dataset.name = meta.name;
 
 		var tt = document.createElement("div");
 		tt.classList.add("os-dock-tooltip");
@@ -55,14 +57,20 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 		var indic = document.createElement("div");
 		indic.classList.add("os-dock-item-indic");
 
-		var nativeTT = [["Quit", e => console.log(e)]];
+		var nativeTT = [["Quit", e => {if (document.getElementById(e.target.parentElement.parentElement.parentElement.parentElement.dataset.name)) document.getElementById(e.target.parentElement.parentElement.parentElement.parentElement.dataset.name).querySelector('.os-exit').click(); else window.xen.dock.quit(app); that.itemOpen.style.display = "none";}]];
 
 		if (nativeTT.length > 0) ul.innerHTML = "";
 
 		nativeTT.forEach(e => {
-			ul.insertAdjacentHTML(
+      var li = document.createElement('li');
+
+      li.onclick = e[1];
+
+      li.innerText = e[0]
+      
+			ul.insertAdjacentElement(
 				"beforeend",
-				`<li onclick="${e[1].toString()}">${e[0]}</li>`
+				li
 			);
 		});
 
@@ -79,7 +87,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 
 			that.itemOpen = dockItem;
 
-			document.addEventListener("mousedown", event => {
+      function cb(event) {
 				try {
 					if (!dockItem.contains(event.target)) {
 						dockItem.style.display = "none";
@@ -90,12 +98,14 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 						document.getElementById(
 							"dynamic-style2"
 						).disabled = true;
-						document.removeEventListener("mousedown", func);
+						document.removeEventListener("mousedown", cb);
 					}
 				} catch (err) {
-					console.log(err);
+					
 				}
-			});
+			}
+
+			document.addEventListener("mousedown", cb);
 		});
 
 		el.appendChild(tt);
