@@ -4,31 +4,30 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width" />
 		<title>Settings</title>
-		<link
-			href="./rsc/styles/settings.css"
-			rel="stylesheet"
-			type="text/css"
-		/>
+		<link href="./rsc/styles/settings.css" rel="stylesheet" type="text/css" />
 	</head>
-	<body style="overflow: auto">
-		<p style="color: white">
-			Sorry, this application is currently unavailable. Xen Error Code 2.
-		</p>
-		<!--
-		<div class="user-section-wrap">
-			<div class="user-img"><img src="./rsc/img/usr.png" /></div>
-			<div class="user-name">GreenWorld</div>
-		</div>
-		<hr />
-		<div class="settings-wrap">
-			<span> General </span>
-			<div class="option-wrap">
-				<span class="option-name"> Window Saving (?)</span>
-				<div class="option-option">
-					<input type="radio" />
-				</div>
+	<body>
+		<div class="leftPanel">
+			<div class="previews">
+				<h4 class="title">Desktop Background</h4>
+				<img src="./rsc/img/fruity-bg.png" backgroundPreview>
+			</div>
+			<div class="viewSelectors">
+				<div class="viewSelector active">Theme</div>
+				<div class="viewSelector">Permissions</div>
+				<div class="viewSelector">filler 1</div>
+				<div class="viewSelector">filler 2</div>
 			</div>
 		</div>
-		-->
+		<div class="rightPanel">
+			<div view="theme" hiddenCat="false">
+				<h3 class="viewTitle">Theme</h3>
+				<img theme="1" src="./rsc/img/fruity-bg.png" class="themePreview">
+				<img theme="2" src="./rsc/img/bg2.jpg" class="themePreview">
+			</div>
+			<div view="permissions" hiddenCat="true">
+				<h3>To be filled</h3>
+			</div>
+		</div>
 	</body>
 </html>
