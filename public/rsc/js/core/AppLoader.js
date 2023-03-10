@@ -135,7 +135,43 @@ var appWin = class WIN {
       
       }
     } 
-    
+
+
+  requestModifySetting(settingFlag, setting){
+      const flag = this.name + "_permission_settingF";
+		console.log(flag);
+		var permCheck = localStorage.getItem(flag);
+		console.log(permCheck);
+		if (permCheck == null || permCheck == undefined || permCheck == false) {
+      	const requestMessage = confirm(
+				this.name +
+					" Wants permission to modify settings. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"
+			);
+      if (requestMessage == true) {
+				console.log("Permission granted");
+
+ if (settingFlag === 'backdrop') {
+    xen.settings.setBg(xen.settings.background[setting])
+ }
+
+        if (settingFlag=='customBackdrop') {
+          xen.settings.setCustomBg(setting);
+        }
+        
+				localStorage.setItem(flag, "true");
+      } else {
+         console.log('permission denied')
+        
+      } 
+    }else if (permCheck === 'true'){
+      if (settingFlag === 'backdrop') {
+        xen.settings.setBg(xen.settings.background[setting])
+   }
+        if (settingFlag=='customBackdrop') {
+          xen.settings.setCustomBg(setting);
+        }
+      }
+  }
   } // its me
 
 

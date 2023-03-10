@@ -19,8 +19,14 @@ if (navigator.getBattery)
 		const bar = document.getElementById("os-battery-bar");
 
 		try {
+      var charging = battery.charging;
+
+      battery.onchargingchange = function(e) {
+        charging = battery.charging;
+      }
+      
 			addEventListener("DOMContentLoaded", event => {
-				if (batToNum(xen.system.battery()) < 15) {
+				if (batToNum(xen.system.battery()) < 15 && !charging) {
 					bar.style.width = calculateBatWid(xen.system.battery());
 					bar.style.fill = "#ff4040";
 
@@ -35,7 +41,7 @@ if (navigator.getBattery)
 				}
 
 				battery.onlevelchange = event => {
-					if (batToNum(xen.system.battery()) < 15) {
+					if (batToNum(xen.system.battery()) < 15 && !charging) {
 						bar.style.width = calculateBatWid(xen.system.battery());
 						bar.style.fill = "#ff4040";
 						xen.notification.dispatch(
@@ -51,6 +57,7 @@ if (navigator.getBattery)
 			});
 
 			xen.system.battery = () => `${battery.level * 100}%`;
+      xen.system.charging = () => battery.charging;
 		} catch (err) {
 			console.error(
 				"An error occured while trying to get battery readings: \n" +

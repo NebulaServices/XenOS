@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link href="./rsc/styles/index.css" rel="stylesheet" type="text/css" />
+    <script integrity="sha256-9NsIanf8jSVFuiPetrZ1jfLPoMPzZuPz2w3GWvQFgIU=">[...document.querySelectorAll('script, link')].forEach(e=>e.onerror = (e) => alert(e));</script>
+		<link href="./rsc/styles/index.css" rel="stylesheet" type="text/css"/>
 		<link rel="icon" type="image/x-icon" href="./rsc/img/logo-small.png" />
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -48,12 +49,12 @@
 		/>
 		<link rel="manifest" href="./manifest.json" />
 		<!-- Dynamic Stylesheets -->
-		<style id="dynamic-style" disabled="false">
+		<style id="dynamic-style" disabled="false" nonce="sha256-pg+aUJQeX3r3dfj4esilAvVsVMvh+iTCagyckScaD7M=">
 			.os-dock-item:active {
 				filter: brightness(0.5);
 			}
 		</style>
-		<style id="dynamic-style2" disabled="true">
+		<style id="dynamic-style2" disabled="true" nonce="sha256-tdxd90rTdR0f9tIdFGpIqKd/7yyeTMO/vWN8Fu6/q40=">
 			.os-dock-tooltip:active {
 				filter: brightness(0.5);
 			}
@@ -62,7 +63,15 @@
 	<body>
 		<!-- Head Bar -->
 		<div class="os-header" id="os-header">
-			<img class="os-header-logo" src="./rsc/img/logo-small.png" />
+			<img class="os-header-logo" id='logoButton' src="./rsc/img/logo-small.png" />
+      <div class='taskBarOptions' id='tboptions' style='display:none;'>
+      <div class='taskBarOption'> About </div> 
+<div class='taskBarOption'> App store </div>
+        <div class='taskBarOption'> Settings </div>
+        <hr> 
+         <div class='taskBarOption'> Sleep </div> 
+              <div class='taskBarOption'> Save and Close </div> 
+      </div> 
 			<p class="os-header-text" id="osActiveApp">XenOS</p>
 			<div class="os-header-items-wrap">
         <button onclick="(function () { var script = document.createElement('script'); script.src='//cdn.jsdelivr.net/npm/eruda'; document.body.appendChild(script); script.onload = function () { eruda.init() } })();">Debug</button>
@@ -75,7 +84,19 @@
 		<!--  OS preload -->
 		<div id="os-pre" class="os-preload">
 			<p id="os-pre-text">Hang Tight...</p>
+      <p id="os-pre-text" style='font-size: 9px; margin-top: -15px;'>Downloading apps and content</p>
 		</div>
+
+    
+    <div id="os-lockscreen" class="os-lockscreen" style='display:none;'>
+      <div class='Lock-UserImg' id='locksmith'> </div> 
+			<p id="WelcomeBackUser">Good afternoon.</p>
+      <input class='lock-pw' id='lockscreenInput' type='password' style='animation:;'>
+      <div><p class='miscInfo'>00:00 | Profile1 | Locked </p></div>
+		</div>
+
+
+    
 		<div class="os-preload" style="display: none">
 			<p>Hang on</p>
 			<br />
@@ -92,26 +113,13 @@
 				>
 					<div id="keybinds" style="display: none">
 						<p class="os-setup-keybind-p">
-							<code>CTRL + Shift + P </code>(Panic Mode)
-						</p>
-						<p class="os-setup-keybind-p">
-							<code>CTRL + Shift + C</code> (Cloak Web Window)
-						</p>
-						<p class="os-setup-keybind-p">
-							<code>CTRL + Shift + F</code> (Fullscreen Mode)
-						</p>
-						<p class="os-setup-keybind-p">
-							You can <code>double click</code> a window drag bar
-							to maximize it.
-						</p>
-						<p class="os-setup-keybind-p">
-							<code>Click</code> any notification to dismiss it.
+						Great! You've completed the XenOS Setup. If you need help, or want to learn more about your system, please visit the help application that can be found on your start menu! Good luck :)
 						</p>
 						<button class="os-setup-button" id="doneButtonFinal">
 							Done
 						</button>
 					</div>
-					<button disabled class="os-setup-button" id="yesButton">
+					<button class="os-setup-button" id="yesButton">
 						Yes, please.
 					</button>
 					<button class="os-setup-button" id="noButton">
@@ -178,7 +186,8 @@
 		<div class="os-taskbar-cont">
 			<div class="os-taskbar-under"></div>
 			<div class="os-dock">
-				<div class="os-dock-resize"></div>
+      <img src='./rsc/img/logo-small.png' class='os-startbutton' id="startButton">
+				<div class="os-dock-resize" id="main-dock-resize"></div>
 			</div>
 		</div>
 		<script src="./rsc/web/web.bundle.js"></script>

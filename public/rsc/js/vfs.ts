@@ -25,12 +25,12 @@ function createObject(db) {
 
 function saveFile(db, file, content) {
 	return new Promise(async resolve => {
-		return resolve(
+    try {await remove(file);} catch(e) {};
 			db
 				.transaction("main", "readwrite")
 				.objectStore("main")
-				.add({ key: file, body: content })
-		);
+				.add({ key: file, body: content, dir: '/' })
+        .onsuccess = function() {resolve()};
 	});
 }
 
@@ -64,7 +64,7 @@ async function save(name, content) {
 
 	var all = await getAll(await getObject(db.result));
 
-	if (all.find(e => e.key == name)) return console.log("abort save");
+	//if (all.find(e => e.key == name)) return console.log("abort save");
 
 	console.log(all);
 
@@ -80,7 +80,13 @@ async function get(file) {
 
 	var all = await getAll(obj);
 
-	return all.find(e => e.key == file).body;
+  console.log(all);
+
+  try {
+	  return all.find(e => e.key == file).body;
+  } catch(e) {
+    return new Error({message: 'not found'})
+  }
 }
 
 async function remove(file) {
@@ -115,6 +121,16 @@ async function exists(file) {
 	return all.find(e => e.key == file) ? true : false;
 }
 
+async function readdir(dir) {
+	var [db, event] = await openAsync("db-fs", false);
+
+	var obj = await getObject(db.result);
+
+	var all = await getAll(obj);
+
+	return all.filter(e=>e.dir==dir).map(e=>e.key);
+}
+
 function getDir(db, name) {
 	return new Promise(async resolve => {
 		var obj = await getObject(db);
@@ -142,6 +158,7 @@ window.__XEN_WEBPACK.core.VFS = class {
 	readFile = async function (file, json) {
 		return json ? JSON.parse(await get(file)) : await get(file);
 	};
+  readdir = readdir;
 	getStorageData = space;
 	removeFile = remove;
 };

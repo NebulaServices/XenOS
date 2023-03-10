@@ -15,6 +15,85 @@ document.addEventListener("keydown", event => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+const StartButton = document.getElementById('startButton')
+
+StartButton.onclick = function(){
+   if (!xen.dock.menu) {
+          xen.dock.openMenu();
+          xen.dock.menu = true;
+        } else {
+          xen.dock.closeMenu();
+          xen.dock.menu = false;
+        }
+}
+
+  
+const INACTIVITY_TIME = 300000; 
+var hadNotice = false;
+
+let timeoutID = null;
+
+function resetTimeout() {
+  clearTimeout(timeoutID);
+  timeoutID = setTimeout(() => {
+    console.log('User inactive');
+     hadNotice = "false";
+    document.dispatchEvent(new Event('userInactive'));
+  }, INACTIVITY_TIME);
+}
+
+function handleUserActivity() {
+  if (hadNotice === "false"){
+     console.log('User active');
+  document.dispatchEvent(new Event('userActive'));
+  resetTimeout();
+     hadNotice = "true";
+  }
+ 
+}
+
+document.addEventListener('mousemove', handleUserActivity);
+document.addEventListener('keydown', handleUserActivity);
+document.addEventListener('click', handleUserActivity);
+document.addEventListener('touchstart', handleUserActivity);
+
+resetTimeout(); // start tracking inactivity on page load
+
+
+  
+var _ic = document.getElementById('logoButton')
+var _to = document.getElementById('tboptions')
+var _tbo_displaying = false; 
+_ic.onclick = function(){
+  _to.style.display = 'flex'
+  _tbo_displaying = "true";
+}
+document.getElementById('os-desktop').addEventListener('click', function(event){
+  
+  _to.addEventListener('click', function(event){
+    console.log('menu')
+    _to.innerHTML = `
+      XenOS v0.8 Beta \n Copyright Nebula Services 2023`
+  })
+
+  if(_tbo_displaying === "true"){
+     _to.style.display = 'none'
+    _tbo_displaying = "false";
+    _to.innerHTML = `
+  
+      <div class="taskBarOption"> About </div> 
+<div class="taskBarOption"> App store </div>
+        <div class="taskBarOption"> Settings </div>
+        <hr> 
+         <div class="taskBarOption"> Sleep </div> 
+              <div class="taskBarOption"> Save and Close </div> 
+      `
+    
+  }
+})
+
+
+  
 	Element.prototype.insertAfter = function(el, ref) {
 		this.insertBefore(el, ref.nextSibling);
 	};
@@ -146,6 +225,8 @@ document.addEventListener("DOMContentLoaded", () => {
 			let left = e.clientX - startX;
 			let top = e.clientY - startY;
 
+            if (top<29) top = 29;
+
 			requestAnimationFrame(() => {
 				win.style.position = `absolute`;
 				win.style.top = `${top}px`;
@@ -196,6 +277,49 @@ document.addEventListener("DOMContentLoaded", () => {
 const btn = document.getElementById("launchpadButton");
 const lp = document.getElementById("launchpad-overlay");
 
+window.__XEN_WEBPACK.core.platform = async function() {
+  return navigator.userAgentData.platform;
+}
+
+window.xen.awaitAll = async function(...args) {
+  return await Promise.all(args)?true:false;
+}
+
+window.xen.wait = (ms) => new Promise(e=>setTimeout(()=>e(), ms));
+
+window.xen.system.details = () => {
+  return require('device-uuid')
+}
+
+window.xen.blob64 = function(file) {
+  return new Promise(async (e) => {
+    fetch(file).then(e=>e.blob()).then(blob => {
+      const fr = new FileReader();
+        
+      fr.addEventListener("load", function(evt) {
+        e(evt.target.result);
+      }); 
+        
+      fr.readAsDataURL(blob);
+    });
+  });
+}
+
 /*
 btn.addEventListener("click", () => xen.system.launchpad(lp.style.display !== 'flex'));
 */
+var _title;
+document.addEventListener('userInactive', function(){
+  const frame = document.createElement("iframe");
+ frame.src = "/saver.html";
+  frame.style='overflow:none;outline:transparent;border:transparent;width:100%;height:100%;z-index:40000004;position: absolute;pointer-events:none;'
+  frame.id='saverFrame'
+  document.body.appendChild(frame);
+  _title = document.title
+  document.title = 'sleeping | XenOS'
+})
+
+document.addEventListener('userActive', function(){
+  document.getElementById('saverFrame').remove()
+  document.title = _title;
+})

@@ -2,6 +2,8 @@
 
 window.__XEN_WEBPACK = { core: {}, html: {} };
 
+
+
 // Core
 var FileSystemComponent = require("./vfs.ts");
 var SettingsComponent = require("./settings.ts");
@@ -16,13 +18,17 @@ var ErrorComponent = require("./core/ErrorManager.js");
 var WindowManager = require("./core/WindowManager.js");
 var MotherBoardComponent = require("./core.js");
 
+// Frameworks 
+
+
 // After
-var PreloadComponent = require("./preload.js");
 var LeaderComponent = require("./index.js");
 var SetupComponent = require("./setup.js");
 var MarkupOrganizer = require("./markup.js");
 var BatteryComponent = require("./battery.js");
 var dragComponent = require("./draggable.js");
+
+var PreloadComponent = require("./preload.js");
 
 navigator.serviceWorker.register("/sw.js", {
 	scope: "/",

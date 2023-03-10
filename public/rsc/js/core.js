@@ -1,4 +1,4 @@
-// OS MotherBoard API
+// OS MotherBoard API (asus z790)
 window.__XEN_WEBPACK.core.OS = class OS {
 	constructor() {
 		this.fs = new window.__XEN_WEBPACK.core.VFS();

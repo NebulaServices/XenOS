@@ -44,16 +44,16 @@ window.__XEN_WEBPACK.core.System = class System {
 				// Where a new app is created in the UI
 				const desk = document.getElementById("os-desktop");
 				try {
-					let injectCode = `const thisAppName = this.dataset.appname;xen.windowManager.focus(thisAppName);/*xen.windowManager.modWin(thisAppName, "zIndex", this.style.zIndex);*/xen.windowManager.modWin(thisAppName, "locX", this.style.left);xen.windowManager.modWin(thisAppName, "locY", this.style.top);`;
-					let closeCode = `const thisAppName = this.dataset.appname;
+					let injectCode = new Function(`const thisAppName = this.dataset.appname;xen.windowManager.focus(thisAppName);/*xen.windowManager.modWin(thisAppName, "zIndex", this.style.zIndex);*/xen.windowManager.modWin(thisAppName, "locX", this.style.left);xen.windowManager.modWin(thisAppName, "locY", this.style.top);`);
+					let closeCode = new Function(`const thisAppName = this.dataset.appname;
 xen.system.unregister("${name}");
 document.dispatchEvent(
 	new CustomEvent("WindowClose", {
 		window: thisAppName,
 		detail: { text: "${name}" },
 	})
-);`;
-					let miniCode = `xen.apps.minimize('${name}');`;
+);`);
+					let miniCode = new Function(`xen.apps.minimize('${name}');`);
 					let master = document.createElement("div");
 					let headerBox = document.createElement("div");
 					let headerTitle = document.createElement("div");
@@ -89,9 +89,10 @@ document.dispatchEvent(
 					headerTitle.appendChild(miniSpan);
 					closeSpan.classList.add("os-exit");
 					miniSpan.classList.add("os-mini");
-					master.setAttribute("onclick", injectCode);
-					closeSpan.setAttribute("onclick", closeCode);
-					miniSpan.setAttribute("onclick", miniCode);
+					master.onclick = injectCode;
+					closeSpan.onclick = closeCode;
+					miniSpan.onclick = miniCode;
+          
 					closeSpan.innerHTML = `<svg style="width: 15px;height: 15px;" xmlns="http://www.w3.org/2000/svg" width="188" height="185" viewBox="0 0 188 185" fill="none">
 	<rect width="188" height="185" rx="92.5" fill="#F46868"></rect>
 	</svg>`;
@@ -341,4 +342,16 @@ document.dispatchEvent(
 
 		document.title = `${win.id} | XenOS`;
 	}
+
+  #restart() {
+    document.documentElement.replaceWith(document.documentElement.cloneNode(true));
+    
+    var links = document.getElementsByTagName("link"); for (var i = 0; i < links.length;i++) { var link = links[i]; if (link.rel === "stylesheet") {link.href+='?'}}
+
+    var scripts = document.getElementsByTagName("script"); for (var i = 0; i < scripts.length;i++) { var script = scripts[i]; if (script.type !== "application/json") {script.href+='?flg'}}
+  }
+
+  requestRestart(app) {
+    this.#restart();
+  }
 };

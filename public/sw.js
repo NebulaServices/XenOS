@@ -11,6 +11,10 @@ self.addEventListener("fetch", event => {
 				cacheName: "apps",
 			});
 
+      if (path=='/apps/data') {
+        return new Response(JSON.stringify((await (await caches.open('apps')).keys()).filter(e=>e.url.endsWith('/manifest.json')).filter(e=>e.url.split('/').length>4).map(e=>e.url.split('/').slice(4, 6)).map(e=>e.join('/'))), {headers: {'content-type': "application/json"}});
+      }
+        
 			if (cacheResp && path.startsWith("/apps/")) {
 				var body = await cacheResp.blob();
 
@@ -36,7 +40,7 @@ self.addEventListener("fetch", event => {
 
 					body = `<head><base href="${
 						location.origin + path
-					}"><script src="/rsc/web/webcommunicator.js"></head></script>${body}`;
+					}"><script src="/rsc/web/webcommunicator.js"></script></head>${body}`;
 
 					return new Response(body, {
 						headers: {
@@ -140,7 +144,7 @@ self.addEventListener("activate", event => event.waitUntil(clients.claim()));
 function getContentType(file) {
 	if (file.endsWith(".html")) return "text/html";
 	if (file.endsWith(".css")) return "text/css";
-	if (file.endsWith(".js")) return "application/javascript";
+	if (file.endsWith(".js")) return "text/javascript";
 	if (file.endsWith(".png")) return "image/png";
 	// TODO: Add more types
 	return "text/plain";

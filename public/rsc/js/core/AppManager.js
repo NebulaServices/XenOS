@@ -47,16 +47,32 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
   
 	constructor() {
 		this.apps = {
-			appsInstalled: [{ WelcomeToXenOS: { repository: "none/preload" } }],
+			appsInstalled: [],
 		};
 	}
 
-  
+  async start() {
+    var data = [];
+    
+    var json = await (await fetch('/apps/data')).json();
+
+    for (var k of json) {
+      var req = await (await fetch('/apps/'+k+'/manifest.json')).json();
+
+      var g = {};
+
+      g[req.name] = req;
+
+      data.push(g);
+    };
+
+    this.apps.appsInstalled = data;
+  }
 
 	async #install(author, proj, file, content, entry, log) {
-		navigator.serviceWorker.addEventListener("message", async () => {
+		navigator.serviceWorker.onmessage = async () => {
 			if (log) console.log("Installed!");
-		});
+		};
 
 		navigator.serviceWorker.ready.then(registration =>
 			registration.active.postMessage({
@@ -172,7 +188,7 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 		if (!repo) repo = "https://xenos-app-repository.enderkingj.repl.co";
 
 		try {
-			var ver = (await this.getMeta.json()).version;
+			var ver = (await this.getMeta(pkg)).version;
 
 			var currVer = await (
 				await fetch(repo + "/version", {
@@ -184,8 +200,8 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 			).text();
 
 			if (ver == currVer) return true;
-		} catch {}
-
+		} catch(e) {console.log(e)}
+console.log(pkg + ' updating')
 		return await this.install(pkg, repo, log);
 	}
 
@@ -205,7 +221,6 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 			const location = localStorage.get("prefix") + meta.embedUrl;
 
 			// TODO: Convert xen.system.register to use promise and return the iframe element so that an inject script can be added to it
-			alert("buh");
 			if (xen.windowManager.windows[meta.name]._min == "true") {
 				xen.apps.minClick({}, "${name}");
 			}

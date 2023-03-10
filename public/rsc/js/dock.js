@@ -8,12 +8,22 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 		this.fs = fs;
 		this.split = document.querySelector(".os-dock-resize");
 		this.cont = document.querySelector(".os-dock");
+
+    this.startMenu = {};
 	}
 
 	async #remove(app) {
 		const meta = await xen.apps.getMeta(app);
 
 		document.getElementById("_Dock_" + meta.name).remove();
+
+    var sep = document.getElementById('main-dock-resize');
+
+    var after = [...document.querySelectorAll('.os-dock-item')].slice([...document.querySelectorAll('.os-dock > *')].indexOf(sep));
+
+    if (!after.length) {
+      sep.style.opacity = '0';
+    }
 
 		return true;
 	}
@@ -49,7 +59,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 
 		var img = document.createElement("img");
 		img.src = icon;
-		img.setAttribute("onclick", `window.xen.apps.launch("${app}")`);
+		img.onclick = new Function(`window.xen.apps.launch("${app}")`);
 
 		// Fallback image
 		img.onerror = () => (img.src = "https://google.com/favicon.ico");
@@ -74,12 +84,19 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 			);
 		});
 
+    document.addEventListener('keyup', () => {
+			event.preventDefault();
+
+			if (that.itemOpen) that.itemOpen.style.display = "none";
+    });
+
 		el.addEventListener("contextmenu", event => {
 			event.preventDefault();
 
 			if (that.itemOpen) that.itemOpen.style.display = "none";
 
 			var dockItem = el.getElementsByClassName("os-dock-tooltip")[0];
+      console.log(dockItem);
 			dockItem.style.display = "block";
 
 			document.getElementById("dynamic-style").disabled = true;
@@ -112,6 +129,8 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 		el.appendChild(img);
 		el.appendChild(indic);
 
+    document.getElementById('main-dock-resize').style.opacity = '1';
+
 		if (pin) this.cont.insertBefore(el, this.split);
 		else this.cont.insertAfter(el, this.split);
 
@@ -128,14 +147,14 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 			document
 				.getElementById("_Dock_" + meta.name)
 				.querySelector("img")
-				.setAttribute("onclick", "");
+				.onclick = function() {};
 		} else {
 			await this.#add(app);
 
 			document
 				.getElementById("_Dock_" + meta.name)
 				.querySelector("img")
-				.setAttribute("onclick", "");
+				.onclick = function() {};;
 			document
 				.getElementById("_Dock_" + meta.name)
 				.querySelector(".os-dock-item-indic").style.opacity = "1";
@@ -152,7 +171,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 			document
 				.getElementById("_Dock_" + meta.name)
 				.querySelector("img")
-				.setAttribute("onclick", `window.xen.apps.launch("${app}")`);
+				.onclick = new Function(`window.xen.apps.launch("${app}")`);
 		} else await this.#remove(app);
 	}
 
@@ -160,6 +179,14 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 		const meta = await xen.apps.getMeta(app);
 
 		let data = await this.fs.readFile("__DOCK_PINS.xen", true);
+
+    if (data.indexOf(app)>-1) {
+      data.splice(data.indexOf(app), 1);
+
+      console.log(data);
+      
+      return await this.fs.writeFile("__DOCK_PINS.xen", JSON.stringify(data));
+    }
 
 		data.push(app);
 
@@ -186,17 +213,21 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 	}
 
 	async loadNative() {
+    await this.menuStart();
 		if (!(await this.fs.exists("__DOCK_PINS.xen")))
 			await this.fs.writeFile(
 				"__DOCK_PINS.xen",
 				JSON.stringify([
+          "Xen/Settings",
 					"Xen/Store",
 					"Xen/notes",
 					"Xen/Testflight",
-					"Velocity/Velocity",
-					"Xen/Settings",
+					"Velocity/Velocity"
+       
 				])
 			);
+
+    console.log('saved')
 
 		await this.loadPins();
 
@@ -216,4 +247,134 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 	async show(app) {}
 
 	async hide(app, open = false) {}
+
+  // start menu time
+
+  menu = false;
+
+  async menuStart() {
+    if (!await xen.fs.exists('__START_PINS.xen')) await xen.fs.writeFile('__START_PINS.xen', '[]');
+    
+    var that = this;
+    
+    window.addEventListener('keyup', function(e) {
+      console.log(e.key);
+      if (e.key=='Alt') {
+        if (!that.menu) {
+          that.openMenu();
+          that.menu = true;
+        } else {
+          that.closeMenu();
+          that.menu = false;
+        }
+      }
+    });
+  }
+
+  async pinStart(app) {
+    var meta = await xen.apps.getMeta(app);
+
+    if (!await xen.fs.exists('__START_PINS.xen')) await xen.fs.writeFile('__START_PINS.xen', '[]');
+
+    if ((await xen.fs.readFile('__START_PINS.xen', true)).contains(app)) {
+      var data = await xen.fs.readFile('__START_PINS.xen', true);
+
+      data.splice(data.indexOf(app, 1));
+
+      return await xen.fs.writeFile('__START_PINS.xen', JSON.stringify(data));
+    }
+
+    await xen.fs.writeFile('__START_PINS.xen', JSON.stringify([...await xen.fs.readFile('__START_PINS.xen', true), app]));
+  }
+
+  createMenu(apps) {
+    var that = this;
+    
+    var master = document.createElement('div');
+    master.classList.add('start-menu');
+    master.style.height = '0px';
+
+    master.innerHTML = `
+      <div class="start-over" style="height:0px">
+        <div class="start-left">${apps.map(e=>`<div class="start-app" data-app="${e.id}"><img class="start-app-icon" src="${path.join(`/apps/${e.id}/`, e.icon)}">${e.name}</div>`).join('\n')||'No Apps'}</div>
+        <div class="start-right">Something</div>
+      </div>
+    `
+
+    master.querySelectorAll('.start-app').forEach(el => {
+      el.onclick = function() {
+        that.closeMenu();
+        that.menu = false;
+        
+        window.xen.apps.launch(el.dataset.app);
+      }
+    });
+
+    return master;
+  }
+
+  menuTimeout = 0;
+
+  async openMenu() {
+    var that = this;
+    if (this.menu) return;
+    await xen.wait(this.menuTimeout);
+    
+    if (document.querySelector('.start-menu')) document.querySelector('.start-menu').remove();
+    if (this.menuTime) clearTimeout(this.menuTime);
+    const apps = await xen.fs.readFile('__START_PINS.xen', true);
+
+    for (var app in apps) {
+      var meta = await xen.apps.getMeta(apps[app]);
+      meta.id = apps[app];
+
+      apps[app] = meta;
+    }
+
+    var el = this.createMenu(apps);
+
+    document.querySelector('.os-taskbar-cont').insertAdjacentElement('afterbegin', el);
+
+    setTimeout(function() {
+      document.querySelector('.os-taskbar-cont').style.height = '560px';
+      document.querySelector('.start-over').style.height = '500px';
+      document.querySelector('.start-menu').style.height = '500px';
+    }, 5);
+
+    setTimeout(function() {
+      document.querySelector('.start-left').style.opacity = '1';
+      document.querySelector('.start-right').style.opacity = '1';
+    }, 30);
+
+    this.menuTimeout = 50;
+
+    function cb(event) {
+      try {
+        if (!el.contains(event.target)) {
+          that.closeMenu();
+          that.menu = false;
+          document.removeEventListener("mousedown", cb);
+        }
+      } catch (err) {
+        
+      }
+    }
+
+    document.addEventListener("mousedown", cb);
+  }
+
+  async closeMenu() {
+    if (!this.menu) return;
+    await xen.wait(this.menuTimeout);
+    
+    document.querySelector('.start-over').style.height = '0px';
+    document.querySelector('.start-menu').style.height = '0px';
+    document.querySelector('.os-taskbar-cont').style.height = '60px';
+    
+    this.menuTime = setTimeout(function() {
+      document.querySelector('.start-menu').remove();
+    }, 150);
+
+    this.menuTimeout = 200;
+  }
 };
