@@ -276,7 +276,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 
     if (!await xen.fs.exists('__START_PINS.xen')) await xen.fs.writeFile('__START_PINS.xen', '[]');
 
-    if ((await xen.fs.readFile('__START_PINS.xen', true)).contains(app)) {
+    if ((await xen.fs.readFile('__START_PINS.xen', true)).indexOf(app)>-1) {
       var data = await xen.fs.readFile('__START_PINS.xen', true);
 
       data.splice(data.indexOf(app, 1));

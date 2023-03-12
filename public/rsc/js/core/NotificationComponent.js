@@ -15,10 +15,8 @@ window.__XEN_WEBPACK.core.NotificationComponent = class NotificationComponent {
 			master.appendChild(notiWrap);
 			notiWrap.classList.add("os-notification-1");
 			notiWrap.id = name;
-			notiWrap.setAttribute(
-				"ondblclick",
-				`this.style.display='none';this.remove();`
-			);
+			notiWrap.ondblclick=
+				new Function(`this.style.display='none';this.remove();`);
 			notiWrap.appendChild(iconWrap);
 			iconWrap.classList.add("os-notification-icon");
 			if (icon == "lowbat")

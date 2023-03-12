@@ -205,14 +205,25 @@ console.log(pkg + ' updating')
 		return await this.install(pkg, repo, log);
 	}
 
+  async #errorWin(error, meta, app) {
+    console.log(error, meta, app);
+  }
+
 	async launch(app) {
+    var that = this;
+    
 		const path = "/apps/" + app;
 		const meta = await xen.apps.getMeta(app);
-
+  
+    if (x>2) x+1=3
+    
 		await xen.dock.opened(app);
 
 		if (meta.type === "app") {
-			var mainFile = await (await fetch(path + "/" + meta.entry)).text();
+      var req = await fetch(path + "/" + meta.entry).catch(e=>{
+        that.#errorWin(e, meta, app);
+      });
+      var mainFile = await (req).text();
 
 			window.xen.apps.loader.load(meta.name, mainFile, path, app);
 		}
