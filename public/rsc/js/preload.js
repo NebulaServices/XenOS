@@ -40,11 +40,12 @@ var timingFlag = document.currentScript.src.endsWith('?flg');
     xen.apps.update("Kleki/Kleki", undefined, false),
   	xen.apps.update("Velocity/Velocity", undefined, false),
     
-    // Load doc
-    
-  	xen.dock.loadNative(),
     xen.apps.start()
   );
+
+  // Load dock (Must be after others to ensure first load)
+  
+  xen.dock.loadNative()
 
   // Detect Platform
   xen.platform = await window.__XEN_WEBPACK.core.platform();

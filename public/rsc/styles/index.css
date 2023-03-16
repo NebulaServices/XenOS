@@ -1,8 +1,6 @@
-@import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap);
-
-@import url(https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@200&display=swap);
-
-@import url(https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap);
+@import url(/rsc/font/Montserrat.css);
+@import url(/rsc/font/Inter.css);
+@import url(/rsc/font/IBMPlexSans.css);
 
 @keyframes preload-anim {
   0%,
@@ -15,6 +13,17 @@
   75% {
     opacity: 0;
   }
+}
+@keyframes delNotif {
+	0% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+
+	100% {
+		opacity: 0;
+		transform: translateX(250px);
+	}
 }
 @-webkit-keyframes slideInRight {
   0% {
@@ -68,9 +77,10 @@
 body {
   overflow: hidden;
   cursor: auto;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "IBM PLEX SANS", sans-serif;
   margin: 0;
   transition: 0s;
+  font-weight: 300;
 }
 
 iframe {
@@ -87,7 +97,7 @@ button {
     color: white;
     font-size: 13px;
     border: transparent;
-    font-family: "IBM Plex Sans";
+    font-family: "IBM PLEX SANS";
 }
 .os-preload,
 .os-setup {
@@ -147,7 +157,7 @@ button {
     width: 193px;
     height: 24px;
     margin-left: 31px;
-    font-family: "IBM Plex Sans";
+    font-family: "IBM PLEX SANS";
     font-size: 20px;
     border-radius: 4px;
     padding-left: 6px;
@@ -168,7 +178,7 @@ button {
   cursor: pointer;
   font-variant: none;
   font-weight: 100;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "IBM PLEX SANS", sans-serif;
   color: black;
 }
 
@@ -647,12 +657,12 @@ button {
   filter: brightness(0.5);
 }
 .os-notification-title {
-  color: white;
-  padding-left: 9px;
-  position: absolute;
-  margin-top: 11px;
-  margin-left: 50px;
-  margin-bottom: 38px;
+ color: white;
+    padding-left: 19px;
+    position: absolute;
+    margin-top: 13px;
+    margin-left: 50px;
+    margin-bottom: 38px;
 }
 .os-notification-title:active {
 }
@@ -668,13 +678,13 @@ button {
   margin-left: 10px;
 }
 .os-notification-description {
-  display: block;
-  position: relative;
-  font-size: 10.5px;
-  width: 208px;
-  margin-left: 59px;
-  margin-top: 13px;
-  color: white;
+ display: block;
+    position: relative;
+    font-size: 10.5px;
+    width: 208px;
+    margin-left: 69px;
+    margin-top: 13px;
+    color: white;
 }
 .os-notification-dismiss {
 }
@@ -893,7 +903,7 @@ hr {
     width: 193px;
     height: 24px;
     margin-left: 31px;;
-    font-family: "IBM Plex Sans";
+    font-family: "IBM PLEX SANS";
     font-size: 20px;
     border-radius: 4px;
   transition: .2s;
@@ -1003,4 +1013,26 @@ width: calc(100% - 10px);
 }
 .start-app:active {
   filter: brightness(.8);
+}
+
+.miniPlayer{
+  background: #a8a8a836;
+  backdrop-filter: blur(6px);
+  position: absolute;
+  width: 270px;
+  height: 113px;
+  top: 36px;
+  right: 12px;
+  border-radius: 8px;
+  box-shadow: 10px 10px 42px 2px rgb(0 0 0 / 50%);
+  -webkit-box-shadow: 10px 10px 42px 2px rgb(45 45 45 / 56%);
+  -moz-box-shadow: 10px 10px 42px 2px rgba(66, 66, 66, 0.5);
+  border: 0.7px solid #b5b5b54a;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-content: center;
+  flex-direction: column;
+  padding-top: 9px;
+  padding-left: 15px;
 }

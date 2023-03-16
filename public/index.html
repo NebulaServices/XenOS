@@ -1,7 +1,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
-    <script integrity="sha256-9NsIanf8jSVFuiPetrZ1jfLPoMPzZuPz2w3GWvQFgIU=">[...document.querySelectorAll('script, link')].forEach(e=>e.onerror = (e) => alert(e));</script>
+    <script integrity="sha256-9NsIanf8jSVFuiPetrZ1jfLPoMPzZuPz2w3GWvQFgIU=">[...document.querySelectorAll('script, link')].forEach(e=>e.onerror = (e) => alert(e));if (navigator.serviceWorker.controller === null) {
+  navigator.serviceWorker.register("/sw.js", {
+  	scope: "/",
+  });
+
+  navigator.serviceWorker.ready.then(e=>location.reload());
+}</script>
+    <!--<link href="./rsc/font/IBMPlexSans.css" rel="stylesheet" type="text/css"/>
+    <link href="./rsc/font/Inter.css" rel="stylesheet" type="text/css"/
+    <link href="./rsc/font/Montserrat.css" rel="stylesheet" type="text/css"/>-->
 		<link href="./rsc/styles/index.css" rel="stylesheet" type="text/css"/>
 		<link rel="icon" type="image/x-icon" href="./rsc/img/logo-small.png" />
 		<meta charset="utf-8" />
@@ -77,6 +86,12 @@
         <button onclick="(function () { var script = document.createElement('script'); script.src='//cdn.jsdelivr.net/npm/eruda'; document.body.appendChild(script); script.onload = function () { eruda.init() } })();">Debug</button>
 				<!-- SVG CODE HERE -->
 				<!-- SVG CODE END -->
+           <div id='miniPlayer' class='miniPlayer' style='display:none;'>
+      <div class='taskBarOption'> SONG NAME </div> 
+  <div class='taskBarOption'> SONG ARTIST </div> 
+             <div class='taskBarOption'> BAR </div> 
+              <div class='taskBarOption'> BUTTONS </div> 
+      </div> 
 				<div class="os-battery-container"></div>
 				<p id="timeIndicator"></p>
 			</div>

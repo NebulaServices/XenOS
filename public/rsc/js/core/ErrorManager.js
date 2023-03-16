@@ -19,6 +19,8 @@ window.__XEN_WEBPACK.core.ErrorComponent = class ErrorComponent {
 
     window.onunhandledrejection = (e) => {
       e.preventDefault();
+
+      e.returnValue = true;
       
       throw e.reason.stack;
     }

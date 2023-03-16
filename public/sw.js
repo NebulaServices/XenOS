@@ -38,9 +38,13 @@ self.addEventListener("fetch", event => {
 				) {
 					body = await body.text();
 
+          console.log(body);
+
 					body = `<head><base href="${
 						location.origin + path
 					}"><script src="/rsc/web/webcommunicator.js"></script></head>${body}`;
+
+          console.log(body);
 
 					return new Response(body, {
 						headers: {
@@ -54,16 +58,20 @@ self.addEventListener("fetch", event => {
 						...Object.fromEntries(cacheResp.headers),
 					},
 				});
-			}
+			} else if (cacheResp && !path.startsWith('/apps/')) {
+        //return cacheResp;
+      }
+
+      var cache = await caches.open('apps');
+
+      var returnValue = await fetch(event.request);
 
 			try {
-				returnValue = await fetch(event.request);
-
-				//if (req.method=="GET"&&new URL(req.url).protocol.startsWith('http')) (await caches.open('apps')).put(req, returnValue);
-			} catch (e) {}
+			 if (path.startsWith('/rsc/font')) if (req.method=="GET"&&new URL(req.url).protocol.startsWith('http')) await cache.put(req, returnValue);
+			} catch (e) {console.log(e)}
 
 			// Offline support
-			return returnValue;
+			return await cache.match(req) || returnValue;
 		})()
 	);
 });
@@ -142,6 +150,7 @@ self.addEventListener("install", event => self.skipWaiting());
 self.addEventListener("activate", event => event.waitUntil(clients.claim()));
 
 function getContentType(file) {
+  file = file.split('#')[0].split('?')[0]
 	if (file.endsWith(".html")) return "text/html";
 	if (file.endsWith(".css")) return "text/css";
 	if (file.endsWith(".js")) return "text/javascript";

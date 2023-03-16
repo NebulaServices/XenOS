@@ -269,6 +269,16 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
         }
       }
     });
+    
+    document.getElementById('startButton').onclick = function(){
+      if (!that.menu) {
+        that.openMenu();
+        that.menu = true;
+      } else {
+        that.closeMenu();
+        that.menu = false;
+      }
+    }
   }
 
   async pinStart(app) {
@@ -351,6 +361,8 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
     function cb(event) {
       try {
         if (!el.contains(event.target)) {
+          if (document.getElementById('startButton').contains(event.target)) return;
+          
           that.closeMenu();
           that.menu = false;
           document.removeEventListener("mousedown", cb);

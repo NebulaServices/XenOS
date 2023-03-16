@@ -206,7 +206,62 @@ console.log(pkg + ' updating')
 	}
 
   async #errorWin(error, meta, app) {
-    console.log(error, meta, app);
+    var blob = new Blob([`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            @import url(/rsc/font/Montserrat.css);
+            
+            @import url(/rsc/font/Inter.css);
+            
+            @import url(/rsc/font/IBMPlexSans.css);
+          
+            body {
+              color: white;
+              font-family: "IBM Plex Sans";
+            }
+
+            button {
+              
+            }
+          </style>
+          <script>
+            const error = atob("${btoa(error)}");
+          </script>
+        </head>
+        <body>
+          ${meta.name} Encountered an Unexpected Error<br>
+          <button id="ok">Ok</button>
+          <button id="copy">Copy to Clipboard</button>
+          <button id="troubleshoot">Troubleshoot</button>
+
+          <script>
+            document.getElementById('ok').onclick = function(e) {
+            window.parent.xen.dock.quit("${app}");
+              window.parent.xen.system.unregister("${meta.name}");
+              window.parent.document.dispatchEvent(
+              	new CustomEvent("WindowClose", {
+              		window: "${meta.name}",
+              		detail: { text: "${meta.name}" },
+              	})
+              );
+
+              return;
+            }
+
+            document.getElementById('copy').onclick = function(e) {
+            // TODO
+              return;
+            }
+          </script>
+        </body>
+      </html>
+    `], {type: 'text/html'});
+
+    var url = URL.createObjectURL(blob);
+
+    xen.system.register(meta.name, '0px', '0px', url, true, '350px', '100px');
   }
 
 	async launch(app) {
@@ -214,18 +269,21 @@ console.log(pkg + ' updating')
     
 		const path = "/apps/" + app;
 		const meta = await xen.apps.getMeta(app);
-  
-    if (x>2) x+1=3
     
 		await xen.dock.opened(app);
 
 		if (meta.type === "app") {
-      var req = await fetch(path + "/" + meta.entry).catch(e=>{
-        that.#errorWin(e, meta, app);
-      });
-      var mainFile = await (req).text();
+      // Load Electrode
 
-			window.xen.apps.loader.load(meta.name, mainFile, path, app);
+      try {
+        var req = await fetch(path + "/" + meta.entry);
+      
+        var mainFile = await (req).text();
+  
+  			window.xen.apps.loader.load(meta.name, mainFile, path, app);
+      } catch(err) {
+        that.#errorWin(err, meta, app);
+      }
 		}
 
 		if (meta.type === "embed") {
@@ -297,7 +355,7 @@ console.log(pkg + ' updating')
 		setTimeout(function () {
 			el.style.transition = "all 0.001s ease-in-out 0s";
 			xen.windowManager.modWin(name, "minimized", true);
-			el.setAttribute("onclick", `{xen.apps.minClick({}, "${name}")}`);
+			el.onclick = new Function(`{xen.apps.minClick({}, "${name}")}`);
 		}, 500);
 	}
 
@@ -318,7 +376,7 @@ console.log(pkg + ' updating')
 			el.style.transition = "all 0.001s ease-in-out 0s";
 			that.minimized.splice(that.minimized.indexOf(el), 1);
 			xen.windowManager.modWin(name, "minimized", false);
-			el.setAttribute("onclick", "");
+			el.onclick = function() {};
 		}, 500);
 	}
 };

@@ -1,5 +1,7 @@
 const path = require('path-browserify');
 
+// Electrode/App Communication APIs
+
 window.__XEN_WEBPACK.winRaw = [];
 
 var appWin = class WIN {
@@ -84,12 +86,13 @@ var appWin = class WIN {
 		//const flag = this.name + "_permission_filesystem";
 	}
 	executeJavascript(code = "") {
+    // TODO: remove?
 		this.el.querySelector("iframe").contentWindow.postMessage({
 			message: "__XEN_LISTENER_CONNECTION_MANAGER",
 			data: { type: "executeJS", code },
 		});
 	}
-	requestDispatchNotification(notificationName, body) {
+	requestDispatchNotification(notificationName, body, image) {
 		const flag = this.name + "_permission_notify";
 		console.log(flag);
 		var permCheck = localStorage.getItem(flag);
@@ -104,16 +107,19 @@ var appWin = class WIN {
 				console.log("Permission granted");
 				localStorage.setItem(flag, "true");
 				setTimeout(function () {
-					xen.notification.dispatch(notificationName, body);
+					xen.notification.dispatch(notificationName, body, image);
 				}, 600);
 			} else {
 				console.log("permission refused");
 			}
 			xen.browserTool.fullscreen();
 		} else if (permCheck === "true") {
-			xen.notification.dispatch(notificationName, body);
+			xen.notification.dispatch(notificationName, body, image);
 		}
 	}
+  retractNotification(id){
+    xen.notification.retract(id)
+  }
   requestBareServer(){
     const flag = this.name + "_permission_notify";
 		console.log(flag);
@@ -135,6 +141,11 @@ var appWin = class WIN {
       
       }
     } 
+  openNewWindow(childName, location) {
+    console.log(childName, location)
+     xen.windowManager.modWin(this.name, 'child_processes', location)
+    xen.system.register(childName, '0','0', location)
+  }
 
 
   requestModifySetting(settingFlag, setting){
@@ -176,6 +187,7 @@ var appWin = class WIN {
 
 
 var _NativeWindow = class NATWIN {
+  // Some native windows need to be converted in order to work with the API
 	constructor(window) {
 		this.raw = window;
 	}
@@ -217,6 +229,7 @@ window.__XEN_WEBPACK.core.AppLoaderComponent = class ALC {
 
 	load(name, script = "", path, _name = "") {
 		{
+      // Scoping for variables and easy app launching
 			eval(`
 (function(name, path, _name) {
 	${script}

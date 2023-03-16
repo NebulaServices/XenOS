@@ -16,18 +16,20 @@ window.__XEN_WEBPACK.core.NotificationComponent = class NotificationComponent {
 			notiWrap.classList.add("os-notification-1");
 			notiWrap.id = name;
 			notiWrap.ondblclick=
-				new Function(`this.style.display='none';this.remove();`);
+				new Function(`xen.notification.retract(this.id)`);
 			notiWrap.appendChild(iconWrap);
 			iconWrap.classList.add("os-notification-icon");
 			if (icon == "lowbat")
 				iconWrap.innerHTML = `<object data="/rsc/img/icons/lowbat.svg" width="447" height="112" type="image/svg+xml"></object>`;
 			else
-				iconWrap.innerHTML = `<img src='https://xenos-dev.greenworldia.repl.co/media?imageUrl=https://media.discordapp.net/attachments/1062938122666639360/1075175423631163402/XOS.png' style='    width: 47px;
-    height: 53px;
+				iconWrap.innerHTML = `<img src='${icon}' style='height: 56px;
     position: absolute;
-    top: -17px;
+    top: -18px;
     left: 6px;
-    border-radius: 13px;'>`;
+    border-radius: 13px;
+    box-shadow: -6px 3px 72px -4px rgba(0,0,0,0.53);
+    -webkit-box-shadow: -6px 3px 72px -4px rgba(0,0,0,0.53);
+    -moz-box-shadow: -6px 3px 72px -4px rgba(0,0,0,0.53);'>`;
 
 			notiWrap.appendChild(notiTitle);
 			notiTitle.innerText = name;
@@ -48,6 +50,10 @@ window.__XEN_WEBPACK.core.NotificationComponent = class NotificationComponent {
 	}
 	retract(name) {
 		let el = document.getElementById(name);
-		el.style.display = "none";
+    el.style = 'animation: delNotif 1s ease 0s 1 normal forwards;'
+    setTimeout(function(){
+        el.remove()
+    }, 1000)
+	 
 	}
 };

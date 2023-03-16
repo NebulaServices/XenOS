@@ -15,17 +15,7 @@ document.addEventListener("keydown", event => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-const StartButton = document.getElementById('startButton')
 
-StartButton.onclick = function(){
-   if (!xen.dock.menu) {
-          xen.dock.openMenu();
-          xen.dock.menu = true;
-        } else {
-          xen.dock.closeMenu();
-          xen.dock.menu = false;
-        }
-}
 
   
 const INACTIVITY_TIME = 300000; 
@@ -68,13 +58,14 @@ _ic.onclick = function(){
   _to.style.display = 'flex'
   _tbo_displaying = "true";
 }
-document.getElementById('os-desktop').addEventListener('click', function(event){
+
+_to.addEventListener('click', function(event){
+  console.log('menu')
+  _to.innerHTML = `
+    XenOS v0.8 Beta \n Copyright Nebula Services 2023`
+});
   
-  _to.addEventListener('click', function(event){
-    console.log('menu')
-    _to.innerHTML = `
-      XenOS v0.8 Beta \n Copyright Nebula Services 2023`
-  })
+document.getElementById('os-desktop').addEventListener('click', function(event){
 
   if(_tbo_displaying === "true"){
      _to.style.display = 'none'
