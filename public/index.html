@@ -208,6 +208,19 @@
 				<div class="os-dock-resize" id="main-dock-resize"></div>
 			</div>
 		</div>
+		<script>
+			// This is only here for testing and should be removed in production :)
+			function loadDebugScript() {
+				if (document.getElementById("eruda")) return;
+				var script = document.createElement('script'); 
+				script.src='//cdn.jsdelivr.net/npm/eruda'; 
+				script.id = "eruda"
+				document.body.appendChild(script); 
+				script.onload = function () {
+					eruda.init();
+				}
+			}
+		</script>
 		<script src="./rsc/web/web.bundle.js"></script>
 	</body>
 </html>
