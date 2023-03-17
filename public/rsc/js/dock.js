@@ -222,8 +222,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 					"Xen/Store",
 					"Xen/notes",
 					"Xen/Testflight",
-					"Velocity/Velocity"
-       
+					"cohenerickson/Velocity"
 				])
 			);
 

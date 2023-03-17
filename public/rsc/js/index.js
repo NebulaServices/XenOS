@@ -23,31 +23,31 @@ var hadNotice = false;
 
 let timeoutID = null;
 
-function resetTimeout() {
-  clearTimeout(timeoutID);
-  timeoutID = setTimeout(() => {
-    console.log('User inactive');
-     hadNotice = "false";
-    document.dispatchEvent(new Event('userInactive'));
-  }, INACTIVITY_TIME);
-}
+// // function resetTimeout() {
+// //   clearTimeout(timeoutID);
+// //   timeoutID = setTimeout(() => {
+// //     console.log('User inactive');
+// //      hadNotice = "false";
+// //     document.dispatchEvent(new Event('userInactive'));
+// //   }, INACTIVITY_TIME);
+// // }
 
-function handleUserActivity() {
-  if (hadNotice === "false"){
-     console.log('User active');
-  document.dispatchEvent(new Event('userActive'));
-  resetTimeout();
-     hadNotice = "true";
-  }
+// // function handleUserActivity() {
+// //   if (hadNotice === "false"){
+// //      console.log('User active');
+// //   document.dispatchEvent(new Event('userActive'));
+// //   resetTimeout();
+// //      hadNotice = "true";
+// //   }
  
-}
+// // }
 
-document.addEventListener('mousemove', handleUserActivity);
-document.addEventListener('keydown', handleUserActivity);
-document.addEventListener('click', handleUserActivity);
-document.addEventListener('touchstart', handleUserActivity);
+// // document.addEventListener('mousemove', handleUserActivity);
+// // document.addEventListener('keydown', handleUserActivity);
+// // document.addEventListener('click', handleUserActivity);
+// // document.addEventListener('touchstart', handleUserActivity);
 
-resetTimeout(); // start tracking inactivity on page load
+// resetTimeout(); // start tracking inactivity on page load
 
 
   
@@ -314,3 +314,8 @@ document.addEventListener('userActive', function(){
   document.getElementById('saverFrame').remove()
   document.title = _title;
 })
+
+
+
+// Interceptors
+

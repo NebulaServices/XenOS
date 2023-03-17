@@ -38,7 +38,7 @@ var timingFlag = document.currentScript.src.endsWith('?flg');
   	xen.apps.update("Xen/Testflight", undefined, false),
   	xen.apps.update("Xen/Welcome", undefined, false),
     xen.apps.update("Kleki/Kleki", undefined, false),
-  	xen.apps.update("Velocity/Velocity", undefined, false),
+  	xen.apps.update("cohenerickson/Velocity", undefined, false),
     
     xen.apps.start()
   );
@@ -78,17 +78,19 @@ var originalText = bytes.toString(CryptoJS.enc.Utf8);
 
   
 var flag = localStorage.getItem('passwordSet')
-  console.log(flag)
+  
 var psw = localStorage.getItem('_SXenPass')
 var input = document.getElementById('lockscreenInput')
-console.log(input)
+
 var _lockScreen = document.getElementById('os-lockscreen')
 var lockCir = document.getElementById('locksmith')
 if (flag === "true"){
   _lockScreen.style.display = 'flex'
-console.log('password required')
-var passed = false;
 
+var passed = false;
+function reloader(){
+  location.reload()
+}
 function pwBypass() {
  alert('TAMPERING DETECTED \n ')
   const today = new Date();
@@ -96,7 +98,7 @@ const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric
 const longFormDate = today.toLocaleDateString('en-US', options);
 xen.fs.writeFile('tamper.xlog', '#### Last Tamper Detection: ' + longFormDate)
 
-setInterval(location.reload(), 500)
+setInterval(function(){reloader()}, 950)
   
 
 }
@@ -127,8 +129,7 @@ observer.observe(document.documentElement, {attributes: true, subtree: true, chi
   
 const ee = window.addEventListener("keyup", (event) => {
   
-  console.log(psw)
-  console.log(input.value)
+ 
   
 
   if (input.value == decodePassword(psw)) {
@@ -163,7 +164,7 @@ const ee = window.addEventListener("keyup", (event) => {
   }
 })
 
-  console.log(ee)
+  
 } else {
   passed = true;
   _lockScreen.style.display = 'none'
@@ -172,3 +173,31 @@ const ee = window.addEventListener("keyup", (event) => {
 
 });
 
+
+function _e(){
+}
+
+function pre_gath(){
+   const fs = xen.fs
+  const that = this;
+var isOnline = navigator.onLine;
+
+  xen.fs.writeFile('system.xen',`
+  ####### System Information (F) ####### \n
+  System_Manufacturer: ${xen.platform}; \n
+  Is_InternetConnected: ${isOnline} \n
+  Parent_Browser: undefined \n
+  `)
+  }
+pre_gath();
+
+function __ViewFile(){
+  xen.fs.readFile('system.xen')
+  .then((fileContent) => {
+    localStorage.setItem('systemInfo', fileContent);
+    console.log('File content stored in localStorage');
+  })
+  .catch((error) => {
+    console.error('Error reading file:', error);
+  });
+}
