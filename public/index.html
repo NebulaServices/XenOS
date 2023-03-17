@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
-    <script integrity="sha256-9NsIanf8jSVFuiPetrZ1jfLPoMPzZuPz2w3GWvQFgIU=">[...document.querySelectorAll('script, link')].forEach(e=>e.onerror = (e) => alert(e));if (navigator.serviceWorker.controller === null) {
+    <script integrity="sha256-9NsIanf8jSVFuiPetrZ1jfLPoMPzZuPz2w3GWvQFgIU=">
+	[...document.querySelectorAll('script, link')].forEach(e=>e.onerror = (e) => alert(e));
+	if (navigator.serviceWorker.controller === null) {
   navigator.serviceWorker.register("/sw.js", {
   	scope: "/",
   });
 
   navigator.serviceWorker.ready.then(e=>location.reload());
-}</script>
+}
+</script>
     <!--<link href="./rsc/font/IBMPlexSans.css" rel="stylesheet" type="text/css"/>
     <link href="./rsc/font/Inter.css" rel="stylesheet" type="text/css"/
     <link href="./rsc/font/Montserrat.css" rel="stylesheet" type="text/css"/>-->
@@ -80,10 +83,10 @@
         <hr> 
          <div class='taskBarOption'> Sleep </div> 
               <div class='taskBarOption'> Save and Close </div> 
-      </div> 
+		</div> 
 			<p class="os-header-text" id="osActiveApp">XenOS</p>
 			<div class="os-header-items-wrap">
-        <button onclick="(function () { var script = document.createElement('script'); script.src='//cdn.jsdelivr.net/npm/eruda'; document.body.appendChild(script); script.onload = function () { eruda.init() } })();">Debug</button>
+        <button onclick="loadDebugScript()">Debug</button>
 				<!-- SVG CODE HERE -->
 				<!-- SVG CODE END -->
            <div id='miniPlayer' class='miniPlayer' style='display:none;'>
@@ -106,7 +109,7 @@
     <div id="os-lockscreen" class="os-lockscreen" style='display:none;'>
       <div class='Lock-UserImg' id='locksmith'> </div> 
 			<p id="WelcomeBackUser">Good afternoon.</p>
-      <input class='lock-pw' id='lockscreenInput' type='password' style='animation:;'>
+      <input class='lock-pw' id='lockscreenInput' type='password'>
       <div><p class='miscInfo'>00:00 | Profile1 | Locked </p></div>
 		</div>
 
@@ -185,7 +188,7 @@
 							src="/media?imageUrl=https://media.discordapp.net/attachments/986016042847469659/1063271330578972702/Frame_1velocity_2.png"
 							onclick="xen.system.register('Velocity', '10', '10', 'https://velocity.radon.games/')"
 						/>
-						<div class='os-launchpad-applet-title' )"> Velocity
+						<div class='os-launchpad-applet-title'> Velocity
 					</div>
 				</div>
 				<div class="os-launchpad-applet">

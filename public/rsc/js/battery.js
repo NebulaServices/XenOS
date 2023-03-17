@@ -65,6 +65,10 @@ if (navigator.getBattery)
 			);
 			bar.style.fill = "#ff4040";
 		}
+		if (battery.dischargingTime == Infinity) {
+			const bar = document.getElementsByClassName('os-battery-container')[0];
+			bar.remove();
+		}
 	});
 else {
 	// Remove icon
