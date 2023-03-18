@@ -1,9 +1,9 @@
 self.addEventListener("activate", () => self.clients.claim());
 
-self.addEventListener("fetch", event => {
-	const req = event.request;
+self.addEventListener("fetch", e => {
+	const req = e.request;
 
-	event.respondWith(
+	e.respondWith(
 		(async () => {
 			const path = new URL(req.url).pathname;
 
@@ -11,10 +11,19 @@ self.addEventListener("fetch", event => {
 				cacheName: "apps",
 			});
 
-      if (path=='/apps/data') {
-        return new Response(JSON.stringify((await (await caches.open('apps')).keys()).filter(e=>e.url.endsWith('/manifest.json')).filter(e=>e.url.split('/').length>4).map(e=>e.url.split('/').slice(4, 6)).map(e=>e.join('/'))), {headers: {'content-type': "application/json"}});
-      }
-        
+			if (path == "/apps/data") {
+				return new Response(
+					JSON.stringify(
+						(await (await caches.open("apps")).keys())
+							.filter(file => file.url.endsWith("/manifest.json"))
+							.filter(file => file.url.split("/").length > 4)
+							.map(url => url.url.split("/").slice(4, 6))
+							.map(url => url.join("/"))
+					),
+					{ headers: { "content-type": "application/json" } }
+				);
+			}
+
 			if (cacheResp && path.startsWith("/apps/")) {
 				var body = await cacheResp.blob();
 
@@ -38,13 +47,13 @@ self.addEventListener("fetch", event => {
 				) {
 					body = await body.text();
 
-          console.log(body);
+					console.log(body);
 
 					body = `<head><base href="${
 						location.origin + path
 					}"><script src="/rsc/web/webcommunicator.js"></script></head>${body}`;
 
-          console.log(body);
+					console.log(body);
 
 					return new Response(body, {
 						headers: {
@@ -58,68 +67,83 @@ self.addEventListener("fetch", event => {
 						...Object.fromEntries(cacheResp.headers),
 					},
 				});
-			} else if (cacheResp && !path.startsWith('/apps/')) {
-        //return cacheResp;
-      }
+			} else if (cacheResp && !path.startsWith("/apps/")) {
+				//return cacheResp;
+			}
 
-      var cache = await caches.open('apps');
+			var cache = await caches.open("apps");
 
-      var returnValue = await fetch(event.request);
+			var returnValue = await fetch(event.request);
 
 			try {
-			 if (path.startsWith('/rsc/font')) if (req.method=="GET"&&new URL(req.url).protocol.startsWith('http')) await cache.put(req, returnValue);
-			} catch (e) {console.log(e)}
+				if (path.startsWith("/rsc/font"))
+					if (
+						req.method == "GET" &&
+						new URL(req.url).protocol.startsWith("http")
+					)
+						await cache.put(req, returnValue);
+			} catch (e) {
+				console.log(e);
+			}
 
 			// Offline support
-			return await cache.match(req) || returnValue;
+			return (await cache.match(req)) || returnValue;
 		})()
 	);
 });
 
 // Install
-self.addEventListener("message", async event => {
-	var { info, file, content } = event.data;
+self.addEventListener("message", async e => {
+	var { info, file, content } = e.data;
 
-	if (file == info.entry) {
+	if (file === info.entry) {
 		content = `
 var _xen = window.xen;
 var _import_xen = _xen.apps.loader;
-var { window: BrowserWindow } = _import_xen;
+var {
+    window: BrowserWindow
+} = _import_xen;
 
-import('/sdk.bundle.js').then(e => {
-console.log(e);
+import('/sdk.bundle.js').then(() => {
+    var listeners = []
 
-  var listeners = []
-  var xen = { 
-    BrowserWindow,
-    on(event, callback) {
-      listeners.push([event, callback]);
-    },
-    emit(event, ...data) {
-      listeners.filter(e=>e[0]==event).forEach(e=>e[1](...data));
-    },
-    quit(force = true) {
-      if (force) {
-        Object.values(window.xen.windowManager.windows).forEach(win => {
-          if (win.el.id==name) win.el.remove();
-        });
+    class xen = {
+		constructor() {
+			this.#parent = parent;
+			parent = undefined;
+		}
+		
+		BrowserWindow,
+        on(event, callback) {
+            listeners.push([event, callback]);
+        },
+        emit(event, ...data) {
+            listeners.filter(listener => listener[0] === event).forEach(e => e[1](...data));
+        },
+        quit(force = true) {
+            if (force)
+                Object.values(window.xen.windowManager.windows).forEach(win => {
+                    if (win.el.id === name) win.el.remove();
+                });
 
-        window.xen.dock.quit(_name);
-      }
-    },
-    setIcon(url) {
-      window.xen.dock.icon(_name, url);
-    },
-  };
-  
-  (function(xen) {
-    xen.BrowserWindow = class BROWIN extends _import_xen.window {
-      constructor(...args) {
-        super(...args, name, path, xen);
-      }
-    }
-    ${await content.text()}
-  })(xen);
+            window.xen.dock.quit(_name);
+        },
+        setIcon(url) {
+            window.xen.dock.icon(_name, url);
+        },
+    };
+
+    (xen => {
+        xen.BrowserWindow = class BROWIN extends _import_xen.window {
+            constructor(...args) {
+                super(...args, name, path, xen);
+                this.#window.parent
+            }
+        }
+        $ {
+            await content.text()
+        }
+    })(xen);
 });
     `;
 	}
@@ -141,16 +165,16 @@ console.log(e);
 	});
 
 	// Notify that the file has been installed
-	if (event.data.log) event.source.postMessage(url);
+	if (e.data.log) e.source.postMessage(url);
 });
 
 // Immediately apply updates
-self.addEventListener("install", event => self.skipWaiting());
+self.addEventListener("install", () => self.skipWaiting());
 
-self.addEventListener("activate", event => event.waitUntil(clients.claim()));
+self.addEventListener("activate", e => e.waitUntil(clients.claim()));
 
 function getContentType(file) {
-  file = file.split('#')[0].split('?')[0]
+	file = file.split("#")[0].split("?")[0];
 	if (file.endsWith(".html")) return "text/html";
 	if (file.endsWith(".css")) return "text/css";
 	if (file.endsWith(".js")) return "text/javascript";

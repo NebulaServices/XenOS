@@ -15,8 +15,9 @@ window.__XEN_WEBPACK.core.NotificationComponent = class NotificationComponent {
 			master.appendChild(notiWrap);
 			notiWrap.classList.add("os-notification-1");
 			notiWrap.id = name;
-			notiWrap.ondblclick=
-				new Function(`xen.notification.retract(this.id)`);
+			notiWrap.ondblclick = new Function(
+				`xen.notification.retract(this.id)`
+			);
 			notiWrap.appendChild(iconWrap);
 			iconWrap.classList.add("os-notification-icon");
 			if (icon == "lowbat")
@@ -50,10 +51,7 @@ window.__XEN_WEBPACK.core.NotificationComponent = class NotificationComponent {
 	}
 	retract(name) {
 		let el = document.getElementById(name);
-    el.style = 'animation: delNotif 1s ease 0s 1 normal forwards;'
-    setTimeout(function(){
-        el.remove()
-    }, 1000)
-	 
+		el.style = "animation: delNotif 1s ease 0s 1 normal forwards;";
+		setTimeout(() => el.remove(), 1000);
 	}
 };

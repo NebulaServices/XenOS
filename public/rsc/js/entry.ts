@@ -2,8 +2,6 @@
 
 window.__XEN_WEBPACK = { core: {}, html: {} };
 
-
-
 // Core
 var FileSystemComponent = require("./vfs.ts");
 var SettingsComponent = require("./settings.ts");
@@ -18,8 +16,7 @@ var ErrorComponent = require("./core/ErrorManager.js");
 var WindowManager = require("./core/WindowManager.js");
 var MotherBoardComponent = require("./core.js");
 
-// Frameworks 
-
+// Frameworks
 
 // After
 var LeaderComponent = require("./index.js");
@@ -34,10 +31,10 @@ navigator.serviceWorker.register("/sw.js", {
 	scope: "/",
 });
 
-window.onbeforeunload = event => {
+window.onbeforeunload = e => {
 	console.log("Attempted Close");
 
-	event.preventDefault();
-	event.returnValue = false;
+	e.preventDefault();
+	e.returnValue = false;
 	return false;
 };

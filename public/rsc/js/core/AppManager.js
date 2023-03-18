@@ -43,31 +43,33 @@ function stopLoader(func) {
 }
 
 window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
-  fileApps = [];
-  
+	fileApps = [];
+
 	constructor() {
 		this.apps = {
 			appsInstalled: [],
 		};
 	}
 
-  async start() {
-    var data = [];
-    
-    var json = await (await fetch('/apps/data')).json();
+	async start() {
+		var data = [];
 
-    for (var k of json) {
-      var req = await (await fetch('/apps/'+k+'/manifest.json')).json();
+		var json = await (await fetch("/apps/data")).json();
 
-      var g = {};
+		for (var k of json) {
+			var req = await (
+				await fetch("/apps/" + k + "/manifest.json")
+			).json();
 
-      g[req.name] = req;
+			var g = {};
 
-      data.push(g);
-    };
+			g[req.name] = req;
 
-    this.apps.appsInstalled = data;
-  }
+			data.push(g);
+		}
+
+		this.apps.appsInstalled = data;
+	}
 
 	async #install(author, proj, file, content, entry, log) {
 		navigator.serviceWorker.onmessage = async () => {
@@ -116,7 +118,7 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 						body: JSON.stringify(metaBody),
 					})
 				).json();
-			} catch (e) {
+			} catch (err) {
 				percent += 19;
 
 				if (log) loaderBegin(`FAILURE: ${meta.name}`, "2");
@@ -200,13 +202,17 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 			).text();
 
 			if (ver == currVer) return true;
-		} catch(e) {console.log(e)}
-console.log(pkg + ' updating')
+		} catch (e) {
+			console.erro(e);
+		}
+		console.log(pkg + " updating");
 		return await this.install(pkg, repo, log);
 	}
 
-  async #errorWin(error, meta, app) {
-    var blob = new Blob([`
+	async #errorWin(error, meta, app) {
+		var blob = new Blob(
+			[
+				`
       <!DOCTYPE html>
       <html>
         <head>
@@ -257,33 +263,44 @@ console.log(pkg + ' updating')
           </script>
         </body>
       </html>
-    `], {type: 'text/html'});
+    `,
+			],
+			{ type: "text/html" }
+		);
 
-    var url = URL.createObjectURL(blob);
+		var url = URL.createObjectURL(blob);
 
-    xen.system.register(meta.name, '0px', '0px', url, true, '350px', '100px');
-  }
+		xen.system.register(
+			meta.name,
+			"0px",
+			"0px",
+			url,
+			true,
+			"350px",
+			"100px"
+		);
+	}
 
 	async launch(app) {
-    var that = this;
-    
+		var that = this;
+
 		const path = "/apps/" + app;
 		const meta = await xen.apps.getMeta(app);
-    
+
 		await xen.dock.opened(app);
 
 		if (meta.type === "app") {
-      // Load Electrode
+			// Load Electrode
 
-      try {
-        var req = await fetch(path + "/" + meta.entry);
-      
-        var mainFile = await (req).text();
-  
-  			window.xen.apps.loader.load(meta.name, mainFile, path, app);
-      } catch(err) {
-        that.#errorWin(err, meta, app);
-      }
+			try {
+				var req = await fetch(path + "/" + meta.entry);
+
+				var mainFile = await req.text();
+
+				window.xen.apps.loader.load(meta.name, mainFile, path, app);
+			} catch (err) {
+				that.#errorWin(err, meta, app);
+			}
 		}
 
 		if (meta.type === "embed") {
@@ -299,7 +316,7 @@ console.log(pkg + ' updating')
 		if (meta.type == "file") {
 			var file = "/apps/" + app + "/" + meta.file;
 
-      this.fileApps.push([app, meta]);
+			this.fileApps.push([app, meta]);
 
 			xen.system.register(meta.name, "10", "10", file);
 		}
@@ -311,8 +328,7 @@ console.log(pkg + ' updating')
 
 	minimized = [];
 
-	minClick(event, name) {
-		console.log("sus");
+	minClick(_event, name) {
 		this.unminimize(name);
 		xen.windowManager.modWin(name, "_min", "false");
 	}
@@ -321,8 +337,6 @@ console.log(pkg + ' updating')
 		var last = [...document.querySelectorAll(".os-dock-item")].pop();
 
 		var rects = last.getBoundingClientRect();
-
-		console.log(rects);
 
 		var x = rects.left + 11 - 0.2 * el.clientWidth - 50;
 		var y = rects.top - rects.height - 62 - 0.05 * el.clientHeight;
@@ -337,22 +351,21 @@ console.log(pkg + ' updating')
 		var el = document.getElementById(name);
 
 		if (that.minimized.includes(el)) return this.unminimize(name);
-    
-    el.style.transition = 'all 0.5s ease';
-    el.style.transform = 'scale(0.1)';
-    
+
+		el.style.transition = "all 0.5s ease";
+		el.style.transform = "scale(0.1)";
+
 		el.querySelectorAll("iframe").forEach(
-			e => (e.style.pointerEvents = "none")
+			frame => (frame.style.pointerEvents = "none")
 		);
 
-    console.log(el.querySelectorAll("iframe"));
+		console.log(el.querySelectorAll("iframe"));
 
 		that.minimized.push(el);
+
 		xen.windowManager.modWin(name, "_min", "true");
 
-		console.log(name);
-
-		setTimeout(function () {
+		setTimeout(() => {
 			el.style.transition = "all 0.001s ease-in-out 0s";
 			xen.windowManager.modWin(name, "minimized", true);
 			el.onclick = new Function(`{xen.apps.minClick({}, "${name}")}`);
@@ -368,15 +381,15 @@ console.log(pkg + ' updating')
 		el.style.transform = "scale(1)";
 
 		el.querySelectorAll("iframe").forEach(
-			e => (e.style.pointerEvents = "none")
+			frame => (frame.style.pointerEvents = "none")
 		);
 
 		// TODO: Convert this to css
-		setTimeout(function () {
+		setTimeout(() => {
 			el.style.transition = "all 0.001s ease-in-out 0s";
 			that.minimized.splice(that.minimized.indexOf(el), 1);
 			xen.windowManager.modWin(name, "minimized", false);
-			el.onclick = function() {};
+			el.onclick = function () {};
 		}, 500);
 	}
 };

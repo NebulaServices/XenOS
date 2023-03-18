@@ -19,12 +19,12 @@ if (navigator.getBattery)
 		const bar = document.getElementById("os-battery-bar");
 
 		try {
-      var charging = battery.charging;
+			var charging = battery.charging;
 
-      battery.onchargingchange = function(e) {
-        charging = battery.charging;
-      }
-      
+			battery.onchargingchange = function (e) {
+				charging = battery.charging;
+			};
+
 			addEventListener("DOMContentLoaded", event => {
 				if (batToNum(xen.system.battery()) < 15 && !charging) {
 					bar.style.width = calculateBatWid(xen.system.battery());
@@ -40,7 +40,7 @@ if (navigator.getBattery)
 					bar.style.fill = "#fff";
 				}
 
-				battery.onlevelchange = event => {
+				battery.onlevelchange = () => {
 					if (batToNum(xen.system.battery()) < 15 && !charging) {
 						bar.style.width = calculateBatWid(xen.system.battery());
 						bar.style.fill = "#ff4040";
@@ -57,7 +57,7 @@ if (navigator.getBattery)
 			});
 
 			xen.system.battery = () => `${battery.level * 100}%`;
-      xen.system.charging = () => battery.charging;
+			xen.system.charging = () => battery.charging;
 		} catch (err) {
 			console.error(
 				"An error occured while trying to get battery readings: \n" +
@@ -66,7 +66,9 @@ if (navigator.getBattery)
 			bar.style.fill = "#ff4040";
 		}
 		if (battery.dischargingTime == Infinity) {
-			const bar = document.getElementsByClassName('os-battery-container')[0];
+			const bar = document.getElementsByClassName(
+				"os-battery-container"
+			)[0];
 			bar.remove();
 		}
 	});

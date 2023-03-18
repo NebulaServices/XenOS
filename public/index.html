@@ -86,7 +86,7 @@
 		</div> 
 			<p class="os-header-text" id="osActiveApp">XenOS</p>
 			<div class="os-header-items-wrap">
-        <button onclick="loadDebugScript()">Debug</button>
+        	<button onclick="loadDebugScript()">Debug</button>
 				<!-- SVG CODE HERE -->
 				<!-- SVG CODE END -->
            <div id='miniPlayer' class='miniPlayer' style='display:none;'>
@@ -216,7 +216,7 @@
 				script.src='//cdn.jsdelivr.net/npm/eruda'; 
 				script.id = "eruda"
 				document.body.appendChild(script); 
-				script.onload = function () {
+				script.onload = () => {
 					eruda.init();
 				}
 			}
