@@ -3,19 +3,19 @@
 function openAsync(...args) {
 	return new Promise(async resolve => {
 		var req = indexedDB.open(args[0]);
-		req.onupgradeneeded = async e => {
-			await createObject(e.target.result);
-			if (args[1]) return resolve([req, e]);
+		req.onupgradeneeded = async function (event) {
+			await createObject(event.target.result);
+			if (args[1]) return resolve([req, event]);
 		};
-		req.onsuccess = e => {
-			if (!args[1]) return resolve([req, e]);
+		req.onsuccess = function (event) {
+			if (!args[1]) return resolve([req, event]);
 		};
 	});
 }
 
 function createObject(db) {
 	return new Promise(async resolve => {
-		const req = db.createObjectStore("main", {
+		var req = db.createObjectStore("main", {
 			keyPath: "id",
 			autoIncrement: true,
 		});
@@ -25,78 +25,83 @@ function createObject(db) {
 
 function saveFile(db, file, content) {
 	return new Promise(async resolve => {
-		try {
-			await remove(file);
-		} finally {
-		}
-
-		db
-			.transaction("main", "readwrite")
-			.objectStore("main")
-			.add({ key: file, body: content, dir: "/" }).onsuccess = () =>
-			resolve();
+    try {await remove(file);} catch(e) {};
+			db
+				.transaction("main", "readwrite")
+				.objectStore("main")
+				.add({ key: file, body: content, dir: '/' })
+        .onsuccess = function() {resolve()};
 	});
 }
 
 function getObject(db) {
-	return new Promise(async resolve =>
-		resolve(db.transaction("main", "readwrite").objectStore("main"))
-	);
+	return new Promise(async resolve => {
+		return resolve(db.transaction("main", "readwrite").objectStore("main"));
+	});
 }
 
 function getAll(db) {
 	return new Promise(async resolve => {
-		const req = db.getAll();
-		req.onsuccess = () => resolve(req.result);
+		var req = db.getAll();
+		req.onsuccess = function () {
+			return resolve(req.result);
+		};
 	});
 }
 
 function deleteObj(db, name) {
 	return new Promise(async resolve => {
-		const req = db.delete(name);
+		var req = db.delete(name);
 
-		req.onsuccess = () => resolve(true);
+		req.onsuccess = function () {
+			return resolve(true);
+		};
 	});
 }
 
 async function save(name, content) {
-	const [db, event] = await openAsync("db-fs", false);
+	var [db, event] = await openAsync("db-fs", false);
 
-	await getAll(await getObject(db.result));
+	var all = await getAll(await getObject(db.result));
 
-	await saveFile(event.target.result, name, content);
+	//if (all.find(e => e.key == name)) return console.log("abort save");
+
+	console.log(all);
+
+	var obj = await saveFile(event.target.result, name, content);
 
 	return true;
 }
 
-async function get(searchFile) {
-	const [db] = await openAsync("db-fs", false);
-
-	const obj = await getObject(db.result);
-
-	const all = await getAll(obj);
-
-	try {
-		return all.find(file => file.key == searchFile).body;
-	} catch {
-		return new Error({ message: "not found" });
-	}
-}
-
-async function remove(searchFile) {
-	var [db] = await openAsync("db-fs", false);
+async function get(file) {
+	var [db, event] = await openAsync("db-fs", false);
 
 	var obj = await getObject(db.result);
 
 	var all = await getAll(obj);
 
-	await deleteObj(obj, all.find(file => file.key == searchFile).id);
+  console.log(all);
+
+  try {
+	  return all.find(e => e.key == file).body;
+  } catch(e) {
+    return new Error({message: 'not found'})
+  }
+}
+
+async function remove(file) {
+	var [db, event] = await openAsync("db-fs", false);
+
+	var obj = await getObject(db.result);
+
+	var all = await getAll(obj);
+	var done = await deleteObj(obj, all.find(e => e.key == file).id);
 
 	return true;
 }
 
-async function space(_detailed = true) {
-	const data = await navigator.storage.estimate();
+async function space(detailed = true) {
+	var data = await navigator.storage.estimate();
 
 	return {
 		max: data.quota,
@@ -106,38 +111,38 @@ async function space(_detailed = true) {
 	};
 }
 
-async function exists(searchFile) {
-	const [db] = await openAsync("db-fs", false);
+async function exists(file) {
+	var [db, event] = await openAsync("db-fs", false);
 
-	const obj = await getObject(db.result);
+	var obj = await getObject(db.result);
 
-	const all = await getAll(obj);
+	var all = await getAll(obj);
 
-	// TODO: Refactor
-	return all.find(file => file.key == searchFile) ? true : false;
+	return all.find(e => e.key == file) ? true : false;
 }
 
 async function readdir(dir) {
-	const [db] = await openAsync("db-fs", false);
+	var [db, event] = await openAsync("db-fs", false);
 
-	const obj = await getObject(db.result);
+	var obj = await getObject(db.result);
 
-	const all = await getAll(obj);
+	var all = await getAll(obj);
 
-	return all.filter(file => file.dir == dir).map(file => file.key);
+	return all.filter(e=>e.dir==dir).map(e=>e.key);
 }
 
 function getDir(db, name) {
 	return new Promise(async resolve => {
-		const obj = await getObject(db);
-		const all = await getAll(obj);
-		const data = {};
+		var obj = await getObject(db);
+		var all = await getAll(obj);
+		var data = {};
 
 		all.forEach(({ key }) => {
 			if (!key.startsWith(name)) return;
 			if (key.split("/").length > 1) {
-				const split = key.split("/")[0];
+				var split = key.split("/")[0];
 				data[split] = [];
+				console.log(data);
 			}
 		});
 
@@ -150,9 +155,10 @@ window.__XEN_WEBPACK.core.VFS = class {
 
 	exists = exists;
 	writeFile = save;
-	readFile = async (file, json) =>
-		json ? JSON.parse(await get(file)) : await get(file);
-	readdir = readdir;
+	readFile = async function (file, json) {
+		return json ? JSON.parse(await get(file)) : await get(file);
+	};
+  readdir = readdir;
 	getStorageData = space;
 	removeFile = remove;
 };

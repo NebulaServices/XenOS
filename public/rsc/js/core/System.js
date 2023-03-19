@@ -17,7 +17,7 @@ window.__XEN_WEBPACK.core.System = class System {
 		console.log("Stored Window Data", inStorageWindowData_Debug);
 		console.log("Registering Capture");
 		console.log("Registering windowManager");
-		console.log("Registering ErrorManager");
+    console.log("Registering ErrorManager");
 		console.log("Inserting DefaultWindow");
 
 		document.querySelector(".os-setup").style.transition = "1s ease-in-out";
@@ -33,15 +33,7 @@ window.__XEN_WEBPACK.core.System = class System {
 		return true;
 	}
 
-	register(
-		name,
-		posX,
-		posY,
-		location,
-		native,
-		width = "800px",
-		height = "500px"
-	) {
+	register(name, posX, posY, location, native, width = '800px', height = '500px') {
 		let check = document.getElementById(name);
 		if (check === null) {
 			if ((name, posX, posY == null)) {
@@ -52,11 +44,8 @@ window.__XEN_WEBPACK.core.System = class System {
 				// Where a new app is created in the UI
 				const desk = document.getElementById("os-desktop");
 				try {
-					let injectCode = new Function(
-						`const thisAppName = this.dataset.appname;xen.windowManager.focus(thisAppName);/*xen.windowManager.modWin(thisAppName, "zIndex", this.style.zIndex);*/xen.windowManager.modWin(thisAppName, "locX", this.style.left);xen.windowManager.modWin(thisAppName, "locY", this.style.top);`
-					);
-					let closeCode =
-						new Function(`const thisAppName = this.dataset.appname;
+					let injectCode = new Function(`const thisAppName = this.dataset.appname;xen.windowManager.focus(thisAppName);/*xen.windowManager.modWin(thisAppName, "zIndex", this.style.zIndex);*/xen.windowManager.modWin(thisAppName, "locX", this.style.left);xen.windowManager.modWin(thisAppName, "locY", this.style.top);`);
+					let closeCode = new Function(`const thisAppName = this.dataset.appname;
 xen.system.unregister("${name}");
 document.dispatchEvent(
 	new CustomEvent("WindowClose", {
@@ -64,9 +53,7 @@ document.dispatchEvent(
 		detail: { text: "${name}" },
 	})
 );`);
-					let miniCode = new Function(
-						`xen.apps.minimize('${name}');`
-					);
+					let miniCode = new Function(`xen.apps.minimize('${name}');`);
 					let master = document.createElement("div");
 					let headerBox = document.createElement("div");
 					let headerTitle = document.createElement("div");
@@ -81,9 +68,9 @@ document.dispatchEvent(
 					master.classList.add("box");
 					master.id = name;
 
-					master.style.width = width;
-					master.style.height = height;
-
+          master.style.width = width;
+          master.style.height = height;
+          
 					desk.appendChild(master);
 
 					headerBox.classList.add("box-header");
@@ -92,16 +79,10 @@ document.dispatchEvent(
 					master.appendChild(headerBox);
 					headerBox.appendChild(headerTitle);
 
-					master.insertAdjacentHTML(
-						"afterbegin",
-						`<div class="leftResize resize"></div><div class="topResize resize"></div><div class="rightResize resize"></div><div class="bottomResize resize"></div>`
-					);
-					master.insertAdjacentHTML(
-						"afterbegin",
-						`<div class="topLeftResize dresize"></div><div class="topRightResize dresize"></div><div class="bottomRightResize dresize"></div><div class="bottomLeftResize dresize"></div>`
-					);
+          master.insertAdjacentHTML('afterbegin', `<div class="leftResize resize"></div><div class="topResize resize"></div><div class="rightResize resize"></div><div class="bottomResize resize"></div>`);
+          master.insertAdjacentHTML('afterbegin', `<div class="topLeftResize dresize"></div><div class="topRightResize dresize"></div><div class="bottomRightResize dresize"></div><div class="bottomLeftResize dresize"></div>`);
 
-					xen.system.resizeListener(master);
+          xen.system.resizeListener(master);
 
 					headerTitle.appendChild(headerTitleText);
 					headerTitle.appendChild(closeSpan);
@@ -111,7 +92,7 @@ document.dispatchEvent(
 					master.onclick = injectCode;
 					closeSpan.onclick = closeCode;
 					miniSpan.onclick = miniCode;
-
+          
 					closeSpan.innerHTML = `<svg style="width: 15px;height: 15px;" xmlns="http://www.w3.org/2000/svg" width="188" height="185" viewBox="0 0 188 185" fill="none">
 	<rect width="188" height="185" rx="92.5" fill="#F46868"></rect>
 	</svg>`;
@@ -122,11 +103,14 @@ document.dispatchEvent(
 
 					boxBody.appendChild(contentFrame);
 					contentFrame.src = location || "about:blank";
-					contentFrame.contentWindow.addEventListener("error", e =>
-						console.log(
-							"An error occurred in the iframe:",
-							e.message
-						)
+					contentFrame.contentWindow.addEventListener(
+						"error",
+						function (event) {
+							console.log(
+								"An error occurred in the iframe:",
+								event.message
+							);
+						}
 					);
 					xen.windowManager.addWindow(
 						name,
@@ -146,12 +130,12 @@ document.dispatchEvent(
 					);
 
 					return master;
-				} catch (err) {
-					console.log("Xen Registration Error: \n" + err);
+				} catch (e) {
+					console.log("Xen Registration Error: \n" + e);
 				}
 			}
 		} else {
-			if (xen.windowManager.windows[name].minimized) {
+			if (xen.windowManager.windows[name].minimized == true) {
 				document.getElementById(name).style.display = "block";
 				xen.windowManager.windows[name].minimized = false;
 			} else {
@@ -162,221 +146,168 @@ document.dispatchEvent(
 		}
 	}
 
-	resizeListener(master) {
-		var left = master.querySelector(".leftResize"),
-			right = master.querySelector(".rightResize"),
-			top = master.querySelector(".topResize"),
-			bottom = master.querySelector(".bottomResize");
+  resizeListener(master) {
+    var left = master.querySelector('.leftResize'),
+      right = master.querySelector('.rightResize'),
+      top = master.querySelector('.topResize'),
+      bottom = master.querySelector('.bottomResize');
 
-		var topLeft = master.querySelector(".topLeftResize"),
-			topRight = master.querySelector(".topRightResize"),
-			bottomLeft = master.querySelector(".bottomLeftResize"),
-			bottomRight = master.querySelector(".bottomRightResize");
+    var topLeft = master.querySelector('.topLeftResize'),
+      topRight = master.querySelector('.topRightResize'),
+      bottomLeft = master.querySelector('.bottomLeftResize'),
+      bottomRight = master.querySelector('.bottomRightResize');
 
-		[left, right, top, bottom].forEach((side, index) => {
-			var s = ["left", "right", "top", "bottom"][index];
+    [left, right, top, bottom].forEach((side, index) => {
+      var s = ['left', 'right', 'top', 'bottom'][index];
+      
+      var startX;
+      var startY;
+      var computed;
+      var startHeight;
+      var startWidth;
+      var startTop;
+      var startLeft;
+      
+      var mousemove = function(e) {
 
-			var startX;
-			var startY;
-			var computed;
-			var startHeight;
-			var startWidth;
-			var startTop;
-			var startLeft;
+        requestAnimationFrame(() => {
+          if (s=='top') {
+            var height = (parseInt(startHeight.replace('px', '')) - (e.clientY - startY));
+            master.style.height = (height>70?height:70)+'px';
+            master.style.top = (height>70?parseInt(startTop.replace('px', '')) + (e.clientY - startY):'')+'px';
+          } else if (s=='bottom') {
+            var height = (parseInt(startHeight.replace('px', '')) + (e.clientY - startY));
+            master.style.height = (height>70?height:70)+'px';
+            master.style.top = startTop;
+          } else if (s=='left') {
+            var width = (parseInt(startWidth.replace('px', '')) - (e.clientX - startX));
+            master.style.width = (width>70?width:70)+'px';
+            master.style.left = (width>70?parseInt(startLeft.replace('px', '')) + (e.clientX - startX):'')+'px';
+          } else if (s=='right') {
+            var width = (parseInt(startWidth.replace('px', '')) + (e.clientX - startX));
+            master.style.width = (width>70?width:70)+'px';
+            master.style.left = startLeft;
+          }
+        });
+      };
+    
+      document.addEventListener('mousedown', function(e) {
+        if (e.target!==side) return;
 
-			var mousemove = function (e) {
-				requestAnimationFrame(() => {
-					if (s == "top") {
-						var height =
-							parseInt(startHeight.replace("px", "")) -
-							(e.clientY - startY);
-						master.style.height =
-							(height > 70 ? height : 70) + "px";
-						master.style.top =
-							(height > 70
-								? parseInt(startTop.replace("px", "")) +
-								  (e.clientY - startY)
-								: "") + "px";
-					} else if (s == "bottom") {
-						var height =
-							parseInt(startHeight.replace("px", "")) +
-							(e.clientY - startY);
-						master.style.height =
-							(height > 70 ? height : 70) + "px";
-						master.style.top = startTop;
-					} else if (s == "left") {
-						var width =
-							parseInt(startWidth.replace("px", "")) -
-							(e.clientX - startX);
-						master.style.width = (width > 70 ? width : 70) + "px";
-						master.style.left =
-							(width > 70
-								? parseInt(startLeft.replace("px", "")) +
-								  (e.clientX - startX)
-								: "") + "px";
-					} else if (s == "right") {
-						var width =
-							parseInt(startWidth.replace("px", "")) +
-							(e.clientX - startX);
-						master.style.width = (width > 70 ? width : 70) + "px";
-						master.style.left = startLeft;
-					}
-				});
-			};
+        computed = window.getComputedStyle(master);
 
-			document.addEventListener("mousedown", function (e) {
-				if (e.target !== side) return;
+        startHeight = computed.height+'';
+        startWidth = computed.width+'';
+        startTop = computed.top+'';
+        startLeft = computed.left+'';
+        
+        startX = e.clientX;
+        startY = e.clientY;
+        
+  			master.querySelectorAll('iframe').forEach(function(iframe) {
+  				iframe.style.pointerEvents = "none";
+  			});
+        
+        document.addEventListener('mousemove', mousemove);
+      });
 
-				computed = window.getComputedStyle(master);
+      document.addEventListener('mouseup', function(e) {
+        if (!startX&&!startY) return;
 
-				startHeight = computed.height + "";
-				startWidth = computed.width + "";
-				startTop = computed.top + "";
-				startLeft = computed.left + "";
+        computed = null;
 
-				startX = e.clientX;
-				startY = e.clientY;
+        startX = null;
+        startY = null;
+        
+  			master.querySelectorAll('iframe').forEach(function(iframe) {
+  				iframe.style.pointerEvents = "all";
+  			});
+        
+        document.removeEventListener('mousemove', mousemove);        
+      });
+    });
 
-				master.querySelectorAll("iframe").forEach(function (iframe) {
-					iframe.style.pointerEvents = "none";
-				});
+    [topLeft, topRight, bottomLeft, bottomRight].forEach((side, index) => {
+      var s = ['topLeft', 'topRight', 'bottomLeft', 'bottomRight'][index];
+      
+      var startX;
+      var startY;
+      var computed;
+      var startHeight;
+      var startWidth;
+      var startTop;
+      var startLeft;
+      
+      var mousemove = function(e) {
+        requestAnimationFrame(() => {
+         if (s=='topLeft') {
+            var height = (parseInt(startHeight.replace('px', '')) - (e.clientY - startY));
+            var width = (parseInt(startWidth.replace('px', '')) - (e.clientX - startX));
+            master.style.height = (height>70?height:70)+'px';
+            master.style.top = (height>70?parseInt(startTop.replace('px', '')) + (e.clientY - startY):'')+'px';
+            master.style.width = (width>70?width:70)+'px';
+            master.style.left = (width>70?parseInt(startLeft.replace('px', '')) + (e.clientX - startX):'')+'px';
+          } else if (s=='topRight') {
+            var height = (parseInt(startHeight.replace('px', '')) - (e.clientY - startY));
+            var width = (parseInt(startWidth.replace('px', '')) + (e.clientX - startX));
+            master.style.height = (height>70?height:70)+'px';
+            master.style.top = (height>70?parseInt(startTop.replace('px', '')) + (e.clientY - startY):'')+'px';
+            master.style.width = (width>70?width:70)+'px';
+            master.style.left = startLeft;
+          } else if (s=='bottomLeft') {
+            var height = (parseInt(startHeight.replace('px', '')) + (e.clientY - startY));
+            var width = (parseInt(startWidth.replace('px', '')) - (e.clientX - startX));
+            master.style.height = (height>70?height:70)+'px';
+            master.style.top = startTop
+            master.style.width = (width>70?width:70)+'px';
+            master.style.left = (width>70?parseInt(startLeft.replace('px', '')) + (e.clientX - startX):'')+'px';
+          } else if (s=='bottomRight') {
+            var height = (parseInt(startHeight.replace('px', '')) + (e.clientY - startY));
+            var width = (parseInt(startWidth.replace('px', '')) + (e.clientX - startX));
+            master.style.height = (height>70?height:70)+'px';
+            master.style.top = startTop
+            master.style.width = (width>70?width:70)+'px';
+            master.style.left = startLeft;
+          }
+        });
+      };
+    
+      document.addEventListener('mousedown', function(e) {
+        if (e.target!==side) return;
 
-				document.addEventListener("mousemove", mousemove);
-			});
+        computed = window.getComputedStyle(master);
 
-			document.addEventListener("mouseup", function (e) {
-				if (!startX && !startY) return;
+        startHeight = computed.height+'';
+        startWidth = computed.width+'';
+        startTop = computed.top+'';
+        startLeft = computed.left+'';
+        
+        startX = e.clientX;
+        startY = e.clientY;
+        
+  			master.querySelectorAll('iframe').forEach(function(iframe) {
+  				iframe.style.pointerEvents = "none";
+  			});
+        
+        document.addEventListener('mousemove', mousemove);
+      });
 
-				computed = null;
+      document.addEventListener('mouseup', function(e) {
+        if (!startX&&!startY) return;
 
-				startX = null;
-				startY = null;
+        computed = null;
 
-				master.querySelectorAll("iframe").forEach(function (iframe) {
-					iframe.style.pointerEvents = "all";
-				});
-
-				document.removeEventListener("mousemove", mousemove);
-			});
-		});
-
-		[topLeft, topRight, bottomLeft, bottomRight].forEach((side, index) => {
-			var s = ["topLeft", "topRight", "bottomLeft", "bottomRight"][index];
-
-			var startX;
-			var startY;
-			var computed;
-			var startHeight;
-			var startWidth;
-			var startTop;
-			var startLeft;
-
-			var mousemove = function (e) {
-				requestAnimationFrame(() => {
-					if (s == "topLeft") {
-						var height =
-							parseInt(startHeight.replace("px", "")) -
-							(e.clientY - startY);
-						var width =
-							parseInt(startWidth.replace("px", "")) -
-							(e.clientX - startX);
-						master.style.height =
-							(height > 70 ? height : 70) + "px";
-						master.style.top =
-							(height > 70
-								? parseInt(startTop.replace("px", "")) +
-								  (e.clientY - startY)
-								: "") + "px";
-						master.style.width = (width > 70 ? width : 70) + "px";
-						master.style.left =
-							(width > 70
-								? parseInt(startLeft.replace("px", "")) +
-								  (e.clientX - startX)
-								: "") + "px";
-					} else if (s == "topRight") {
-						var height =
-							parseInt(startHeight.replace("px", "")) -
-							(e.clientY - startY);
-						var width =
-							parseInt(startWidth.replace("px", "")) +
-							(e.clientX - startX);
-						master.style.height =
-							(height > 70 ? height : 70) + "px";
-						master.style.top =
-							(height > 70
-								? parseInt(startTop.replace("px", "")) +
-								  (e.clientY - startY)
-								: "") + "px";
-						master.style.width = (width > 70 ? width : 70) + "px";
-						master.style.left = startLeft;
-					} else if (s == "bottomLeft") {
-						var height =
-							parseInt(startHeight.replace("px", "")) +
-							(e.clientY - startY);
-						var width =
-							parseInt(startWidth.replace("px", "")) -
-							(e.clientX - startX);
-						master.style.height =
-							(height > 70 ? height : 70) + "px";
-						master.style.top = startTop;
-						master.style.width = (width > 70 ? width : 70) + "px";
-						master.style.left =
-							(width > 70
-								? parseInt(startLeft.replace("px", "")) +
-								  (e.clientX - startX)
-								: "") + "px";
-					} else if (s == "bottomRight") {
-						var height =
-							parseInt(startHeight.replace("px", "")) +
-							(e.clientY - startY);
-						var width =
-							parseInt(startWidth.replace("px", "")) +
-							(e.clientX - startX);
-						master.style.height =
-							(height > 70 ? height : 70) + "px";
-						master.style.top = startTop;
-						master.style.width = (width > 70 ? width : 70) + "px";
-						master.style.left = startLeft;
-					}
-				});
-			};
-
-			document.addEventListener("mousedown", function (e) {
-				if (e.target !== side) return;
-
-				computed = window.getComputedStyle(master);
-
-				startHeight = computed.height + "";
-				startWidth = computed.width + "";
-				startTop = computed.top + "";
-				startLeft = computed.left + "";
-
-				startX = e.clientX;
-				startY = e.clientY;
-
-				master.querySelectorAll("iframe").forEach(function (iframe) {
-					iframe.style.pointerEvents = "none";
-				});
-
-				document.addEventListener("mousemove", mousemove);
-			});
-
-			document.addEventListener("mouseup", function (e) {
-				if (!startX && !startY) return;
-
-				computed = null;
-
-				startX = null;
-				startY = null;
-
-				master.querySelectorAll("iframe").forEach(function (iframe) {
-					iframe.style.pointerEvents = "all";
-				});
-
-				document.removeEventListener("mousemove", mousemove);
-			});
-		});
-	}
+        startX = null;
+        startY = null;
+        
+  			master.querySelectorAll('iframe').forEach(function(iframe) {
+  				iframe.style.pointerEvents = "all";
+  			});
+        
+        document.removeEventListener('mousemove', mousemove);        
+      });
+    });
+  }
 
 	unregister(appName) {
 		let win = document.getElementById(appName);
@@ -390,16 +321,21 @@ document.dispatchEvent(
 
 	launchpad(status) {
 		const lp = document.getElementById("launchpad-overlay");
-
-		lp.style.display = status ? "flex" : "none";
+		if (status == true) {
+			lp.style.display = "flex";
+		} else {
+			lp.style.display = "none";
+		}
 	}
 
 	focus(win) {
 		var focusedWindow = this.focusedWindow;
-		if (focusedWindow) focusedWindow.style.filter = "brightness(.9)";
-		focusedWindow = win;
 
+		if (focusedWindow) {
+			focusedWindow.style.filter = "brightness(.9)";
+		}
 		win.style.filter = "brightness(1)";
+		focusedWindow = win;
 
 		const osHeader = this.osHeader;
 		osHeader.innerText = win.id;
@@ -407,29 +343,15 @@ document.dispatchEvent(
 		document.title = `${win.id} | XenOS`;
 	}
 
-	#restart() {
-		document.documentElement.replaceWith(
-			document.documentElement.cloneNode(true)
-		);
+  #restart() {
+    document.documentElement.replaceWith(document.documentElement.cloneNode(true));
+    
+    var links = document.getElementsByTagName("link"); for (var i = 0; i < links.length;i++) { var link = links[i]; if (link.rel === "stylesheet") {link.href+='?'}}
 
-		var links = document.getElementsByTagName("link");
-		for (var i = 0; i < links.length; i++) {
-			var link = links[i];
-			if (link.rel === "stylesheet") {
-				link.href += "?";
-			}
-		}
+    var scripts = document.getElementsByTagName("script"); for (var i = 0; i < scripts.length;i++) { var script = scripts[i]; if (script.type !== "application/json") {script.href+='?flg'}}
+  }
 
-		var scripts = document.getElementsByTagName("script");
-		for (var i = 0; i < scripts.length; i++) {
-			var script = scripts[i];
-			if (script.type !== "application/json") {
-				script.href += "?flg";
-			}
-		}
-	}
-
-	requestRestart(app) {
-		this.#restart();
-	}
+  requestRestart(app) {
+    this.#restart();
+  }
 };

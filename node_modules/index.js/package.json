@@ -1,0 +1,28 @@
+{
+  "name": "index.js",
+  "version": "0.0.3",
+  "description": "Module loader",
+  "license": "MIT",
+  "author": "CatTail",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/CatTail/index.js.git"
+  },
+  "dependencies": {},
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha test"
+  },
+  "keywords": [
+    "module",
+    "loader",
+    "index"
+  ],
+  "bugs": {
+    "url": "https://github.com/CatTail/index.js/issues"
+  },
+  "homepage": "https://github.com/CatTail/index.js",
+  "devDependencies": {
+    "mocha": "^1.21.4"
+  }
+}

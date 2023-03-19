@@ -15,58 +15,62 @@ document.addEventListener("keydown", event => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-	const INACTIVITY_TIME = 300000;
-	var hadNotice = false;
 
-	let timeoutID = null;
 
-	// // function resetTimeout() {
-	// //   clearTimeout(timeoutID);
-	// //   timeoutID = setTimeout(() => {
-	// //     console.log('User inactive');
-	// //      hadNotice = "false";
-	// //     document.dispatchEvent(new Event('userInactive'));
-	// //   }, INACTIVITY_TIME);
-	// // }
+  
+const INACTIVITY_TIME = 300000; 
+var hadNotice = false;
 
-	// // function handleUserActivity() {
-	// //   if (hadNotice === "false"){
-	// //      console.log('User active');
-	// //   document.dispatchEvent(new Event('userActive'));
-	// //   resetTimeout();
-	// //      hadNotice = "true";
-	// //   }
+let timeoutID = null;
 
-	// // }
+// // function resetTimeout() {
+// //   clearTimeout(timeoutID);
+// //   timeoutID = setTimeout(() => {
+// //     console.log('User inactive');
+// //      hadNotice = "false";
+// //     document.dispatchEvent(new Event('userInactive'));
+// //   }, INACTIVITY_TIME);
+// // }
 
-	// // document.addEventListener('mousemove', handleUserActivity);
-	// // document.addEventListener('keydown', handleUserActivity);
-	// // document.addEventListener('click', handleUserActivity);
-	// // document.addEventListener('touchstart', handleUserActivity);
+// // function handleUserActivity() {
+// //   if (hadNotice === "false"){
+// //      console.log('User active');
+// //   document.dispatchEvent(new Event('userActive'));
+// //   resetTimeout();
+// //      hadNotice = "true";
+// //   }
+ 
+// // }
 
-	// resetTimeout(); // start tracking inactivity on page load
+// // document.addEventListener('mousemove', handleUserActivity);
+// // document.addEventListener('keydown', handleUserActivity);
+// // document.addEventListener('click', handleUserActivity);
+// // document.addEventListener('touchstart', handleUserActivity);
 
-	var _ic = document.getElementById("logoButton");
-	var _to = document.getElementById("tboptions");
-	var _tbo_displaying = false;
-	_ic.onclick = function () {
-		_to.style.display = "flex";
-		_tbo_displaying = "true";
-	};
+// resetTimeout(); // start tracking inactivity on page load
 
-	_to.addEventListener("click", function (event) {
-		console.log("menu");
-		_to.innerHTML = `
-    XenOS v0.8 Beta \n Copyright Nebula Services 2023`;
-	});
 
-	document
-		.getElementById("os-desktop")
-		.addEventListener("click", function (event) {
-			if (_tbo_displaying === "true") {
-				_to.style.display = "none";
-				_tbo_displaying = "false";
-				_to.innerHTML = `
+  
+var _ic = document.getElementById('logoButton')
+var _to = document.getElementById('tboptions')
+var _tbo_displaying = false; 
+_ic.onclick = function(){
+  _to.style.display = 'flex'
+  _tbo_displaying = "true";
+}
+
+_to.addEventListener('click', function(event){
+  console.log('menu')
+  _to.innerHTML = `
+    XenOS v0.8 Beta \n Copyright Nebula Services 2023`
+});
+  
+document.getElementById('os-desktop').addEventListener('click', function(event){
+
+  if(_tbo_displaying === "true"){
+     _to.style.display = 'none'
+    _tbo_displaying = "false";
+    _to.innerHTML = `
   
       <div class="taskBarOption"> About </div> 
 <div class="taskBarOption"> App store </div>
@@ -74,28 +78,30 @@ document.addEventListener("DOMContentLoaded", () => {
         <hr> 
          <div class="taskBarOption"> Sleep </div> 
               <div class="taskBarOption"> Save and Close </div> 
-      `;
-			}
-		});
+      `
+    
+  }
+})
 
-	Element.prototype.insertAfter = function (el, ref) {
+
+  
+	Element.prototype.insertAfter = function(el, ref) {
 		this.insertBefore(el, ref.nextSibling);
 	};
 
 	// Update time
 	setInterval(() => {
 		const timeText = document.getElementById("timeIndicator");
-
-		const date = new Date();
-		const options = {
-			timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-			hour: "numeric",
-			minute: "numeric",
-			hour12: true,
-		};
-		let dateStr = date.toLocaleString("en-US", options);
-
-		timeText.innerText = dateStr;
+		timeText.innerText = (() => {
+			const date = new Date();
+			const options = {
+				timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+				hour: "numeric",
+				minute: "numeric",
+				hour12: true,
+			};
+			return date.toLocaleString("en-US", options);
+		})();
 	}, 1000);
 
 	// Xen Init
@@ -112,16 +118,16 @@ document.addEventListener("DOMContentLoaded", () => {
 	let dockItem;
 	elIDS.forEach(id => {
 		let el = document.getElementById(id);
-		el.addEventListener("contextmenu", e => {
-			e.preventDefault();
+		el.addEventListener("contextmenu", event => {
+			event.preventDefault();
 
 			if (dockItem) dockItem.style.display = "none";
 			dockItem = el.getElementsByClassName("os-dock-tooltip")[0];
 			dockItem.style.display = "block";
 
-			document.addEventListener("click", e => {
+			document.addEventListener("click", event => {
 				try {
-					if (!dockItem.contains(e.target)) {
+					if (!dockItem.contains(event.target)) {
 						dockItem.style.display = "none";
 						dockItem = null;
 					}
@@ -137,17 +143,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	let focusedWin = null;
 	let xenHeader = document.getElementById("osActiveApp");
-
-	window.xen.windowManager.handleWindowClick = function handleWindowClick(
-		win
-	) {
-		if (!win) return;
+  
+	window.xen.windowManager.handleWindowClick = function handleWindowClick(win) {
+    if (!win) return;
 		if (focusedWin) {
 			focusedWin.style.zIndex = "1";
 			focusedWin.style.filter = "brightness(.8)";
-			focusedWin
-				.querySelectorAll("iframe")
-				.forEach(e => (e.style.pointerEvents = "none"));
+      focusedWin.querySelectorAll('iframe').forEach(e=>e.style.pointerEvents='none');
 		}
 		win.style.zIndex = "100";
 		win.style.filter = "brightness(1)";
@@ -157,23 +159,26 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.title = `${win.id} | XenOS`;
 
 		focusedWin = win;
-	};
+	}
 	function handleExit() {
-		setTimeout(() => {
+		setTimeout(function () {
 			xenHeader.innerText = "XenOS";
 			document.title = `Desktop | XenOS`;
 			console.log("close");
 		}, 100);
 	}
-	document.addEventListener("WindowClose", () => handleExit());
-	document.addEventListener("keydown", e => {
-		if (e.metaKey && e.key === "m")
+	document.addEventListener("WindowClose", function (e) {
+		handleExit();
+	});
+	document.addEventListener("keydown", function (event) {
+		if (event.metaKey && event.key === "m") {
 			console.log("Command + Shift + M combination detected!");
+		}
 	});
 	function initWindow(_win) {
 		const win = document.getElementById(_win);
 		__uni_windows.push(win);
-		const frames = win.querySelectorAll("iframe");
+		const iframes = win.querySelectorAll("iframe");
 		const navbar = win.querySelector(".box-header-title");
 		let startX, startY;
 
@@ -181,8 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
 			if (win.style.transform == "scale(0.1)") return;
 			if (!e.target.classList.contains("box-header-title")) return;
 
-			frames.forEach(frame => {
-				frame.style.pointerEvents = "none";
+			iframes.forEach(function (iframe) {
+				iframe.style.pointerEvents = "none";
 			});
 
 			startX = e.clientX - win.offsetLeft;
@@ -196,14 +201,14 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 
 		navbar.addEventListener("mouseup", e => {
-			if (e.target instanceof window.SVGSVGElement) return;
-			if (e.target instanceof window.SVGRectElement) return;
-			if (e.target.classList.contains("os-mini")) return;
+      if (e.target instanceof window.SVGSVGElement) return;
+      if (e.target instanceof window.SVGRectElement) return;
+      if (e.target.classList.contains('os-mini')) return;
 
-			console.log(e.target);
-
-			iframes.forEach(frame => {
-				frame.style.pointerEvents = "auto";
+      console.log(e.target);
+      
+			iframes.forEach(function (iframe) {
+				iframe.style.pointerEvents = "auto";
 			});
 		});
 
@@ -211,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			let left = e.clientX - startX;
 			let top = e.clientY - startY;
 
-			if (top < 29) top = 29;
+            if (top<29) top = 29;
 
 			requestAnimationFrame(() => {
 				win.style.position = `absolute`;
@@ -237,15 +242,15 @@ document.addEventListener("DOMContentLoaded", () => {
 			window.xen.windowManager.handleWindowClick(win);
 		});
 
-		win.addEventListener("click", e => {
-			console.log("eee");
+    win.addEventListener("click", (e) => {
+      console.log('eee');
 
-			if (e.target instanceof window.SVGSVGElement) return;
-			if (e.target instanceof window.SVGRectElement) return;
-			if (e.target.classList.contains("os-mini")) return;
-
-			iframes.forEach(frame => (frame.style.pointerEvents = "auto"));
-		});
+      if (e.target instanceof window.SVGSVGElement) return;
+      if (e.target instanceof window.SVGRectElement) return;
+      if (e.target.classList.contains('os-mini')) return;
+      
+      iframes.forEach(e=>e.style.pointerEvents='auto');
+    });
 	}
 
 	const xenDesk = document.getElementById("os-desktop");
@@ -260,8 +265,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	);
 });
 
-// Whoever wrote this; please finish it
-/*
 const btn = document.getElementById("launchpadButton");
 const lp = document.getElementById("launchpad-overlay");
 
@@ -293,6 +296,9 @@ window.xen.blob64 = function(file) {
   });
 }
 
+/*
+btn.addEventListener("click", () => xen.system.launchpad(lp.style.display !== 'flex'));
+*/
 var _title;
 document.addEventListener('userInactive', function(){
   const frame = document.createElement("iframe");
@@ -312,4 +318,4 @@ document.addEventListener('userActive', function(){
 
 
 // Interceptors
-*/
+

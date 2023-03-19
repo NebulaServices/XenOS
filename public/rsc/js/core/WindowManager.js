@@ -16,7 +16,7 @@ window.__XEN_WEBPACK.WindowManager = class WindowManager {
 	addWindow(id, el, ...props) {
 		const windowProps = { el };
 
-		if (props.pop()) windowProps.native = true;
+		if (props.pop() == true) windowProps.native = true;
 
 		Object.defineProperty(windowProps, "locX", {
 			get() {
@@ -37,19 +37,26 @@ window.__XEN_WEBPACK.WindowManager = class WindowManager {
 			},
 		});
 
-		for (let i = 0; i < props.length; i += 2)
+		for (let i = 0; i < props.length; i += 2) {
 			windowProps["_" + props[i]] = props[i + 1];
+		}
 
 		this.windows[id] = windowProps;
 	}
 	removeWindow(id) {
-		if (this.windows[id]) delete this.windows[id];
+		if (this.windows[id]) {
+			delete this.windows[id];
+		}
 	}
 	modWin(id, prop, value) {
-		if (this.windows[id]) this.windows[id][prop] = value;
+		if (this.windows[id]) {
+			this.windows[id][prop] = value;
+		}
 	}
 	getZIndex(id) {
-		if (this.windows[id]) return this.windows[id].zIndex;
+		if (this.windows[id]) {
+			return this.windows[id].zIndex;
+		}
 	}
 
 	getLocation(id) {

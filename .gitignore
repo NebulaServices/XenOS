@@ -1,6 +1,0 @@
-node_modules/
-package-lock.json
-
-*.bundle.js
-
-replit_zip_error_log.txt

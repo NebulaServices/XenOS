@@ -1,10 +1,10 @@
 const headerBar = document.getElementById("os-header");
 let rect = headerBar.getBoundingClientRect();
 
-document.addEventListener("mousemove", e => {
+document.addEventListener("mousemove", function (e) {
 	const dragBoxes = document.querySelectorAll(".box-header-title");
-	dragBoxes.forEach(box => {
-		box.addEventListener("mousedown", e => {
+	dragBoxes.forEach(function (dBox) {
+		dBox.addEventListener("mousedown", function (e) {
 			if (
 				e.clientX < rect.left ||
 				e.clientX > rect.right ||
@@ -13,9 +13,9 @@ document.addEventListener("mousemove", e => {
 			) {
 			} else {
 				const activeWindowName = xen.windowManager.activeWindow.active;
-				if (activeWindowName === "null")
+				if (activeWindowName == "null") {
 					console.log("No Active Window Selected");
-				else {
+				} else {
 					try {
 						const activeWindow =
 							document.getElementById(activeWindowName);
@@ -25,7 +25,7 @@ document.addEventListener("mousemove", e => {
 						e.preventDefault();
 						e.stopPropagation();
 					} catch (err) {
-						console.error(err);
+						console.log(err);
 					}
 				}
 			}

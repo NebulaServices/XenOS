@@ -3,16 +3,26 @@ Object.defineProperty(window, "xen", {
 	enumerable: false,
 });
 
-// Execute JS from Xen
 var listeners = [];
+
+xen.parent = {
+	send(message, ...data) {
+		window.top.postMessage({ message, data: data });
+	},
+	on(event, cb) {
+		listeners.push([event, cb]);
+	},
+};
+
 listeners.push([
 	"__XEN_LISTENER_CONNECTION_MANAGER",
-	(type, ...args) => {
-		if (type === "executeJS") return eval(args[0]);
+	function (type, ...args) {
+		if (type == "executeJS") return window.eval(args[0]);
 	},
 ]);
-window.addEventListener("message", data => {
+
+window.addEventListener("message", function (data) {
 	listeners
-		.filter(listener => listener[0] === data.data.message)
+		.filter(e => e[0] == data.data.message)
 		.forEach(e => e[1](...data.data.data));
 });
