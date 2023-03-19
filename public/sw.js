@@ -73,7 +73,7 @@ self.addEventListener("fetch", e => {
 
 			var cache = await caches.open("apps");
 
-			var returnValue = await fetch(event.request);
+			var returnValue = await fetch(e.request);
 
 			try {
 				if (path.startsWith("/rsc/font"))
@@ -114,11 +114,11 @@ import('/sdk.bundle.js').then(() => {
 		}
 		
 		BrowserWindow,
-        on(event, callback) {
-            listeners.push([event, callback]);
+        on(e, callback) {
+            listeners.push([e, callback]);
         },
-        emit(event, ...data) {
-            listeners.filter(listener => listener[0] === event).forEach(e => e[1](...data));
+        emit(e, ...data) {
+            listeners.filter(listener => listener[0] === e).forEach(e => e[1](...data));
         },
         quit(force = true) {
             if (force)

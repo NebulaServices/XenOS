@@ -110,7 +110,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 		});
 
 		el.addEventListener("contextmenu", e => {
-			event.preventDefault();
+			e.preventDefault();
 
 			if (that.itemOpen) that.itemOpen.style.display = "none";
 
@@ -210,9 +210,8 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 
 		data.push(app);
 
-		if (document.getElementById("_Dock_" + meta.name)) {
+		if (document.getElementById("_Dock_" + meta.name))
 			console.log(document.getElementById("_Dock_" + meta.name));
-		}
 
 		await this.fs.writeFile("__DOCK_PINS.xen", JSON.stringify(data));
 
