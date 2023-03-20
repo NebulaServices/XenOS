@@ -75,12 +75,13 @@
 	}
 }
 body {
-  overflow: hidden;
-  cursor: auto;
-  font-family: "IBM PLEX SANS", sans-serif;
-  margin: 0;
-  transition: 0s;
-  font-weight: 300;
+ overflow: hidden;
+    cursor: auto;
+    font-family: "IBM PLEX SANS", sans-serif;
+    margin: 0;
+    transition: 0s;
+    font-weight: 300;
+    background: black;
 }
 
 iframe {
@@ -92,12 +93,25 @@ iframe {
   user-select: none;
 }
 
-button {
-      background: transparent;
+.header-button {
+   background: transparent;
     color: white;
     font-size: 13px;
     border: transparent;
     font-family: "IBM PLEX SANS";
+    /* position: absolute; */
+    /* left: 0; */
+    font-weight: 100;
+    padding-right: 9px;
+}
+.header-rightend{
+  position: absolute;
+    right: 0;
+    padding-right: 11px;
+    /* margin-top: 62px; */
+    display: flex;
+    align-content: center;
+    flex-direction: row;
 }
 .os-preload,
 .os-setup {
@@ -165,8 +179,7 @@ button {
     padding-bottom: 2px;
 }
 #timeIndicator {
-  position: relative;
-  margin-right: 10px;
+
   font-size: 15px;
 }
 
@@ -193,24 +206,27 @@ button {
 }
 
 .os-header {
-  color: #fff;
-  box-shadow: 1px 1px 1px rgb(0 0 0/30%);
-  height: 28px;
-  background: #0000007d;
-  justify-content: flex-start;
-  cursor: default;
-  user-select: none;
-  padding-bottom: 1px;
-  z-index: 200;
-  position: absolute;
-  pointer-events: auto;
+      color: #fff;
+    height: 31px;
+    background: #0000007d;
+    justify-content: flex-start;
+    cursor: default;
+    user-select: none;
+    padding-bottom: 1px;
+    z-index: 200;
+    position: absolute;
+    pointer-events: auto;
+    backdrop-filter: blur(212px);
 }
 
 .os-header-items-wrap {
-  position: relative;
-  height: 37px;
-  justify-content: flex-end;
-  z-index: 1;
+ position: relative;
+    height: 37px;
+    justify-content: flex-start;
+    z-index: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .os-header-items {
@@ -225,19 +241,24 @@ button {
 }
 
 .os-header-text {
-  margin-left: 14px;
-  color: rgb(255 255 255/63%);
-  text-shadow: 0 0 15px rgb(255 255 255/50%), 0 0 10px rgb(255 255 255/50%);
-  width: 166px;
+     margin-left: 10px;
+    color: rgb(255 255 255);
+    /* text-shadow: 0 0 9px rgb(255 255 255 / 21%), 0 0 10px rgb(255 255 255 / 23%); */
+    width: fit-content;
+    min-width: fit-content;
+    max-width: 183px;
+    font-size: 17px;
+    font-weight: 300;
+    padding-right: 8px;
 }
 
 .os-header-logo {
-  margin-left: 8px;
-  width: 19px;
-  -webkit-transition: all 0.6s 0s ease;
-  -moz-transition: all 0.6s 0s ease;
-  -o-transition: all 0.6s 0s ease;
-  transition: all 0.6s 0s ease;
+ margin-left: 15px;
+    width: 21px;
+    -webkit-transition: all 0.6s 0s ease;
+    -moz-transition: all 0.6s 0s ease;
+    -o-transition: all 0.6s 0s ease;
+    transition: all 0.6s 0s ease;
 }
 
 .os-header-logo:hover {
@@ -245,7 +266,7 @@ button {
 }
 
 .os-battery-container {
-  margin-top: 4px;
+  margin-top: 14px;
 }
 
 .os-battery-percent {
@@ -291,12 +312,13 @@ button {
 }
 
 .drag {
-  box-shadow: 0 8px 16px rgb(0 0 0/25%);
-  width: 500px;
-  height: 300px;
-  border-radius: 5px 5px 12px 12px;
-  resize: auto;
-  will-change: transform;
+ box-shadow: 0 8px 16px rgb(0 0 0/25%);
+    width: 500px;
+    height: 300px;
+    border-radius: 5px 5px 12px 12px;
+    resize: auto;
+    will-change: transform;
+    border: 0.4px solid rgb(255 255 255 / 20%);
 }
 
 .drag:before {
@@ -333,15 +355,16 @@ button {
 }
 
 .box-body-inner {
-  position: absolute;
-  padding: 0;
-  background: rgba(58, 58, 58, 0.66);
-  height: calc(100% - 25px);
-  z-index: 1;
-  color: #fff;
-  font-size: 12px;
-  overflow: hidden;
-  width: 100%;
+ position: absolute;
+    padding: 0;
+    background: rgba(58, 58, 58, 0.66);
+    height: calc(100% - 25px);
+    z-index: 1;
+    color: #fff;
+    font-size: 12px;
+    overflow: hidden;
+    width: 100%;
+    border-radius: 0px 0px 9px 9px;
 }
 
 .os-launchpad {
@@ -520,20 +543,20 @@ button {
 
 .os-exit {
   right: 11px;
-  margin-top: 5px;
-  /* font-size: 20px; */
-  position: absolute;
-  width: 12px;
-  height: 15px;
+    margin-top: 3px;
+    /* font-size: 20px; */
+    position: absolute;
+    width: 12px;
+    height: 15px;
 }
 
 .os-mini {
   right: 32px;
-  margin-top: 5px;
-  /* font-size: 20px; */
-  position: absolute;
-  width: 12px;
-  height: 15px;
+    margin-top: 3px;
+    /* font-size: 20px; */
+    position: absolute;
+    width: 12px;
+    height: 15px;
 }
 .os-dock {
   width: 100%;

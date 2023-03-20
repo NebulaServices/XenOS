@@ -86,17 +86,24 @@
 		</div> 
 			<p class="os-header-text" id="osActiveApp">XenOS</p>
 			<div class="os-header-items-wrap">
-        <button onclick="loadDebugScript()">Debug</button>
+        <button class='header-button' onclick="loadDebugScript()">Debug</button>
+         <button class='header-button' onclick="console.log('option')">Fullscreen</button>
+       
 				<!-- SVG CODE HERE -->
 				<!-- SVG CODE END -->
+ <div class='header-rightend'> 
+       
            <div id='miniPlayer' class='miniPlayer' style='display:none;'>
       <div class='taskBarOption'> SONG NAME </div> 
   <div class='taskBarOption'> SONG ARTIST </div> 
              <div class='taskBarOption'> BAR </div> 
               <div class='taskBarOption'> BUTTONS </div> 
       </div> 
+
+        
 				<div class="os-battery-container"></div>
 				<p id="timeIndicator"></p>
+   </div> 
 			</div>
 		</div>
 		<!--  OS preload -->
@@ -175,31 +182,10 @@
 		</div>
 		<!--  OS (Desktop) -->
 		<div class="os-body" id="os-desktop">
-			<!--  OS launchpad  -->
-			<div
-				class="os-launchpad"
-				id="launchpad-overlay"
-				style="display: none"
-			>
-				<div class="os-launchpad-applet-wrapper">
-					<div class="os-launchpad-applet">
-						<img
-							class="os-launchpad-applet-img"
-							src="/media?imageUrl=https://media.discordapp.net/attachments/986016042847469659/1063271330578972702/Frame_1velocity_2.png"
-							onclick="xen.system.register('Velocity', '10', '10', 'https://velocity.radon.games/')"
-						/>
-						<div class='os-launchpad-applet-title'> Velocity
-					</div>
-				</div>
-				<div class="os-launchpad-applet">
-					<img
-						class="os-launchpad-applet-img"
-						src="/media?imageUrl=https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Visual_Studio_Code_1.35_icon.svg/2048px-Visual_Studio_Code_1.35_icon.svg.png"
-					/>
-					<div class="os-launchpad-applet-title">VSCode</div>
-				</div>
-			</div>
-		</div>
+		<div> </div>
+		
+
+      
 		<!--  OS taskbar (Desktop) -->
 		<div class="os-taskbar-cont">
 			<div class="os-taskbar-under"></div>
