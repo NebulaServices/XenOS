@@ -12,7 +12,10 @@ try {
   var Bundle = webpack(
     {
       mode: "development",
-      entry: path.join(__dirname, "public/rsc/js/entry.ts"),
+      entry: {
+        web: path.join(__dirname, "public/rsc/js/entry.ts"),
+        communicator: path.join(__dirname, "public/rsc/js/inject/index.js"),
+      },
       module: {
         rules: [
           {
@@ -27,7 +30,7 @@ try {
       },
       output: {
         path: path.join(__dirname, "public/rsc/web/"),
-        filename: "web.bundle.js",
+        filename: "[name].bundle.js",
       },
       experiments: {
         topLevelAwait: true,

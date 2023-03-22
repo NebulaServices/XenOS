@@ -40,7 +40,7 @@ self.addEventListener("fetch", event => {
 
 					body = `<head><base href="${
 						location.origin + path
-					}"><script src="/rsc/web/webcommunicator.js"></script></head>${body}`;
+					}"><script src="/rsc/web/communicator.bundle.js"></script></head>${body}`;
 
 					return new Response(body, {
 						headers: {
@@ -116,6 +116,37 @@ console.log(e);
     setIcon(url) {
       window.xen.dock.icon(_name, url);
     },
+    apps: {
+      install(...args) {
+        var response = false;
+        const flag = name + "_permission_getApps";
+        var permCheck = localStorage.getItem(flag);
+        console.log(permCheck);
+        if (permCheck == null || permCheck == undefined || permCheck == false) {
+          const requestMessage = confirm(
+            name +
+              atob("${btoa(`Wants permission to see which apps are installed. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"`)}")
+          );
+    
+          if (requestMessage == true) {
+            console.log("Permission granted");
+            localStorage.setItem(flag, "true");
+            response = true;
+          } else if (requestMessage == false) {
+            localStorage.setItem(flag, "false");
+            response = false;
+          }
+        } else if (permCheck === "true") {
+          response = true;
+        }
+
+        if (response) {
+          return window.xen.apps.install(...args);
+        } else {
+          return new Error('Unauthorized');
+        }
+      },
+    }
   };
   
   (async function(xen) {
@@ -123,7 +154,8 @@ console.log(e);
       constructor(...args) {
         super(...args, name, path, xen);
       }
-    }
+    };
+    
     ${await content.text()}
   })(xen);
 });

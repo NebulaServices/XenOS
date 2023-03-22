@@ -83,12 +83,12 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 	#install(author, proj, file, content, entry, log) {
     return new Promise(resolve => {
   		navigator.serviceWorker.onmessage = async () => {
-  			if (log) console.log("Installed!");
+  			if (log) console.log("STATUS: INSTALLED (3)");
   		};
 
       function cb(e) {
         if (e.data!==`/apps/${author}/${proj}/${file}`) return false;
-        console.log('ok done');
+        console.log('STATUS: OK (4)');
 
         navigator.serviceWorker.removeEventListener('message', cb);
         resolve();
@@ -358,8 +358,40 @@ console.log(pkg + ' updating')
 
 	minimized = [];
 
+  dragData = {};
+  minDown = {};
+
+  createDrag(name) {
+    dragData[name] = {};
+    var startX =
+    
+    function move(e) {
+			let left = e.clientX;
+			let top = e.clientY;
+
+            if (top<32) top = 32;
+
+			requestAnimationFrame(() => {
+				win.style.position = `absolute`;
+				win.style.top = `${top}px`;
+				win.style.left = `${left}px`;
+			});
+    }
+    
+    document.addEventListener('mousemove', move);
+
+    return move;
+  }
+
+  minMDown(event, name) {
+    minDown[name] = event;
+
+    this.dragData[name] = this.createDrag(name);
+  }
+
 	minClick(event, name) {
 		console.log("sus");
+    if (event.clientX!=minDown[name].clientX || event.clientY!=minDown[name].clientY) return
 		this.unminimize(name);
 		xen.windowManager.modWin(name, "_min", "false");
 	}
@@ -402,7 +434,8 @@ console.log(pkg + ' updating')
 		setTimeout(function () {
 			el.style.transition = "all 0.001s ease-in-out 0s";
 			xen.windowManager.modWin(name, "minimized", true);
-			el.onclick = new Function(`{xen.apps.minClick({}, "${name}")}`);
+      el.onmousedown = new Function('e', `{xen.apps.minMDown(e, "${name}")}`);
+			el.onmouseup = new Function('e', `{xen.apps.minClick(e, "${name}")}`);
 		}, 500);
 	}
 
@@ -423,7 +456,8 @@ console.log(pkg + ' updating')
 			el.style.transition = "all 0.001s ease-in-out 0s";
 			that.minimized.splice(that.minimized.indexOf(el), 1);
 			xen.windowManager.modWin(name, "minimized", false);
-			el.onclick = function() {};
+			el.onmousedown = function() {};
+      el.onmouseup = function() {};
 		}, 500);
 	}
 };

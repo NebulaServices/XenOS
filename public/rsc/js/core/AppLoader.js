@@ -8,6 +8,7 @@ var appWin = class WIN {
   listeners = [];
 
   constructor(options = {}, name, path, _xen) {
+    var that = this;
     window.__XEN_WEBPACK.winRaw.push(this);
     this.opts = Object.assign(
       {
@@ -22,6 +23,7 @@ var appWin = class WIN {
         y: 10,
         allCloseQuit: true,
         focus: true,
+        modules: []
       },
       options
     );
@@ -44,6 +46,12 @@ var appWin = class WIN {
 
     this.el = el;
 
+    el.querySelector("iframe").addEventListener('load', 
+function() {
+      that.opts.modules.forEach(module => {
+        that.send('__XEN_MODULE_CONNECTION', {name: module});
+      });
+    });
     this.registerMessages(el.querySelector("iframe").contentWindow);
   }
   registerMessages(win) {
@@ -105,7 +113,7 @@ var appWin = class WIN {
     // TODO: remove?
     this.el.querySelector("iframe").contentWindow.postMessage({
       message: "__XEN_LISTENER_CONNECTION_MANAGER",
-      data: { type: "executeJS", code },
+      data: ["executeJS", code],
     });
   }
   requestDispatchNotification(notificationName, body, image) {
@@ -249,13 +257,15 @@ window.__XEN_WEBPACK.core.AppLoaderComponent = class ALC {
   }
 
   load(name, script = "", path, _name = "") {
-    {
+    try {
       // Scoping for variables and easy app launching
       eval(`
 (function(name, path, _name) {
 	${script}
 })("${name}", "${path}", "${_name}");
       `);
+    } catch(e) {
+      console.error(e);
     }
   }
 };

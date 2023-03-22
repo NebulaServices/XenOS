@@ -17,6 +17,7 @@ var NotificationComponent = require("./core/System.js");
 var ErrorComponent = require("./core/ErrorManager.js");
 var WindowManager = require("./core/WindowManager.js");
 var MotherBoardComponent = require("./x86.js");
+var TerminalBoard = require("./xterminal.js");
 var MotherBoardComponent = require("./core.js");
 
 // Frameworks 

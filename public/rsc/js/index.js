@@ -216,7 +216,7 @@ document.getElementById('os-desktop').addEventListener('click', function(event){
 			let left = e.clientX - startX;
 			let top = e.clientY - startY;
 
-            if (top<29) top = 29;
+            if (top<32) top = 32;
 
 			requestAnimationFrame(() => {
 				win.style.position = `absolute`;

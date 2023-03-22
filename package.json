@@ -28,6 +28,7 @@
 		"path-browserify": "^1.0.1",
 		"request": "^2.88.2",
 		"tippy.js": "^6.3.7",
+		"util": "^0.12.5",
 		"walk-parse5": "^2.0.0",
 		"workbox-webpack-plugin": "^6.5.4"
 	},
@@ -35,7 +36,7 @@
 		"@types/webpack-dev-server": "^4.7.2",
 		"@webpack-cli/generators": "^3.0.1",
 		"ts-loader": "^9.4.2",
-		"webpack": "^5.75.0",
+		"webpack": "^5.76.2",
 		"webpack-cli": "^5.0.1",
 		"webpack-dev-server": "^4.11.1"
 	}
