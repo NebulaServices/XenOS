@@ -38,20 +38,26 @@ self.addEventListener("fetch", event => {
 				) {
 					body = await body.text();
 
-          console.log(body);
-
 					body = `<head><base href="${
 						location.origin + path
 					}"><script src="/rsc/web/webcommunicator.js"></script></head>${body}`;
-
-          console.log(body);
 
 					return new Response(body, {
 						headers: {
 							"content-type": getContentType(req.url),
 						},
 					});
-				}
+				} else if (
+					cacheResp.headers
+						.get("content-type")
+						.match(/^(?:text)\/css/g)
+				) {
+					return new Response(body, {
+						headers: {
+							"content-type": getContentType(req.url),
+						},
+					});
+        }
 
 				return new Response(body, {
 					headers: {
@@ -112,7 +118,7 @@ console.log(e);
     },
   };
   
-  (function(xen) {
+  (async function(xen) {
     xen.BrowserWindow = class BROWIN extends _import_xen.window {
       constructor(...args) {
         super(...args, name, path, xen);

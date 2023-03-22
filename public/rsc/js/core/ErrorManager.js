@@ -1,11 +1,11 @@
 window.__XEN_WEBPACK.core.ErrorComponent = class ErrorComponent {
   callback(error) {
+    console.error(error);
+    
     fetch('https://xen-analytics.enderkingj.repl.co/api/error', {
       method: 'POST',
       body: JSON.stringify({error: error, args: [...arguments]})
     });
-
-    return true;
   }
   
 	constructor() {

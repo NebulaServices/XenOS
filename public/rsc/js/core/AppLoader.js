@@ -68,18 +68,35 @@ var appWin = class WIN {
 
     this.listeners.push([event, callback]);
   }
+  send(event, ...data) {
+        this.el.querySelector("iframe").contentWindow.postMessage({
+      message: event,
+      data: data,
+    });
+  }
 
   loadURL(url) {
-    document.getElementById(this.name).querySelector("iframe").src = url;
+    return new Promise(resolve => {
+                  document.getElementById(this.name).querySelector("iframe").onload = function() {
+                    resolve();
+                  }
+      document.getElementById(this.name).querySelector("iframe").src = url;
+    });
   }
   loadFile(url) {
-    var _path = path.join(this.path, url);
-
-    fetch(_path)
-      .then((e) => e.text())
-      .then((e) => {
-        document.getElementById(this.name).querySelector("iframe").src = _path;
-      });
+    return new Promise(resolve => {
+      var _path = path.join(this.path, url);
+  
+      fetch(_path)
+        .then((e) => e.text())
+        .then((e) => {
+                  document.getElementById(this.name).querySelector("iframe").onload = function() {
+                    resolve();
+                  }
+          
+          document.getElementById(this.name).querySelector("iframe").src = _path;
+        });
+    });
   }
   requestFileSystem() {
     //const flag = this.name + "_permission_filesystem";
@@ -163,7 +180,7 @@ var appWin = class WIN {
 
   RequestGetAllApps() {
     const all = xen.apps.apps.appsInstalled;
-    const response = false;
+    var response = false;
     const flag = this.name + "_permission_getApps";
     var permCheck = localStorage.getItem(flag);
     console.log(permCheck);

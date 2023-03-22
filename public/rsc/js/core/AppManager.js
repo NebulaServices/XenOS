@@ -51,42 +51,69 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 		};
 	}
 
+  async fixInstall(app) {
+    await this.install(app);
+    return true;
+  }
+
   async start() {
     var data = [];
     
     var json = await (await fetch('/apps/data')).json();
 
     for (var k of json) {
-      var req = await (await fetch('/apps/'+k+'/manifest.json')).json();
-
-      var g = {};
-
-      g[req.name] = req;
-
-      data.push(g);
+      try {
+        var req = await (await fetch('/apps/'+k+'/manifest.json')).json();
+  
+        var g = {};
+  
+        g[req.name] = req;
+  
+        data.push(g);
+      } catch(e) {
+        console.log(e);
+      }
     };
 
     this.apps.appsInstalled = data;
+
+    return true;
   }
 
-	async #install(author, proj, file, content, entry, log) {
-		navigator.serviceWorker.onmessage = async () => {
-			if (log) console.log("Installed!");
-		};
+	#install(author, proj, file, content, entry, log) {
+    return new Promise(resolve => {
+  		navigator.serviceWorker.onmessage = async () => {
+  			if (log) console.log("Installed!");
+  		};
 
-		navigator.serviceWorker.ready.then(registration =>
-			registration.active.postMessage({
-				info: {
-					author: author,
-					project: proj,
-					entry: entry,
-				},
-				file: file,
-				log: log || false,
-				content: content,
-			})
-		);
+      function cb(e) {
+        if (e.data!==`/apps/${author}/${proj}/${file}`) return false;
+        console.log('ok done');
+
+        navigator.serviceWorker.removeEventListener('message', cb);
+        resolve();
+      };
+
+      navigator.serviceWorker.addEventListener('message', cb);
+  
+  		navigator.serviceWorker.ready.then(registration =>
+  			registration.active.postMessage({
+  				info: {
+  					author: author,
+  					project: proj,
+  					entry: entry,
+  				},
+  				file: file,
+  				log: log || false,
+  				content: content,
+  			})
+  		);
+    });
 	}
+
+  async validateFile(author, proj, file, content, entry, log) {
+    return;
+  }
 
 	install(
 		pkg,
@@ -94,6 +121,8 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 		log = true
 	) {
 		if (log) console.log(`Installing ${pkg}`);
+
+    var that = this;
 
 		return new Promise(async resolve => {
 			const [author, project] = pkg.split("/");
@@ -132,32 +161,42 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 			var togo = 100 - percent - 20;
 			var percent = togo / meta.assets.length;
 
+      var promises = [];
+
 			for (let asset of meta.assets) {
-				metaBody.asset = asset;
+        promises.push(new Promise(async resolve => {
+  				metaBody.asset = asset;
+  
+  				clearIntervals();
+  				if (log) loaderBegin(`FETCH: ${meta.name}/${asset}`, "3");
+  
+  				percent += Math.floor(percent);
+  
+  				var resp = await fetch(repo + "/download", {
+  					method: "POST",
+  					body: JSON.stringify(metaBody),
+  				});
+  
+  				var body = await resp.blob();
+  				clearIntervals();
+  				if (log) loaderBegin(`SUCCESS: ${meta.name}/${asset}`, "4");
+  
+  				await that.#install(
+  					author,
+  					project,
+  					asset,
+  					body,
+  					meta.entry,
+  					log
+  				);
 
-				clearIntervals();
-				if (log) loaderBegin(`FETCH: ${meta.name}/${asset}`, "3");
-
-				percent += Math.floor(percent);
-
-				var resp = await fetch(repo + "/download", {
-					method: "POST",
-					body: JSON.stringify(metaBody),
-				});
-
-				var body = await resp.blob();
-				clearIntervals();
-				if (log) loaderBegin(`SUCCESS: ${meta.name}/${asset}`, "4");
-
-				await this.#install(
-					author,
-					project,
-					asset,
-					body,
-					meta.entry,
-					log
-				);
+          resolve();
+        }));
 			}
+
+      console.log(promises)
+
+      console.log(await xen.awaitAll(...promises));
 
 			clearIntervals();
 			if (log) loaderBegin(`FETCH: SESSION_CLEAR (END_SESS)`, "5");
@@ -206,6 +245,8 @@ console.log(pkg + ' updating')
 	}
 
   async #errorWin(error, meta, app) {
+    console.log(error);
+    
     var blob = new Blob([`
       <!DOCTYPE html>
       <html>
@@ -306,7 +347,13 @@ console.log(pkg + ' updating')
 	}
 
 	async getMeta(pkg) {
-		return await (await fetch("/apps/" + pkg + "/manifest.json")).json();
+    try {
+  		return await (await fetch("/apps/" + pkg + "/manifest.json")).json();
+    } catch(e) {
+      await this.fixInstall(pkg);
+
+      return await (await fetch("/apps/" + pkg + "/manifest.json")).json();
+    }
 	}
 
 	minimized = [];

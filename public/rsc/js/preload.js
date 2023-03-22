@@ -24,6 +24,9 @@ var timingFlag = document.currentScript.src.endsWith('?flg');
 (async () => {
 	// Proxy
 	//await xen.apps.update("Proxies/Aero", undefined, false);
+
+  await xen.apps.update("Xen/Welcome", undefined, false);
+  await xen.apps.start()
   
   await xen.awaitAll(
 
@@ -36,16 +39,12 @@ var timingFlag = document.currentScript.src.endsWith('?flg');
   	xen.apps.update("Xen/notes", undefined, false),
   	xen.apps.update("Xen/Store", undefined, false),
   	xen.apps.update("Xen/Testflight", undefined, false),
-  	xen.apps.update("Xen/Welcome", undefined, false),
     xen.apps.update("Kleki/Kleki", undefined, false),
-  	xen.apps.update("cohenerickson/Velocity", undefined, false),
-    
-    xen.apps.start()
+  	xen.apps.update("cohenerickson/Velocity", undefined, false)
   );
 
   // Load dock (Must be after others to ensure first load)
-  
-  xen.dock.loadNative()
+  await xen.dock.loadNative()
 
   // Detect Platform
   xen.platform = await window.__XEN_WEBPACK.core.platform();

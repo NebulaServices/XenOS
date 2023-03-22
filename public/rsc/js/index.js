@@ -273,7 +273,7 @@ window.__XEN_WEBPACK.core.platform = async function() {
 }
 
 window.xen.awaitAll = async function(...args) {
-  return await Promise.all(args)?true:false;
+  return (await Promise.allSettled(args))?true:false;
 }
 
 window.xen.wait = (ms) => new Promise(e=>setTimeout(()=>e(), ms));

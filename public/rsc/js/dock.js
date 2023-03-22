@@ -4,6 +4,8 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 	pins = [];
 	itemOpen = null;
 
+  dockOpen = [];
+
 	constructor(fs) {
 		this.fs = fs;
 		this.split = document.querySelector(".os-dock-resize");
@@ -13,6 +15,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 	}
 
 	async #remove(app) {
+    if (!this.dockOpen.includes(app)) return;
 		const meta = await xen.apps.getMeta(app);
 
 		document.getElementById("_Dock_" + meta.name).remove();
@@ -32,6 +35,8 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 		var that = this;
 
 		const meta = await xen.apps.getMeta(app);
+
+    that.dockOpen.push(app);
 
 		// TODO: Have a fallback app icon
 		const icon = path.join("/apps/" + app, meta.icon || "");
@@ -176,9 +181,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 	}
 
 	async pin(app) {
-		const meta = await xen.apps.getMeta(app);
-
-		let data = await this.fs.readFile("__DOCK_PINS.xen", true);
+    let data = await this.fs.readFile("__DOCK_PINS.xen", true);
 
     if (data.indexOf(app)>-1) {
       data.splice(data.indexOf(app), 1);
@@ -187,6 +190,8 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
       
       return await this.fs.writeFile("__DOCK_PINS.xen", JSON.stringify(data));
     }
+    
+		const meta = await xen.apps.getMeta(app);
 
 		data.push(app);
 
@@ -256,17 +261,24 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
     
     var that = this;
     
-    window.addEventListener('keyup', function(e) {
-      console.log(e.key);
+    window.addEventListener('keyup', function(e) {   
       if (e.key=='Alt') {
         if (!that.menu) {
           that.openMenu();
-          that.menu = true;
+          return that.menu = true;
         } else {
           that.closeMenu();
-          that.menu = false;
+          return that.menu = false;
         }
       }
+
+      if (that.menu) that.searchHandler(e);
+    });
+
+    window.addEventListener('keydown', function(e) {   
+      if (that.search) document.querySelector('.start-input').focus();
+
+      if (that.menu&&e.key!=='Alt') that.searchHandler(e);
     });
     
     document.getElementById('startButton').onclick = function(){
@@ -278,6 +290,8 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
         that.menu = false;
       }
     }
+
+    return true;
   }
 
   async pinStart(app) {
@@ -307,6 +321,12 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
       <div class="start-over" style="height:0px">
         <div class="start-left">${apps.map(e=>`<div class="start-app" data-app="${e.id}"><img class="start-app-icon" src="${path.join(`/apps/${e.id}/`, e.icon)}">${e.name}</div>`).join('\n')||'No Apps'}</div>
         <div class="start-right">Something</div>
+      </div>
+
+      <div class="start-search" style="height:0px">
+        <button class="start-back"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="48" d="M328 112L184 256l144 144"/></svg></button>
+        <input class="start-input">
+        <div class="start-results"></div>
       </div>
     `
 
@@ -387,5 +407,90 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
     }, 150);
 
     this.menuTimeout = 200;
+
+    this.search = false;
+  }
+
+  search = false;
+
+  searchHandler(e) {
+    var that = this;
+    
+    if (!that.search) return that.initSearch(e);
+
+    if (e.type=='keyup') if (e.key=='Enter') {
+      if (that.selectedItem) {
+        
+      } else {
+        xen.apps.launch(document.querySelector('.start-results .start-app').dataset.app);
+
+        that.closeMenu();that.menu = false;
+      }
+    }
+  }
+
+  async handleSearch(e) {
+    var that = this;
+
+    document.querySelector('.start-results').innerHTML = await this.generateSearch(e);
+
+    document.querySelectorAll('.start-results .start-app').forEach(el => {
+      el.onclick = (e) => {xen.apps.launch(el.dataset.app);that.closeMenu();that.menu = false;};
+    });
+  }
+
+  initSearch(e) {
+    var that = this;
+    
+    document.querySelector('.start-over').style.opacity = '0';
+
+    document.querySelector('.start-back').onclick = function(e) {
+      that.search = false;
+      document.querySelector('.start-search').style.opacity = '0';
+
+      setTimeout(function() {
+        document.querySelector('.start-over').style.opacity = '1';
+
+        document.querySelector('.start-results').innerHTML = '';
+        document.querySelector('.start-input').value = '';
+      }, 80);
+    }
+
+    document.querySelector('.start-input').oninput = function(e) {
+      var a = e.target.value+'';
+      setTimeout(function() {
+        if (a==e.target.value) that.handleSearch(e.target.value.trim());
+      }, 50);
+    };
+
+    setTimeout(function() {
+      document.querySelector('.start-input').dispatchEvent(new KeyboardEvent('keydown', {key: e.key}));
+      document.querySelector('.start-search').style.opacity = '1';
+    }, 80);
+
+    document.querySelector('.start-input').focus();
+
+    this.search = true;
+
+    this.handleSearch('')
+  }
+
+  async generateSearch(term) {
+    var data = {
+      apps: [],
+      search: [],
+      news: [],
+    }
+    
+    const apps = await Promise.all((await (await fetch('/apps/data')).json()).map(async e=>await (await fetch('/apps/'+e+'/manifest.json')).json()));
+    var names = apps.map(e=>e.name);
+
+    if (names.find(e=>e.toLowerCase().includes(term.toLowerCase()))) {
+      data.apps = names.filter(e=>e.toLowerCase().includes(term.toLowerCase()));
+    }
+
+    var html = `<div class="search-apps">${data.apps.map(e=>apps.find(g=>g.name==e)).map(e=>`<div class="start-app" data-app="${e.id}"><img class="start-app-icon" src="${path.join(`/apps/${e.id}/`, e.icon)}">${e.name}</div>`).join('\n')}</div>`;
+
+    return html;
   }
 };

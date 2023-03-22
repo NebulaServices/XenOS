@@ -102,7 +102,15 @@ iframe {
     /* position: absolute; */
     /* left: 0; */
     font-weight: 100;
-    padding-right: 9px;
+    margin-right: 4px;
+    height: 24px;
+    width: fit-content;
+    text-align: center;
+    transition: 0.1s;
+}
+.header-button:active {
+   background: #8d8d8d61;
+    border-radius: 3px;
 }
 .header-rightend{
   position: absolute;
@@ -250,6 +258,10 @@ iframe {
     font-size: 17px;
     font-weight: 300;
     padding-right: 8px;
+}
+
+.os-header-text:active{
+  
 }
 
 .os-header-logo {
@@ -995,7 +1007,7 @@ hr {
   box-sizing: border-box;
   align-content: center;
   flex-direction: row;
-  transition: 0.3s ease;
+  transition: 0.1s ease;
   flex-wrap: wrap;
   color: white;
   padding: 20px;
@@ -1058,4 +1070,59 @@ width: calc(100% - 10px);
   flex-direction: column;
   padding-top: 9px;
   padding-left: 15px;
+}
+
+.start-search {
+  opacity: 0;
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  transform: translateX(-50%);
+  transition: 0.1s ease;
+}
+
+.start-input {
+  width: calc(100% - 35px);
+  float: right;
+  outline: none;
+  background: #ffffff0f;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 0;
+  color: white;
+  padding-left: 15px;
+}
+
+.start-search {
+  width: calc(100% - 40px);
+  color: white;
+  box-shadow: 0 0 1rem 0 rgb(0 0 0/20%);
+}
+
+.start-back {
+  width: 35px;  
+  color: white;
+  padding: 7px 0;
+  font-size: 10px;
+  text-align: center;
+  box-sizing: border-box;
+  background: #ffffff0f;
+  border: 0;
+  border-right: 1px solid rgb(0, 0, 0, 0.1);
+}
+
+.start-back svg {
+  width: 2em;
+  height: 2em;
+  vertical-align: -0.125em;
+}
+
+.start-results .start-app {
+  margin: 6px auto;
+  width: 100%;
+}
+
+.start-results .start-app:hover {
+  transform: scale(1.01);
+  background: rgb(255, 255, 255, 0.05);
 }
