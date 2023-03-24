@@ -87,7 +87,7 @@
 			<p class="os-header-text" id="osActiveApp">XenOS</p>
 			<div class="os-header-items-wrap">
         <button class='header-button' onclick="loadDebugScript()">Debug</button>
-         <button class='header-button' onclick="document.getElementById(xen.windowManager.activeWindow.active).style = 'width: 99.9%;height: 87%;z-index: 100;filter: brightness(1);position: absolute;top: 29px;'">Fullscreen</button>
+         <button class='header-button' onclick="xen.browserTool.fullscreen()">Fullscreen</button>
        
 				<!-- SVG CODE HERE -->
 				<!-- SVG CODE END -->
@@ -187,7 +187,7 @@
 
       
 		<!--  OS taskbar (Desktop) -->
-		<div class="os-taskbar-cont">
+		<div class="os-taskbar-cont" id='os-taskbar-resizable'>
 			<div class="os-taskbar-under"></div>
 			<div class="os-dock">
       <img src='./rsc/img/logo-small.png' class='os-startbutton' id="startButton">

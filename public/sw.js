@@ -146,6 +146,35 @@ console.log(e);
           return new Error('Unauthorized');
         }
       },
+      uninstall(...args) {
+        var response = false;
+        const flag = name + "_permission_getApps";
+        var permCheck = localStorage.getItem(flag);
+        console.log(permCheck);
+        if (permCheck == null || permCheck == undefined || permCheck == false) {
+          const requestMessage = confirm(
+            name +
+              atob("${btoa(`Wants permission to see which apps are installed. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"`)}")
+          );
+    
+          if (requestMessage == true) {
+            console.log("Permission granted");
+            localStorage.setItem(flag, "true");
+            response = true;
+          } else if (requestMessage == false) {
+            localStorage.setItem(flag, "false");
+            response = false;
+          }
+        } else if (permCheck === "true") {
+          response = true;
+        }
+
+        if (response) {
+          return window.xen.apps.uninstall(...args);
+        } else {
+          return new Error('Unauthorized');
+        }
+      },
     }
   };
   

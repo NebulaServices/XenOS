@@ -65,15 +65,22 @@ img.src = "./rsc/img/"+xen.settings.background[key];
     document.querySelector(
       ".os-body"
     ).style.backgroundImage = `url("${this._data[name]}")`;
+
+    return true;
   }
 
-  setCustomBg(setting: string) {
+  async setCustomBg(setting: string) {
     if (setting.startsWith('blob:')) {
       localStorage.setItem('xen-bg', setting);
+
+      var n = await xen.blob64(setting);
+      await xen.fs.writeFile(setting, n);
       
       document.querySelector(
         ".os-body"
       ).style.backgroundImage = `url("${setting}")`;
+
+      return true;
     }
   }
 };

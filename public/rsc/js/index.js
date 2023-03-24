@@ -62,7 +62,7 @@ _ic.onclick = function(){
 _to.addEventListener('click', function(event){
   console.log('menu')
   _to.innerHTML = `
-    XenOS v0.8 Beta \n Copyright Nebula Services 2023`
+  XenOS ${xen.information.releaseName} v${xen.information.version} `
 });
   
 document.getElementById('os-desktop').addEventListener('click', function(event){
@@ -186,6 +186,8 @@ document.getElementById('os-desktop').addEventListener('click', function(event){
 			if (win.style.transform == "scale(0.1)") return;
 			if (!e.target.classList.contains("box-header-title")) return;
 
+      if(e.which!==1) return;
+
 			iframes.forEach(function (iframe) {
 				iframe.style.pointerEvents = "none";
 			});
@@ -205,7 +207,7 @@ document.getElementById('os-desktop').addEventListener('click', function(event){
       if (e.target instanceof window.SVGRectElement) return;
       if (e.target.classList.contains('os-mini')) return;
 
-      console.log(e.target);
+      if (xen.apps.minimized.includes(win)) return;
       
 			iframes.forEach(function (iframe) {
 				iframe.style.pointerEvents = "auto";
@@ -248,6 +250,8 @@ document.getElementById('os-desktop').addEventListener('click', function(event){
       if (e.target instanceof window.SVGSVGElement) return;
       if (e.target instanceof window.SVGRectElement) return;
       if (e.target.classList.contains('os-mini')) return;
+
+      if (xen.apps.minimized.includes(win)) return;
       
       iframes.forEach(e=>e.style.pointerEvents='auto');
     });

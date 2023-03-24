@@ -15,7 +15,7 @@ window.__XEN_WEBPACK.core.OS = class OS {
     this.x86 = new window.__XEN_WEBPACK.core.x86EngineComponent();
     this.terminal = new window.__XEN_WEBPACK.core.TerminalEngineComponent();
     this.error = new window.__XEN_WEBPACK.core.ErrorComponent();
-    this.information = {"version":0.8, "releaseName":"heliochrome"};
+    this.information = {"version":0.8, "releaseName":"solace"};
 	}
 };
 

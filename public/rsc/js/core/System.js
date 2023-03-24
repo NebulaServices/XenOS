@@ -212,18 +212,13 @@ document.dispatchEvent(
       });
 
       document.addEventListener('mouseup', function(e) {
-        if (!startX&&!startY) return;
+        if (!startX&&!startY) return
 
-        computed = null;
-
-        startX = null;
-        startY = null;
+        document.removeEventListener('mousemove', mousemove);   
         
   			master.querySelectorAll('iframe').forEach(function(iframe) {
   				iframe.style.pointerEvents = "all";
-  			});
-        
-        document.removeEventListener('mousemove', mousemove);        
+  			});     
       });
     });
 
@@ -295,16 +290,11 @@ document.dispatchEvent(
       document.addEventListener('mouseup', function(e) {
         if (!startX&&!startY) return;
 
-        computed = null;
-
-        startX = null;
-        startY = null;
+        document.removeEventListener('mousemove', mousemove);   
         
   			master.querySelectorAll('iframe').forEach(function(iframe) {
   				iframe.style.pointerEvents = "all";
-  			});
-        
-        document.removeEventListener('mousemove', mousemove);        
+  			});     
       });
     });
   }

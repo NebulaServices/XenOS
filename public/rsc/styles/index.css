@@ -968,6 +968,10 @@ hr {
 .start-right {
     flex: 3.2;
     height: 100%;
+  opacity: 1;
+    position: absolute;
+    bottom: -457px;
+   
 }
 
 .start-left, .start-right {
@@ -977,7 +981,7 @@ hr {
 
 .start-menu {
   height: 0px;
-  transition: 0.3s ease;
+  transition: 0.2s ease;
   overflow: hidden;
 }
 
@@ -1049,7 +1053,12 @@ width: calc(100% - 10px);
 .start-app:active {
   filter: brightness(.8);
 }
-
+.start-results{
+  overflow-x: scroll;
+    /*height: 451px;*/
+    width: 100%;
+    border-radius: 5px;
+}
 .miniPlayer{
   background: #a8a8a836;
   backdrop-filter: blur(6px);

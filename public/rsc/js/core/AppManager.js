@@ -332,7 +332,7 @@ console.log(pkg + ' updating')
 
 			// TODO: Convert xen.system.register to use promise and return the iframe element so that an inject script can be added to it
 			if (xen.windowManager.windows[meta.name]._min == "true") {
-				xen.apps.minClick({}, "${name}");
+				xen.apps.minClick({}, meta.name);
 			}
 			xen.system.register(meta.name, "10", "10", location);
 		}
@@ -345,6 +345,30 @@ console.log(pkg + ' updating')
 			xen.system.register(meta.name, "10", "10", file);
 		}
 	}
+
+  async uninstall(pkg) {
+    var meta = await (await fetch("/apps/" + pkg + "/manifest.json")).json();
+
+    var promises = [];
+
+    meta.assets.forEach(asset => {
+      promises.push(new Promise(async resolve => {
+        var c = await caches.open('apps');
+
+        console.log('/apps/'+meta.id+'/'+asset);
+
+        await c.delete('/apps/'+meta.id+'/'+asset);
+
+        resolve();
+      }));
+    });
+
+    await xen.awaitAll(...promises);
+
+    await xen.apps.start();
+
+    return true;
+  }
 
 	async getMeta(pkg) {
     try {
@@ -362,21 +386,30 @@ console.log(pkg + ' updating')
   minDown = {};
 
   createDrag(name) {
-    dragData[name] = {};
-    var startX =
+    var that = this;
+    this.dragData[name] = {startX: this.minDown[name].clientX-this.minDown[name].target.offsetLeft, startY: this.minDown[name].clientY-this.minDown[name].target.offsetTop, };
+
+    this.minDown[name].target.querySelectorAll('*').forEach(el=>el.style.pointerEvents='none');
     
     function move(e) {
-			let left = e.clientX;
-			let top = e.clientY;
+      let left = e.clientX - that.dragData[name].startX;
+			let top = e.clientY - that.dragData[name].startY;
 
-            if (top<32) top = 32;
+      if (top<-193) top = -193;
 
 			requestAnimationFrame(() => {
-				win.style.position = `absolute`;
-				win.style.top = `${top}px`;
-				win.style.left = `${left}px`;
+				that.minDown[name].target.style.position = `absolute`;
+				that.minDown[name].target.style.top = `${top}px`;
+				that.minDown[name].target.style.left = `${left}px`;
 			});
     }
+
+    function up() {
+      document.removeEventListener('mouseup', up);
+      document.removeEventListener('mousemove', move);
+    }
+
+    document.addEventListener('mouseup', up);
     
     document.addEventListener('mousemove', move);
 
@@ -384,16 +417,18 @@ console.log(pkg + ' updating')
   }
 
   minMDown(event, name) {
-    minDown[name] = event;
+    if (event.which!==1) return;
+    
+    this.minDown[name] = event;
 
-    this.dragData[name] = this.createDrag(name);
+    this.createDrag(name);
   }
 
 	minClick(event, name) {
-		console.log("sus");
-    if (event.clientX!=minDown[name].clientX || event.clientY!=minDown[name].clientY) return
-		this.unminimize(name);
-		xen.windowManager.modWin(name, "_min", "false");
+    if (event.clientX==this.minDown[name].clientX && event.clientY==this.minDown[name].clientY) {		
+      this.unminimize(name);
+		  return xen.windowManager.modWin(name, "_min", "false");
+    }
 	}
 
 	dockMinimize(el) {
@@ -410,12 +445,29 @@ console.log(pkg + ' updating')
 		el.style.top = y + "px";
 	}
 
+  ctxMenu(event) {
+    event.preventDefault();
+
+    var el = event.target;
+
+    event.target.style.transition = 'all 0.2s ease';
+    event.target.style.transform = 'scale(0)';
+
+		setTimeout(function () {
+			el.style.transition = "all 0.001s ease-in-out 0s";
+		}, 200);
+  }
+
 	minimize(name) {
 		var that = this;
 
 		var el = document.getElementById(name);
 
 		if (that.minimized.includes(el)) return this.unminimize(name);
+
+    el.addEventListener('contextmenu', that.ctxMenu);
+
+    el.querySelectorAll('*').forEach(el=>el.style.pointerEvents='none');
     
     el.style.transition = 'all 0.5s ease';
     el.style.transform = 'scale(0.1)';
@@ -444,8 +496,14 @@ console.log(pkg + ' updating')
 
 		const el = document.getElementById(name);
 
+    if (parseInt(el.style.top.replace('px', ''))<32) el.style.top = '32px';
+
+    el.removeEventListener('contextmenu', that.ctxMenu);
+
 		el.style.transition = "all 0.5s ease";
 		el.style.transform = "scale(1)";
+
+        el.querySelectorAll('*').forEach(el=>el.style.pointerEvents='');
 
 		el.querySelectorAll("iframe").forEach(
 			e => (e.style.pointerEvents = "none")

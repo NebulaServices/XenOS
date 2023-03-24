@@ -12,6 +12,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 		this.cont = document.querySelector(".os-dock");
 
     this.startMenu = {};
+    this.size = 1;
 	}
 
 	async #remove(app) {
@@ -159,7 +160,9 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 			document
 				.getElementById("_Dock_" + meta.name)
 				.querySelector("img")
-				.onclick = function() {};;
+				.onclick = function() {
+          xen.apps.unminimize(meta.name);
+        };
 			document
 				.getElementById("_Dock_" + meta.name)
 				.querySelector(".os-dock-item-indic").style.opacity = "1";
@@ -230,8 +233,6 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 					"cohenerickson/Velocity"
 				])
 			);
-
-    console.log('saved')
 
 		await this.loadPins();
 
@@ -320,7 +321,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
     master.innerHTML = `
       <div class="start-over" style="height:0px">
         <div class="start-left">${apps.map(e=>`<div class="start-app" data-app="${e.id}"><img class="start-app-icon" src="${path.join(`/apps/${e.id}/`, e.icon)}">${e.name}</div>`).join('\n')||'No Apps'}</div>
-        <div class="start-right">Something</div>
+        <div class="start-right">press any key to search</div>
       </div>
 
       <div class="start-search" style="height:0px">
@@ -379,7 +380,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 
     function cb(event) {
       try {
-        if (!el.contains(event.target)) {
+        if (!el.contains(event.target) && !document.querySelector('.start-menu').contains(event.target)) {
           if (document.getElementById('startButton').contains(event.target)) return;
           
           that.closeMenu();
@@ -406,7 +407,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
       document.querySelector('.start-menu').remove();
     }, 150);
 
-    this.menuTimeout = 200;
+    this.menuTimeout = 100;
 
     this.search = false;
   }
@@ -492,5 +493,15 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
     var html = `<div class="search-apps">${data.apps.map(e=>apps.find(g=>g.name==e)).map(e=>`<div class="start-app" data-app="${e.id}"><img class="start-app-icon" src="${path.join(`/apps/${e.id}/`, e.icon)}">${e.name}</div>`).join('\n')}</div>`;
 
     return html;
+  }
+
+  resize(way){
+    const mainNode = document.getElementById('os-taskbar-resizable')
+    if (way == 'up'){
+      mainNode.style = 'transform: scale(1.2);bottom: 8px;'
+    } else if (way == 'down'){
+       mainNode.style = 'transform: scale(.5); bottom: -11px;'
+    }
+    
   }
 };
