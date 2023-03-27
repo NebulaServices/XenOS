@@ -368,6 +368,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
     setTimeout(function() {
       document.querySelector('.os-taskbar-cont').style.height = '560px';
       document.querySelector('.start-over').style.height = '500px';
+      
       document.querySelector('.start-menu').style.height = '500px';
     }, 5);
 
@@ -448,7 +449,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
     document.querySelector('.start-back').onclick = function(e) {
       that.search = false;
       document.querySelector('.start-search').style.opacity = '0';
-
+     
       setTimeout(function() {
         document.querySelector('.start-over').style.opacity = '1';
 
@@ -467,6 +468,8 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
     setTimeout(function() {
       document.querySelector('.start-input').dispatchEvent(new KeyboardEvent('keydown', {key: e.key}));
       document.querySelector('.start-search').style.opacity = '1';
+          document.querySelector('.start-search').style.height = '475px'
+      
     }, 80);
 
     document.querySelector('.start-input').focus();

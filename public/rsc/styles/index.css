@@ -1055,7 +1055,7 @@ width: calc(100% - 10px);
 }
 .start-results{
   overflow-x: scroll;
-    /*height: 451px;*/
+        height: 100%;
     width: 100%;
     border-radius: 5px;
 }
