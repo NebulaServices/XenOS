@@ -103,6 +103,7 @@ document.dispatchEvent(
 
 					boxBody.appendChild(contentFrame);
 					contentFrame.src = location || "about:blank";
+          contentFrame.classList.add('appFrame')
 					contentFrame.contentWindow.addEventListener(
 						"error",
 						function (event) {
@@ -121,6 +122,7 @@ document.dispatchEvent(
 						posY,
 						native
 					);
+          xen.windowManager.modWin(name,'contentWindow', contentFrame)
 
 					desk.dispatchEvent(
 						new CustomEvent("NewWindow", {
