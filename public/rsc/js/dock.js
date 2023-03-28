@@ -73,7 +73,20 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 		var indic = document.createElement("div");
 		indic.classList.add("os-dock-item-indic");
 
-		var nativeTT = [["Quit", e => {if (document.getElementById(e.target.parentElement.parentElement.parentElement.parentElement.dataset.name)) document.getElementById(e.target.parentElement.parentElement.parentElement.parentElement.dataset.name).querySelector('.os-exit').click(); else window.xen.dock.quit(app); that.itemOpen.style.display = "none";}]];
+		var nativeTT = [
+      [
+        "Quit", 
+        e => {
+          if (document.getElementById(e.target.parentElement.parentElement.parentElement.parentElement.dataset.name)) document.getElementById(e.target.parentElement.parentElement.parentElement.parentElement.dataset.name).querySelector('.os-exit').click(); else window.xen.dock.quit(app); that.itemOpen.style.display = "none";
+        }
+      ],
+      [
+        "Pin to Dock",
+        e => {
+          console.log(this);
+        }
+      ]
+    ];
 
 		if (nativeTT.length > 0) ul.innerHTML = "";
 

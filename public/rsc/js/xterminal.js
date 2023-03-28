@@ -43,5 +43,23 @@ window.__XEN_WEBPACK.core.TerminalEngineComponent = class terminalComponent {
    console.log(xen.awaitAll)
     console.log('passed objective function test')
   }
+
+  sppi(pktg){
+    if (pktg){
+      
+    } else if (!pktg || pktg === null || pktg === ""){
+        const pkg = prompt('Standard Package Installer \n Package:')
+    if(pkg == '' || pkg == " ") {
+       const _prompt = confirm('Error: Package cannnot be blank');
+    } else {
+      const prompt = confirm('Confirm that you want to install ' + pkg);
+      if (prompt == true){
+          xen.apps.install(pkg)
+      }
+    }
+    }
+  
+  }
+  
   
 }
