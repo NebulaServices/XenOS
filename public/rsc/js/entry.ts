@@ -3,34 +3,36 @@
 window.__XEN_WEBPACK = { core: {}, html: {} };
 
 
-
 // Core
-var FileSystemComponent = require("./vfs.ts");
-var SettingsComponent = require("./settings.ts");
-var DockComponent = require("./dock.js");
-var LoggerSystemComponent = require("./core/logger.js");
-var AppManagerComponent = require("./core/AppManager.js");
-var AppLoaderComponent = require("./core/AppLoader.js");
-var BrowserTool = require("./core/BrowserTool.js");
-var NotificationComponent = require("./core/NotificationComponent.js");
-var NotificationComponent = require("./core/System.js");
-var ErrorComponent = require("./core/ErrorManager.js");
-var WindowManager = require("./core/WindowManager.js");
-var MotherBoardComponent = require("./x86.js");
-var TerminalBoard = require("./xterminal.js");
-var MotherBoardComponent = require("./core.js");
+var checkup = require('./checkup.js')
+var FileSystemComponent = require("./vfs");
+var SettingsComponent = require("./settings");
+var DockComponent = require("./dock");
+var LoggerSystemComponent = require("./core/logger");
+var AppManagerComponent = require("./core/AppManager");
+var AppLoaderComponent = require("./core/AppLoader");
+var BrowserTool = require("./core/BrowserTool");
+var NotificationComponent = require("./core/NotificationComponent");
+var NotificationComponent = require("./core/System");
+var ErrorComponent = require("./core/ErrorManager");
+var WindowManager = require("./core/WindowManager");
+var MotherBoardComponent = require("./x86");
+var TerminalBoard = require("./xterminal");
+var DesktopComponent = require('./core/Desktop');
+
+var MotherBoardComponent = require("./core");
 
 // Frameworks 
 
 
 // After
-var LeaderComponent = require("./index.js");
-var SetupComponent = require("./setup.js");
-var MarkupOrganizer = require("./markup.js");
-var BatteryComponent = require("./battery.js");
-var dragComponent = require("./draggable.js");
+var LeaderComponent = require("./index");
+var SetupComponent = require("./setup");
+var MarkupOrganizer = require("./markup");
+var BatteryComponent = require("./battery");
+var dragComponent = require("./draggable");
 
-var PreloadComponent = require("./preload.js");
+var PreloadComponent = require("./preload");
 
 navigator.serviceWorker.register("/sw.js", {
 	scope: "/",

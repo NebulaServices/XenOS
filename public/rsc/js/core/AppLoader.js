@@ -150,7 +150,50 @@ function() {
     xen.windowManager.modWin(this.name, "child_processes", location);
     xen.system.register(childName, "0", "0", location);
   }
+  launch(address){
+    xen.windowManager.modWin(this.name, "opener", true);
+    try {
+     xen.apps.launch(address)
+    } catch (e){
+      console.log(e)
+    }
 
+  }
+  requestFileSystemPermission(){
+    const flag = this.name + "_permission_FS";
+    console.log(flag);
+    var permCheck = localStorage.getItem(flag);
+      if (permCheck == null || permCheck == undefined || permCheck == false) {
+          const requestMessage = confirm(
+        this.name +
+          " Wants permission to access Filesystem. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"
+      );
+      if (requestMessage == true) {
+        console.log("Permission granted");
+        localStorage.setItem(flag, "true");
+        
+      }
+      
+      }
+  }
+  writeFile(name, cont){
+      const flag = this.name + "_permission_FS";
+     var permCheck = localStorage.getItem(flag);
+      if (permCheck == null || permCheck == undefined || permCheck == false) {
+        return
+      } else {
+         xen.fs.writeFile(name, cont)
+      }
+   
+  }
+readFile(file){
+  var result; 
+ xen.fs.readFile(file).then((m) => {
+   result = m;
+    return result;
+})
+  return result;
+}
   requestModifySetting(settingFlag, setting) {
     const flag = this.name + "_permission_settingF";
     console.log(flag);

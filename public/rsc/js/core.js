@@ -1,5 +1,7 @@
 // OS MotherBoard API (asus z790)
 window.__XEN_WEBPACK.core.OS = class OS {
+  Native = a => Boolean(a.match(/^Xen\//g));
+  
 	constructor() {
 		this.fs = new window.__XEN_WEBPACK.core.VFS();
 		this.windowManager = new window.__XEN_WEBPACK.WindowManager();
@@ -15,6 +17,7 @@ window.__XEN_WEBPACK.core.OS = class OS {
     this.x86 = new window.__XEN_WEBPACK.core.x86EngineComponent();
     this.terminal = new window.__XEN_WEBPACK.core.TerminalEngineComponent();
     this.error = new window.__XEN_WEBPACK.core.ErrorComponent();
+    this.desktop = new window.__XEN_WEBPACK.core.DesktopComponent(this.fs);
     this.information = {"version":0.8, "releaseName":"solace"};
 	}
 };

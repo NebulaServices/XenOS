@@ -9,6 +9,10 @@ const keyBindMenu = document.getElementById("keybinds");
 const finalButton = document.getElementById("doneButtonFinal");
 const setupStatus = localStorage.getItem("setup_status");
 
+
+
+
+
 // Cryptography
 var CryptoJS = require("crypto-js");
 

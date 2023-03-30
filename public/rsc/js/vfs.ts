@@ -25,7 +25,7 @@ function createObject(db) {
 
 function saveFile(db, file, content) {
 	return new Promise(async resolve => {
-    try {await remove(file);} catch(e) {};
+    try {await remove(file);} catch(e) {console.log(e)};
 			db
 				.transaction("main", "readwrite")
 				.objectStore("main")
@@ -95,6 +95,7 @@ async function remove(file) {
 	var obj = await getObject(db.result);
 
 	var all = await getAll(obj);
+  console.log(all.find(e=>e.key==file))
 	var done = await deleteObj(obj, all.find(e => e.key == file).id);
 
 	return true;
@@ -131,8 +132,9 @@ async function readdir(dir) {
 	return all.filter(e=>e.dir==dir).map(e=>e.key);
 }
 
-function getDir(db, name) {
+function getDir(name) {
 	return new Promise(async resolve => {
+    var db = await openAsync('db-fs', false);
 		var obj = await getObject(db);
 		var all = await getAll(obj);
 		var data = {};
@@ -150,7 +152,7 @@ function getDir(db, name) {
 	});
 }
 
-window.__XEN_WEBPACK.core.VFS = class {
+class VFS {
 	constructor() {}
 
 	exists = exists;
@@ -161,4 +163,15 @@ window.__XEN_WEBPACK.core.VFS = class {
   readdir = readdir;
 	getStorageData = space;
 	removeFile = remove;
+  dir = getDir
 };
+
+class Directory extends VFS {
+  constructor(files) {
+    super();
+
+    this.getStorageData = null;
+  }
+}
+
+window.__XEN_WEBPACK.core.VFS = VFS;

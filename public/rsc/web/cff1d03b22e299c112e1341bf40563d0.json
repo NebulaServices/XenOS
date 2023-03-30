@@ -1,0 +1,10 @@
+{
+  "name": "Nebula",
+  "assets": ["manifest.json", "app.js", "./r/nebulamain.js","./r/uv.config.js","./r/uv.bundle.js", "index.html", "options.html","main.css", "icon.png"],
+  "entry": "app.js",
+  "type": "app",
+  "repository": "https://github.com/NebulaServices/XenOS",
+  "permissions": [],
+  "icon": "./icon.png",
+  "version": "0.7"
+}

@@ -333,6 +333,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
 
     master.innerHTML = `
       <div class="start-over" style="height:0px">
+        <button class="start-go"><svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path d="M221.09 64a157.09 157.09 0 10157.09 157.09A157.1 157.1 0 00221.09 64z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M338.29 338.29L448 448"/></svg></button>  
         <div class="start-left">${apps.map(e=>`<div class="start-app" data-app="${e.id}"><img class="start-app-icon" src="${path.join(`/apps/${e.id}/`, e.icon)}">${e.name}</div>`).join('\n')||'No Apps'}</div>
         <div class="start-right">press any key to search</div>
       </div>
@@ -352,6 +353,10 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
         window.xen.apps.launch(el.dataset.app);
       }
     });
+
+    master.querySelector('.start-go').onclick = function(e) {
+      that.searchHandler(new KeyboardEvent('keyup', {key: ' '}));
+    }
 
     return master;
   }
@@ -458,6 +463,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
     var that = this;
     
     document.querySelector('.start-over').style.opacity = '0';
+    document.querySelector('.start-search').style.visibility = 'visible';
 
     document.querySelector('.start-back').onclick = function(e) {
       that.search = false;
@@ -467,6 +473,7 @@ window.__XEN_WEBPACK.core.DockComponent = class DockComponent {
         document.querySelector('.start-over').style.opacity = '1';
 
         document.querySelector('.start-results').innerHTML = '';
+        document.querySelector('.start-search').style.visibility = 'hidden';
         document.querySelector('.start-input').value = '';
       }, 80);
     }

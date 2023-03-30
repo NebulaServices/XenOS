@@ -1,0 +1,11 @@
+{
+  "name": "Apps",
+  "assets": ["manifest.json", "app.js", "static/index.html", "static/script.js", "static/build.css", "icon.png"],
+  "entry": "app.js",
+  "type": "app",
+  "repository": "none",
+  "permissions": ["apps"],
+  "icon": "./icon.png",
+  "version": "0.4",
+  "description": "XenOS Official App Store"
+}

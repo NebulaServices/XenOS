@@ -1,0 +1,10 @@
+{
+  "name": "Settings",
+  "assets": ["manifest.json", "app.js", "main.html", "script.js", "style.css", "icon.png", "bg2.jpeg", "fruity-bg.png"],
+  "entry": "app.js",
+  "type": "app",
+  "permissions": [],
+  "version": "1.6",
+  "icon": "./icon.png",
+  "description": "XenOS Official Settings App"
+}

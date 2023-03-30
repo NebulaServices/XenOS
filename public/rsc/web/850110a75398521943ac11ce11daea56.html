@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" class="w-full h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Appstore</title>
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="build.css" />
+  </head>
+  <body class="w-full h-full text-white bg-neutral-900 py-12 px-16">
+    <!-- Header -->
+    <nav class="w-full flex justify-between items-center">
+      <h1 class="text-4xl font-bold mb-4">Featured</h1>
+      <form action="search.html" method="GET">
+        <input placeholder="Search Apps" name="q" class="bg-neutral-900 focus:outline-0 border-b py-1 px-2 text-md" />
+      </form>
+    </nav>
+
+    <!-- Featured -->
+    <section>
+      <div class="w-full aspect-[5/2] rounded-md shadow-2xl overflow-hidden">
+        <div class="relative h-full w-full rounded-md">
+          <div class="absolute w-full h-full bg-transparent"></div>
+          <div
+            class="absolute w-full h-full bg-neutral-800 animate-pulse"
+            id="featuredBackground"
+          ></div>
+          <div class="absolute w-full bottom-0 p-5 flex items-center justify-between">
+            <div>
+              <h1 class="text-3xl font-bold mb-2" id="featuredTitle"></h1>
+              <p id="featuredDescription"></p>
+            </div>
+            <div>
+            <div class="flex-1 flex justify-end items-end" id="featuredInstallButton">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Explore -->
+    <section>
+      <h1 class="text-4xl font-bold my-4">Explore</h1>
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+        id="exploreContainer"
+      >
+      </div>
+    </section>
+
+    <section class="pb-5 pt-24 w-full text-center">
+      XenOS App Store
+    </section>
+  </body>
+</html>

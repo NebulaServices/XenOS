@@ -1,0 +1,16 @@
+{
+  "name": "store",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "dev": "tailwind -i static/root.css -o static/build.css --watch",
+    "build": "tailwind -i static/root.css -o static/build.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tailwindcss": "^3.2.7"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Welcome to XenOS",
+  "assets": ["manifest.json", "welcome.html", "style.css", "icon.png", "fb.png"],
+  "file": "welcome.html",
+  "type": "file",
+  "permissions": [],
+  "icon": "./icon.png",
+  "version": "0.4"
+}

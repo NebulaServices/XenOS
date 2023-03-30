@@ -1,0 +1,11 @@
+{
+  "name": "Notepad",
+  "assets": ["manifest.json", "main.js", "app.js", "index.html", "icon.png"],
+  "entry": "main.js",
+  "type": "app",
+  "repository": "none",
+  "permissions": ["apps"],
+  "icon": "./icon.png",
+  "version": "1.2",
+  "description": "XenOS Official Notepad App"
+}

@@ -6,6 +6,9 @@ window.__XEN_WEBPACK.core.System = class System {
 	}
 
 	begin() {
+    
+
+    
 		console.log("Initializing XenOS");
 
 		console.log("Getting Windows");

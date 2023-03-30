@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Settings</title>
+		<link href="./style.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<div class="leftPanel">
+			<div class="previews">
+				<h4 class="title">Desktop Background</h4>
+				<img src="fruity-bg.png" backgroundPreview>
+			</div>
+      <hr width='201px'> 
+			<div class="viewSelectors">
+				<div class="viewSelector active">Personalization</div>
+				<div class="viewSelector">Permissions</div>
+				<div class="viewSelector">filler 1</div>
+				<div class="viewSelector">filler 2</div>
+			</div>
+		</div>
+
+    
+		<div class="rightPanel">
+			<div view="theme" hiddenCat="false" data-theme="default">
+				<h3 class="viewTitle">Background</h3>
+        <div class='themePreviewContainer'> 
+				<img id='FruityTheme' theme="1" src="./fruity-bg.png" class="themePreview">
+          
+        </div> 
+        <div class='themePreviewContainer' data-theme="forest">
+				<img id="ForestTheme" theme="2" src="./bg2.jpeg" class="themePreview">
+        </div>
+			</div>
+			<div view="permissions" hiddenCat="true">
+				<h3>To be filled</h3>
+			</div>
+		</div>
+    <script src="script.js"> 
+    </script>
+	</body>
+</html>

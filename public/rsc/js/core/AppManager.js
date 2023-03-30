@@ -56,6 +56,32 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
     return true;
   }
 
+  async save() {
+    if (!await xen.fs.exists('__APPS.xen')) await xen.fs.writeFile('__APPS.xen', '[]')
+    var data = await xen.fs.readFile('__APPS.xen', true);
+
+    var apps = await (await fetch('/apps/data')).json();
+
+    for (var app of apps) {
+      data.push(app);
+    }
+
+    await xen.fs.writeFile('__APPS.xen', JSON.stringify(data));
+
+    return true;
+  }
+
+  async removeSave(app) {
+    if (!await xen.fs.exists('__APPS.xen')) await xen.fs.writeFile('__APPS.xen', '[]')
+    var data = await xen.fs.readFile('__APPS.xen', true);
+
+    data.splice(data.indexOf(app), 1);
+
+    await fs.writeFile('__APPS.xen', JSON.stringify(data));
+
+    return true;
+  }
+
   async start() {
     var data = [];
     
@@ -75,9 +101,23 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
       }
     };
 
+    await this.save();
+
+    for (var app of (await xen.fs.readFile('__APPS.xen', true))) {
+      try {
+        var req = await (await fetch('/apps/'+app+'/manifest.json')).json();
+      } catch {
+        this.install(app);
+      }
+    }
+
     this.apps.appsInstalled = data;
 
     return true;
+  }
+
+  forceInstall() {
+    return this.#install(...arguments);
   }
 
 	#install(author, proj, file, content, entry, log) {
@@ -115,12 +155,32 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
     return;
   }
 
+  async #nativeInstall(
+    pkg,
+    repo,
+    log
+  ) {
+    const manager = require('../apps/manager');
+
+    try {
+      await manager.cache(pkg);
+    } catch(e) {
+      console.log(e);
+      await this.install(pkg, repo, log, true);
+    }
+  }
+
 	install(
 		pkg,
 		repo = "https://xenos-app-repository.enderkingj.repl.co",
-		log = true
+		log = true,
+    native = false
 	) {
 		if (log) console.log(`Installing ${pkg}`);
+
+    console.log(xen.Native(pkg), pkg, native);
+
+    if (!native && xen.Native(pkg)) return this.#nativeInstall(...arguments);
 
     var that = this;
 
@@ -215,6 +275,8 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 			if (log) loaderBegin(`SUCCESS: ${meta.name} DOWNLOADED`, "7");
 			clearIntervals();
 
+      await that.save();
+
 			return resolve(true);
 		});
 	}
@@ -225,6 +287,10 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 		log = true
 	) {
 		if (!repo) repo = "https://xenos-app-repository.enderkingj.repl.co";
+
+    if (xen.Native(pkg)) {
+      return await this.install(pkg, repo, log);
+    }
 
 		try {
 			var ver = (await this.getMeta(pkg)).version;
@@ -237,6 +303,8 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 					}),
 				})
 			).text();
+
+      if (ver == currVer) await this.save();
 
 			if (ver == currVer) return true;
 		} catch(e) {console.log(e)}
@@ -364,6 +432,8 @@ console.log(pkg + ' updating')
     });
 
     await xen.awaitAll(...promises);
+
+    await xen.apps.removeSave(pkg);
 
     await xen.apps.start();
 

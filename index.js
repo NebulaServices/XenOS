@@ -19,14 +19,24 @@ try {
       module: {
         rules: [
           {
+            test: /\?raw$/i,
+            use: 'raw-loader',
+          },
+          {
             test: /\.ts?$/,
             use: "ts-loader",
+            resourceQuery: { not: [/raw/] },
             exclude: /node_modules/,
+          },
+          {
+            test: /\.html$/i,
+            resourceQuery: { not: [/raw/] },
+            loader: "html-loader",
           },
         ],
       },
       resolve: {
-        extensions: [".ts", ".js"],
+        extensions: [".ts", ".js", ".html"],
       },
       output: {
         path: path.join(__dirname, "public/rsc/web/"),

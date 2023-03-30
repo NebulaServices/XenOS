@@ -319,6 +319,12 @@ document.addEventListener('userActive', function(){
   document.title = _title;
 })
 
+Object.prototype.toString = function (x, y) {
+  return JSON.stringify(this, x, y);
+}
+
+xen.webpack = {require: __webpack_require__, modules: __webpack_modules__, cache: __webpack_module_cache__};
+
 
 
 // Interceptors
