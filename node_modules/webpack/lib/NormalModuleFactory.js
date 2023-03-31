@@ -85,6 +85,7 @@ const EMPTY_GENERATOR_OPTIONS = {};
 const EMPTY_ELEMENTS = [];
 
 const MATCH_RESOURCE_REGEX = /^([^!]+)!=!/;
+const LEADING_DOT_EXTENSION_REGEX = /^[^.]/;
 
 const loaderToIdent = data => {
 	if (!data.options) {
@@ -841,10 +842,10 @@ class NormalModuleFactory extends ModuleFactory {
 						(err2, hints) => {
 							if (err2) {
 								err.message += `
-An fatal error happened during resolving additional hints for this error: ${err2.message}`;
+A fatal error happened during resolving additional hints for this error: ${err2.message}`;
 								err.stack += `
 
-An fatal error happened during resolving additional hints for this error:
+A fatal error happened during resolving additional hints for this error:
 ${err2.stack}`;
 								return callback(err);
 							}
@@ -852,6 +853,25 @@ ${err2.stack}`;
 								err.message += `
 ${hints.join("\n\n")}`;
 							}
+
+							// Check if the extension is missing a leading dot (e.g. "js" instead of ".js")
+							let appendResolveExtensionsHint = false;
+							const specifiedExtensions = Array.from(
+								resolver.options.extensions
+							);
+							const expectedExtensions = specifiedExtensions.map(extension => {
+								if (LEADING_DOT_EXTENSION_REGEX.test(extension)) {
+									appendResolveExtensionsHint = true;
+									return `.${extension}`;
+								}
+								return extension;
+							});
+							if (appendResolveExtensionsHint) {
+								err.message += `\nDid you miss the leading dot in 'resolve.extensions'? Did you mean '${JSON.stringify(
+									expectedExtensions
+								)}' instead of '${JSON.stringify(specifiedExtensions)}'?`;
+							}
+
 							callback(err);
 						}
 					);
