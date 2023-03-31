@@ -31,7 +31,7 @@ var catter = document.getElementById('errorCatter')
 	constructor() {
     var that = this; // error logging !!!!!!!!
     
-    window.onerror = that.callback;
+    /*window.onerror = that.callback;
 
     [...document.all].forEach(el => {
       el.onerror = that.callback;
@@ -43,6 +43,6 @@ var catter = document.getElementById('errorCatter')
       e.returnValue = true;
       
       throw e.reason.stack;
-    }
+    }*/
   }
 };

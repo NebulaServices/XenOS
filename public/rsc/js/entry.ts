@@ -30,6 +30,7 @@ var LeaderComponent = require("./index");
 var SetupComponent = require("./setup");
 var MarkupOrganizer = require("./markup");
 var BatteryComponent = require("./battery");
+var BatteryComponent = require("./contextmenu");
 var dragComponent = require("./draggable");
 
 var PreloadComponent = require("./preload");

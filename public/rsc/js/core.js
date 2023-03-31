@@ -18,6 +18,7 @@ window.__XEN_WEBPACK.core.OS = class OS {
     this.terminal = new window.__XEN_WEBPACK.core.TerminalEngineComponent();
     this.error = new window.__XEN_WEBPACK.core.ErrorComponent();
     this.desktop = new window.__XEN_WEBPACK.core.DesktopComponent(this.fs);
+    this.ContextMenu = window.__XEN_WEBPACK.core.ContextMenu;
     this.information = {"version":0.8, "releaseName":"solace"};
 	}
 };

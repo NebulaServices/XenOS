@@ -26,7 +26,7 @@ if (navigator.getBattery)
       }
       
 			addEventListener("DOMContentLoaded", event => {
-				if (batToNum(xen.system.battery()) < 15 && !charging) {
+				if (batToNum(xen.system.battery()) < 10 && !charging) {
 					bar.style.width = calculateBatWid(xen.system.battery());
 					bar.style.fill = "#ff4040";
 

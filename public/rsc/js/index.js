@@ -325,7 +325,3 @@ Object.prototype.toString = function (x, y) {
 
 xen.webpack = {require: __webpack_require__, modules: __webpack_modules__, cache: __webpack_module_cache__};
 
-
-
-// Interceptors
-

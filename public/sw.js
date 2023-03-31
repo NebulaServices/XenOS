@@ -194,6 +194,7 @@ console.log(e);
 	const url = `/apps/${info.author}/${info.project}/${file}`;
 
 	caches.open("apps").then(cache => {
+    console.log(url, content)
 		cache.put(
 			url,
 			new Response(content, {

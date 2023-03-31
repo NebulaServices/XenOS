@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+const path = require('path-browserify');
+
 function openAsync(...args) {
 	return new Promise(async resolve => {
 		var req = indexedDB.open(args[0]);
@@ -148,22 +150,25 @@ async function readdir(dir) {
 
 function getDir(name) {
 	return new Promise(async resolve => {
-    var db = await openAsync('db-fs', false);
-		var obj = await getObject(db);
+    var [db, event] = await openAsync('db-fs', false);
+		var obj = await getObject(db.result);
 		var all = await getAll(obj);
 		var data = {};
 
-		all.forEach(({ key }) => {
-			if (!key.startsWith(name)) return;
-			if (key.split("/").length > 1) {
-				var split = key.split("/")[0];
-				data[split] = [];
-				console.log(data);
-			}
-		});
-
-		resolve(data);
+		resolve(new Directory(name));
 	});
+}
+
+function mkdir(dir) {
+  return new Promise(async resolve => {
+  	var [db, event] = await openAsync("db-dirs", false);
+  
+  	var obj = await getObject(db.result);
+  
+    console.log(obj)
+
+    resolve();
+  });
 }
 
 class VFS {
@@ -177,15 +182,26 @@ class VFS {
   readdir = readdir;
 	getStorageData = space;
 	removeFile = remove;
-  dir = getDir
+  dir = getDir;
+  mkdir = mkdir;
 };
 
 class Directory extends VFS {
-  constructor(files) {
+  constructor(path) {
     super();
+    
+    this.path = path;
 
     this.getStorageData = null;
+    var that = this;
+
+    this.dir = new Proxy(this.dir, {
+      apply(t, g, a) {
+        a[0] = path.join(that.path, a[0]);
+        return Reflect.apply(t, g, a);
+      }
+    })
   }
 }
 
-window.__XEN_WEBPACK.core.VFS = VFS;
+window.__XEN_WEBPACK.core.VFS = new Directory('/user/');

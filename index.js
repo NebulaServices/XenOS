@@ -11,7 +11,7 @@ console.log("Welcome to XenOS Server");
 try {
   var Bundle = webpack(
     {
-      mode: "none",
+      mode: "development",
       entry: {
         web: path.join(__dirname, "public/rsc/js/entry.ts"),
         communicator: path.join(__dirname, "public/rsc/js/inject/index.js"),

@@ -62,7 +62,7 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
     var apps = await (await fetch('/apps/data')).json();
 
     for (var app of apps) {
-      data.push(app);
+      if (!data.includes(app)) data.push(app);
     }
 
     await xen.fs.writeFile('__APPS.xen', JSON.stringify(data));
