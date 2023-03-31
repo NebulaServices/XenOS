@@ -4,14 +4,16 @@ const path = require("path");
 const request = require("request");
 const http = require("node:http");
 const createBareServer = require("@tomphttp/bare-server-node");
-const PORT = '3000'
+let PORT = '3000'
 
 console.log("Welcome to XenOS Server");
-
+if(Number(process.env.NODE_APP_INSTANCE) >= 0){
+PORT = 3000 + Number(process.env.NODE_APP_INSTANCE)
+}
 try {
   var Bundle = webpack(
     {
-      mode: "none",
+      mode: "production",
       entry: {
         web: path.join(__dirname, "public/rsc/js/entry.ts"),
         communicator: path.join(__dirname, "public/rsc/js/inject/index.js"),
