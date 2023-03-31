@@ -57,9 +57,8 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
   }
 
   async save() {
-    if (!await xen.fs.exists('__APPS.xen')) await xen.fs.writeFile('__APPS.xen', '[]')
     var data = await xen.fs.readFile('__APPS.xen', true);
-
+    
     var apps = await (await fetch('/apps/data')).json();
 
     for (var app of apps) {
@@ -72,7 +71,6 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
   }
 
   async removeSave(app) {
-    if (!await xen.fs.exists('__APPS.xen')) await xen.fs.writeFile('__APPS.xen', '[]')
     var data = await xen.fs.readFile('__APPS.xen', true);
 
     data.splice(data.indexOf(app), 1);
@@ -100,6 +98,8 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
         console.log(e);
       }
     };
+
+    if (!await xen.fs.exists('__APPS.xen')) await xen.fs.writeFile('__APPS.xen', '[]');
 
     await this.save();
 

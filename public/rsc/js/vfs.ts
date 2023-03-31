@@ -25,8 +25,15 @@ function createObject(db) {
 
 function saveFile(db, file, content) {
 	return new Promise(async resolve => {
-    try {await remove(file);} catch(e) {console.log(e)};
-			db
+      try {
+        async function iterate() {
+          await remove(file);
+          await iterate();
+        }
+        await iterate();
+      } catch(e) {};
+			
+      db
 				.transaction("main", "readwrite")
 				.objectStore("main")
 				.add({ key: file, body: content, dir: '/' })
@@ -66,7 +73,13 @@ async function save(name, content) {
 
 	//if (all.find(e => e.key == name)) return console.log("abort save");
 
-	console.log(all);
+  try {
+    async function iterate() {
+      await remove(name);
+      await iterate();
+    }
+    await iterate();
+  } catch(e) {};
 
 	var obj = await saveFile(event.target.result, name, content);
 
@@ -95,7 +108,8 @@ async function remove(file) {
 	var obj = await getObject(db.result);
 
 	var all = await getAll(obj);
-  console.log(all.find(e=>e.key==file))
+  console.log(all.find(e => e.key == file));
+  console.log(all);
 	var done = await deleteObj(obj, all.find(e => e.key == file).id);
 
 	return true;

@@ -26,7 +26,7 @@ module.exports = {
           mod = await (await fetch(mod)).blob();
         }
 
-        console.log(file, mod);
+        console.log(file)
         
         await this.send(resource, file, mod instanceof Blob ? mod : new Blob([mod], {type: mime.getType(file)}));
 
