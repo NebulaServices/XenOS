@@ -2,61 +2,63 @@
 <html>
 	<head>
       <script defer integrity="sha256-9NsIanf8jSVFuiPetrZ1jfLPoMPzZuPz2w3GWvQFgIU="> 
-        function callback(error){
-          
-             const loadTitle = document.getElementById('os-pre-text')
-const preloadScreen = document.getElementById('os-pre')
-const loadDesc = document.getElementById('os-pre-text2')
-var catter = document.getElementById('errorCatter')
-const progress = document.getElementById('pbarCont')
- const pImg = document.getElementById('preloadImg')
-          
-console.log(catter)
-          console.log(loadDesc)
-          console.log(loadTitle)
+      function callback(error) {
+  const loadTitle = document.getElementById("os-pre-text");
+  const preloadScreen = document.getElementById("os-pre");
+  const loadDesc = document.getElementById("os-pre-text2");
+  var catter = document.getElementById("errorCatter");
+  const progress = document.getElementById("pbarCont");
+  const pImg = document.getElementById("preloadImg");
 
+  console.log(catter);
+  console.log(loadDesc);
+  console.log(loadTitle);
 
-   console.log(error) 
-progress.remove()
-pImg.remove()
-  loadTitle.innerHTML = 'XenOS ran into an error.'
-  loadDesc.innerHTML = `Sorry, XenOS ran into an error that may cause Xen to not run as intended, or at all, because of a problem we encountered during startup. `
-  catter.style = ''
+  console.log(error);
+  progress.remove();
+  pImg.remove();
+  loadTitle.innerHTML = "XenOS ran into an error.";
+  loadDesc.innerHTML = `Sorry, XenOS ran into an error that may cause Xen to not run as intended, or at all, because of a problem we encountered during startup. `;
+  catter.style = "";
 
   catter.innerText += ` \n 
   Error information: \n
   Type: Termination \n Unable to Init: True \n Error:\n${error}
-  \n`
+  \n`;
 
-  loadDesc.style = 'animation:none; font-size:13px; color: white;    margin-top: -10px;'
-  loadTitle.style = 'animation:none;color: white; '
-  preloadScreen.style.background = '#171717'
+  loadDesc.style =
+    "animation:none; font-size:13px; color: white;    margin-top: -10px;";
+  loadTitle.style = "animation:none;color: white; ";
+  preloadScreen.style.background = "#171717";
+}
 
-        }
-   
-  window.onerror = callback;
+window.onerror = callback;
 
-    [...document.all].forEach(el => {
-      el.onerror = callback;
-    });
+[...document.all].forEach((el) => {
+  el.onerror = callback;
+});
 
-    window.onunhandledrejection = (e) => {
-      e.preventDefault();
+window.onunhandledrejection = (e) => {
+  e.preventDefault();
 
-      e.returnValue = true;
-      
-      throw e.reason.stack;
-    }
+  e.returnValue = true;
+
+  throw e.reason.stack;
+};
+
       </script>
     <script integrity="sha256-9NsIanf8jSVFuiPetrZ1jfLPoMPzZuPz2w3GWvQFgIU=">
-	[...document.querySelectorAll('script, link')].forEach(e=>e.onerror = (e) => alert(e));
-	if (navigator.serviceWorker.controller === null) {
+	[...document.querySelectorAll("script, link")].forEach(
+  (e) => (e.onerror = (e) => alert(e))
+);
+if (navigator.serviceWorker.controller === null) {
   navigator.serviceWorker.register("/sw.js", {
-  	scope: "/",
+    scope: "/",
   });
 
-  navigator.serviceWorker.ready.then(e=>location.reload());
+  navigator.serviceWorker.ready.then((e) => location.reload());
 }
+
 </script>
     <!--<link href="./rsc/font/IBMPlexSans.css" rel="stylesheet" type="text/css"/>
     <link href="./rsc/font/Inter.css" rel="stylesheet" type="text/css"/
@@ -257,16 +259,16 @@ pImg.remove()
 		</div>
 		<script>
 			// This is only here for testing and should be removed in production :)
-			function loadDebugScript() {
-				if (document.getElementById("eruda")) return;
-				var script = document.createElement('script'); 
-				script.src='//cdn.jsdelivr.net/npm/eruda'; 
-				script.id = "eruda"
-				document.body.appendChild(script); 
-				script.onload = function () {
-					eruda.init();
-				}
-			}
+		function loadDebugScript() {
+  if (document.getElementById("eruda")) return;
+  var script = document.createElement("script");
+  script.src = "//cdn.jsdelivr.net/npm/eruda";
+  script.id = "eruda";
+  document.body.appendChild(script);
+  script.onload = function () {
+    eruda.init();
+  };
+}
 		</script>
 		<script src="./rsc/web/web.bundle.js"></script>
     

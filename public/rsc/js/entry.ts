@@ -3,7 +3,6 @@
 window.__XEN_WEBPACK = { core: {}, html: {} };
 
 // Core
-var checkup = require("./checkup.js");
 var FileSystemComponent = require("./vfs");
 var SettingsComponent = require("./settings");
 var DockComponent = require("./dock");
