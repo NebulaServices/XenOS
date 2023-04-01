@@ -19,10 +19,6 @@ try {
       module: {
         rules: [
           {
-            test: /\?raw$/i,
-            use: 'raw-loader',
-          },
-          {
             test: /\.ts?$/,
             use: "ts-loader",
             resourceQuery: { not: [/raw/] },

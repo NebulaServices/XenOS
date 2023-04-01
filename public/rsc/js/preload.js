@@ -26,6 +26,8 @@ var timingFlag = document.currentScript.src.endsWith('?flg');
   // Proxy
   //await xen.apps.update("Proxies/Aero", undefined, false);
 
+  await xen.fs.start();
+
   await xen.apps.update("Xen/Welcome", undefined, false);
   await xen.apps.start()
 
@@ -58,8 +60,10 @@ var timingFlag = document.currentScript.src.endsWith('?flg');
     preloader.style.transition = '1s ease-in-out';
     preloader.style.opacity = 0;
     desk.style.transition = "all .5s ease 0s;";
-
+ let event = new CustomEvent('FinishLoad', {});
+      document.dispatchEvent(event);
     setTimeout(() => {
+     
       preloader.style.display = "none";
     }, 1000);
   }, (timingFlag ? 0 : 1300));
@@ -174,9 +178,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 
-function _e() {
-}
-
 function pre_gath() {
   const fs = xen.fs
   const that = this;
@@ -191,6 +192,7 @@ function pre_gath() {
 }
 pre_gath();
 
+// unused
 function __ViewFile() {
   xen.fs.readFile('system.xen')
     .then((fileContent) => {

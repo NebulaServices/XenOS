@@ -1,4 +1,4 @@
-const path = require('path-browserify');
+/*const path = require('path-browserify');
 const mime = require('mime');
 
 module.exports = {
@@ -35,4 +35,4 @@ module.exports = {
 
     return;
   }
-}
+}*/

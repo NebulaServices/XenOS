@@ -14,6 +14,12 @@ document.addEventListener("keydown", event => {
 	}
 });
 
+const bar = document.getElementById('preload_bar')
+document.addEventListener('FinishLoad', function(e){
+  console.log('done?')
+  bar.style = `animation: loadFull 4s linear;`
+})
+
 document.addEventListener("DOMContentLoaded", () => {
 
 

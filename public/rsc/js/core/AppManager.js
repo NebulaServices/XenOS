@@ -178,9 +178,9 @@ window.__XEN_WEBPACK.core.AppManagerComponent = class AMC {
 	) {
 		if (log) console.log(`Installing ${pkg}`);
 
-    console.log(xen.Native(pkg), pkg, native);
+    //console.log(xen.Native(pkg), pkg, native);
 
-    if (!native && xen.Native(pkg)) return this.#nativeInstall(...arguments);
+    //if (!native && xen.Native(pkg)) return this.#nativeInstall(...arguments);
 
     var that = this;
 
