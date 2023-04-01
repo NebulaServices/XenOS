@@ -2,9 +2,8 @@
 
 window.__XEN_WEBPACK = { core: {}, html: {} };
 
-
 // Core
-var checkup = require('./checkup.js')
+var checkup = require("./checkup.js");
 var FileSystemComponent = require("./vfs");
 var SettingsComponent = require("./settings");
 var DockComponent = require("./dock");
@@ -18,12 +17,11 @@ var ErrorComponent = require("./core/ErrorManager");
 var WindowManager = require("./core/WindowManager");
 var MotherBoardComponent = require("./x86");
 var TerminalBoard = require("./xterminal");
-var DesktopComponent = require('./core/Desktop');
+var DesktopComponent = require("./core/Desktop");
 
 var MotherBoardComponent = require("./core");
 
-// Frameworks 
-
+// Frameworks
 
 // After
 var LeaderComponent = require("./index");
@@ -36,13 +34,13 @@ var dragComponent = require("./draggable");
 var PreloadComponent = require("./preload");
 
 navigator.serviceWorker.register("/sw.js", {
-	scope: "/",
+  scope: "/",
 });
 
-window.onbeforeunload = event => {
-	console.log("Attempted Close");
+window.onbeforeunload = (event) => {
+  console.log("Attempted Close");
 
-	event.preventDefault();
-	event.returnValue = false;
-	return false;
+  event.preventDefault();
+  event.returnValue = false;
+  return false;
 };

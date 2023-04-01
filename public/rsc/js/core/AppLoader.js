@@ -23,7 +23,7 @@ var appWin = class WIN {
         y: 10,
         allCloseQuit: true,
         focus: true,
-        modules: []
+        modules: [],
       },
       options
     );
@@ -46,10 +46,9 @@ var appWin = class WIN {
 
     this.el = el;
 
-    el.querySelector("iframe").addEventListener('load', 
-function() {
-      that.opts.modules.forEach(module => {
-        that.send('__XEN_MODULE_CONNECTION', {name: module});
+    el.querySelector("iframe").addEventListener("load", function () {
+      that.opts.modules.forEach((module) => {
+        that.send("__XEN_MODULE_CONNECTION", { name: module });
       });
     });
     this.registerMessages(el.querySelector("iframe").contentWindow);
@@ -77,32 +76,35 @@ function() {
     this.listeners.push([event, callback]);
   }
   send(event, ...data) {
-        this.el.querySelector("iframe").contentWindow.postMessage({
+    this.el.querySelector("iframe").contentWindow.postMessage({
       message: event,
       data: data,
     });
   }
 
   loadURL(url) {
-    return new Promise(resolve => {
-                  document.getElementById(this.name).querySelector("iframe").onload = function() {
-                    resolve();
-                  }
+    return new Promise((resolve) => {
+      document.getElementById(this.name).querySelector("iframe").onload =
+        function () {
+          resolve();
+        };
       document.getElementById(this.name).querySelector("iframe").src = url;
     });
   }
   loadFile(url) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var _path = path.join(this.path, url);
-  
+
       fetch(_path)
         .then((e) => e.text())
         .then((e) => {
-                  document.getElementById(this.name).querySelector("iframe").onload = function() {
-                    resolve();
-                  }
-          
-          document.getElementById(this.name).querySelector("iframe").src = _path;
+          document.getElementById(this.name).querySelector("iframe").onload =
+            function () {
+              resolve();
+            };
+
+          document.getElementById(this.name).querySelector("iframe").src =
+            _path;
         });
     });
   }
@@ -150,50 +152,46 @@ function() {
     xen.windowManager.modWin(this.name, "child_processes", location);
     xen.system.register(childName, "0", "0", location);
   }
-  launch(address){
+  launch(address) {
     xen.windowManager.modWin(this.name, "opener", true);
     try {
-     xen.apps.launch(address)
-    } catch (e){
-      console.log(e)
+      xen.apps.launch(address);
+    } catch (e) {
+      console.log(e);
     }
-
   }
-  requestFileSystemPermission(){
+  requestFileSystemPermission() {
     const flag = this.name + "_permission_FS";
     console.log(flag);
     var permCheck = localStorage.getItem(flag);
-      if (permCheck == null || permCheck == undefined || permCheck == false) {
-          const requestMessage = confirm(
+    if (permCheck == null || permCheck == undefined || permCheck == false) {
+      const requestMessage = confirm(
         this.name +
           " Wants permission to access Filesystem. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"
       );
       if (requestMessage == true) {
         console.log("Permission granted");
         localStorage.setItem(flag, "true");
-        
       }
-      
-      }
+    }
   }
-  writeFile(name, cont){
-      const flag = this.name + "_permission_FS";
-     var permCheck = localStorage.getItem(flag);
-      if (permCheck == null || permCheck == undefined || permCheck == false) {
-        return
-      } else {
-         xen.fs.writeFile(name, cont)
-      }
-   
+  writeFile(name, cont) {
+    const flag = this.name + "_permission_FS";
+    var permCheck = localStorage.getItem(flag);
+    if (permCheck == null || permCheck == undefined || permCheck == false) {
+      return;
+    } else {
+      xen.fs.writeFile(name, cont);
+    }
   }
-readFile(file){
-  var result; 
- xen.fs.readFile(file).then((m) => {
-   result = m;
+  readFile(file) {
+    var result;
+    xen.fs.readFile(file).then((m) => {
+      result = m;
+      return result;
+    });
     return result;
-})
-  return result;
-}
+  }
   requestModifySetting(settingFlag, setting) {
     const flag = this.name + "_permission_settingF";
     console.log(flag);
@@ -307,7 +305,7 @@ window.__XEN_WEBPACK.core.AppLoaderComponent = class ALC {
 	${script}
 })("${name}", "${path}", "${_name}");
       `);
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
   }

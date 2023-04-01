@@ -5,30 +5,30 @@ window.__XEN_WEBPACK.core.ContextMenu = class ContextMenu {
 
   assign(elementId, options) {
     const element = document.getElementById(elementId);
-    element.addEventListener('contextmenu', event => {
+    element.addEventListener("contextmenu", (event) => {
       event.preventDefault();
-      
+
       if (this.menu) {
         this.menu.remove();
       }
-      
-      const menu = document.createElement('div');
-      menu.className = 'context-menu';
+
+      const menu = document.createElement("div");
+      menu.className = "context-menu";
       this.menu = menu;
-      
+
       for (const [title, action] of Object.entries(options)) {
-        const item = document.createElement('div');
-        item.className = 'context-menu-item';
+        const item = document.createElement("div");
+        item.className = "context-menu-item";
         item.innerText = title;
-        item.addEventListener('click', () => {
+        item.addEventListener("click", () => {
           action();
           menu.remove();
         });
         menu.appendChild(item);
       }
-      
+
       document.body.appendChild(menu);
-      
+
       const rect = element.getBoundingClientRect();
       const menuRect = menu.getBoundingClientRect();
       const top = rect.top + event.clientY;
@@ -37,11 +37,11 @@ window.__XEN_WEBPACK.core.ContextMenu = class ContextMenu {
       menu.style.left = `${left}px`;
     });
 
-    document.addEventListener('click', () => {
+    document.addEventListener("click", () => {
       if (this.menu) {
         this.menu.remove();
         this.menu = null;
       }
     });
   }
-}
+};
