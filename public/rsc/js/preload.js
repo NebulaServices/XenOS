@@ -1,6 +1,10 @@
-const defaultWin = document.getElementById("defaultWindow");
+
 const desk = document.getElementById("os-desktop");
 var catter = document.getElementById("errorCatter");
+const lockscreen = document.getElementById("os-lockscreen");
+const preloader = document.getElementById("os-pre");
+var CryptoJS = require("crypto-js");
+var timingFlag = document.currentScript.src.endsWith("?flg");
 
 window.addEventListener("DOMContentLoaded", function () {
   console.log("looking for error");
@@ -13,61 +17,6 @@ window.addEventListener("DOMContentLoaded", function () {
   Agent: ${navigator.userAgent} 
   `;
 });
-
-window.__XEN_WEBPACK.html.defaultWin = defaultWin;
-window.__XEN_WEBPACK.html.desk = desk;
-var CryptoJS = require("crypto-js");
-
-var timingFlag = document.currentScript.src.endsWith("?flg");
-
-// Launch internal apps
-(async () => {
-  // Proxy
-  //await xen.apps.update("Proxies/Aero", undefined, false);
-
-  await xen.fs.start();
-
-  await xen.apps.update("Xen/Welcome", undefined, false);
-  await xen.apps.start();
-
-  await xen.awaitAll(
-    // Preload backgrounds
-    xen.settings.init(),
-
-    // Prepare internal apps
-
-    xen.apps.update("Xen/Settings", undefined, false),
-    xen.apps.update("Xen/notes", undefined, false),
-    xen.apps.update("Xen/Store", undefined, false),
-    xen.apps.update("Xen/Testflight", undefined, false),
-    xen.apps.update("Kleki/Kleki", undefined, false),
-    xen.apps.update("cohenerickson/Velocity", undefined, false)
-  );
-
-  // Load dock (Must be after others to ensure first load)
-  await xen.dock.loadNative();
-
-  // Detect Platform
-  xen.platform = await window.__XEN_WEBPACK.core.platform();
-
-  // Welcome the user :)
-  await window.xen.apps.launch("Xen/Welcome");
-  const lockscreen = document.getElementById("os-lockscreen");
-  const preloader = document.getElementById("os-pre");
-  setTimeout(
-    () => {
-      preloader.style.transition = "1s ease-in-out";
-      preloader.style.opacity = 0;
-      desk.style.transition = "all .5s ease 0s;";
-      let event = new CustomEvent("FinishLoad", {});
-      document.dispatchEvent(event);
-      setTimeout(() => {
-        preloader.style.display = "none";
-      }, 1000);
-    },
-    timingFlag ? 0 : 1300
-  );
-})();
 
 window.addEventListener("DOMContentLoaded", (event) => {
   function decodePassword(encodedPassword) {
@@ -189,6 +138,55 @@ window.addEventListener("DOMContentLoaded", (event) => {
     _lockScreen.style.display = "none";
   }
 });
+
+
+
+
+// Launch internal apps
+(async () => {
+  // Proxy
+  //await xen.apps.update("Proxies/Aero", undefined, false);
+
+  await xen.fs.start();
+
+  await xen.apps.update("Xen/Welcome", undefined, false);
+  await xen.apps.start();
+
+  await xen.awaitAll(
+    xen.settings.init(),
+    // Prepare internal apps
+    xen.apps.update("Xen/Settings", undefined, false),
+    xen.apps.update("Xen/notes", undefined, false),
+    xen.apps.update("Xen/Store", undefined, false),
+    xen.apps.update("Xen/Testflight", undefined, false),
+    xen.apps.update("Kleki/Kleki", undefined, false),
+    xen.apps.update("cohenerickson/Velocity", undefined, false)
+  );
+
+  // Load dock (Must be after others to ensure first load)
+  await xen.dock.loadNative();
+
+  // Detect Platform
+  xen.platform = await window.__XEN_WEBPACK.core.platform();
+
+  // Welcome the user :)
+  await window.xen.apps.launch("Xen/Welcome");
+  setTimeout(
+    () => {
+      preloader.style.transition = "1s ease-in-out";
+      preloader.style.opacity = 0;
+      desk.style.transition = "all .5s ease 0s;";
+      let event = new CustomEvent("FinishLoad", {});
+      document.dispatchEvent(event);
+      setTimeout(() => {
+        preloader.style.display = "none";
+      }, 1000);
+    },
+    timingFlag ? 0 : 1300
+  );
+})();
+
+
 
 function pre_gath() {
   const fs = xen.fs;
