@@ -1,0 +1,153 @@
+@import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap);
+
+@import url(https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@200&display=swap);
+
+@import url(https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap);
+
+:root {
+  --leftPanel-width: 270px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  color: #ffffff;
+  background: #1c1c1c;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.leftPanel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: var(--leftPanel-width);
+  background: #303030;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 6px;
+  resize: horizontal;
+}
+
+.previews {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: calc(100% - 6px);
+  position: relative;
+  padding-left: 6px;
+  padding-top: 6px;
+}
+
+.title {
+  z-index: 2;
+  width: max-content;
+}
+
+.rightPanel {
+  position: absolute;
+  left: var(--leftPanel-width);
+  top: 0;
+  height: 100%;
+  width: calc(100% - var(--leftPanel-width));
+}
+
+[backgroundPreview] {
+  width: calc(100% - 12px);
+  border-radius: 6px;
+}
+
+.viewSelectors {
+  position: relative;
+  padding-left: 6px;
+}
+
+.viewSelector {
+  font-weight: normal;
+  color: #d3d3d3;
+  cursor: pointer;
+  padding-bottom: 2px;
+  transition: 0.2s;
+}
+
+.viewSelector:hover {
+  color: #9f9f9f;
+}
+
+.viewSelector.active {
+  font-weight: bold;
+  color: #ffffff;
+  cursor: defalt;
+}
+
+[view] {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  transition: 200ms ease-in-out;
+  height: 100%;
+  overflow: auto;
+}
+
+[hiddenCat="false"] {
+  position: relative;
+  opacity: 1;
+  z-index: 1;
+}
+
+[hiddenCat="true"] {
+  position: relative;
+  opacity: 0;
+  z-index: -1;
+  height: 0;
+}
+
+[view="theme"] {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+}
+
+.viewTitle {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 6px;
+}
+
+.themePreview {
+  height: 200px;
+  width: 200px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+.themePreview:hover {
+  opacity: 0.7;
+}
+.themePreview:active {
+  transform: rotate(1deg);
+}

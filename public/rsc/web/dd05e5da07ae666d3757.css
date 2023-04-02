@@ -1,0 +1,109 @@
+@import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap);
+
+@import url(https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@200&display=swap);
+
+@import url(https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap);
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+body {
+	overflow: auto;
+    background: #1c1c1c;
+    font-family: "IBM Plex Sans", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    font-size: 20px;
+    margin-left: 51px;
+    font-family: "IBM Plex Sans", sans-serif;
+    margin-top: -20px;
+    color: white;
+}
+
+
+textarea {   
+  width: 100%;
+  height: 100%;
+  max-width: 876px;
+  max-height: 654px;
+  outline: none;
+  font-size: 20px;
+  background: #2f2f2f;
+  color: white;
+  border-radius: 20px;
+  resize: none;
+  padding-left: 34px;
+  padding-top: 15px;
+  font-family: 'Poppins', sans-serif;
+}
+
+@media (min-width: 876px) {
+  textarea {
+    width: 876px;
+    height: 654px;
+  }
+}
+
+
+h1 {
+  margin-bottom: 6px;
+}
+h2 {
+      padding: 0;
+    margin-block: 0;
+    font-size: 15px;
+    margin: 0;
+}
+.word {
+  transform: translate(-50%, -50%);
+  -webkit-animation: word 16s infinite ease-in-out;
+          animation: word 16s infinite ease-in-out;
+}
+.word:nth-child(1) {
+  -webkit-animation-delay: -16s;
+          animation-delay: -16s;
+}
+.word:nth-child(2) {
+  -webkit-animation-delay: -14s;
+          animation-delay: -14s;
+}
+.word:nth-child(3) {
+  -webkit-animation-delay: -12s;
+          animation-delay: -12s;
+}
+.word:nth-child(4) {
+  -webkit-animation-delay: -10s;
+          animation-delay: -10s;
+}
+.word:nth-child(5) {
+  -webkit-animation-delay: -8s;
+          animation-delay: -8s;
+}
+.word:nth-child(6) {
+  -webkit-animation-delay: -6s;
+          animation-delay: -6s;
+}
+.word:nth-child(7) {
+  -webkit-animation-delay: -4s;
+          animation-delay: -4s;
+}
+@-webkit-keyframes word {
+  0%, 5%, 100% {
+    filter: blur(0px);
+    opacity: 1;
+  }
+  20%, 80% {
+    filter: blur(1em);
+    opacity: 0;
+  }
+}
+@keyframes word {
+  0%, 5%, 100% {
+    filter: blur(0px);
+    opacity: 1;
+  }
+  20%, 80% {
+    filter: blur(1em);
+    opacity: 0;
+  }
+}
