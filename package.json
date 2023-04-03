@@ -12,6 +12,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"raw-loader":"4.0.2",
 		"@tomphttp/bare-server-node": "^1.2.5",
 		"@types/node": "^18.0.6",
 		"crypto-js": "^4.1.1",

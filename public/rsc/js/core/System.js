@@ -36,15 +36,7 @@ window.__XEN_WEBPACK.core.System = class System {
     xen.windowManager.modWin(thisAppName, 'locY', this.style.top);
   };
   
-  const closeCode = () => {
-    const thisAppName = name;
-    xen.system.unregister(thisAppName);
-    document.dispatchEvent(new CustomEvent('WindowClose', { window: thisAppName, detail: { text: thisAppName } }));
-  };
-  
-  const miniCode = () => {
-    xen.apps.minimize(name);
-  };
+ 
   
   const masterWindowContainer = document.createElement('div');
   const contentFrame = document.createElement('iframe');
@@ -59,7 +51,15 @@ window.__XEN_WEBPACK.core.System = class System {
     'contentWindow', 
     contentFrame
   );
+  const closeCode = () => {
+    const thisAppName = processID;
+    xen.system.unregister(thisAppName);
+    document.dispatchEvent(new CustomEvent('WindowClose', { window: thisAppName, detail: { text: thisAppName } }));
+  };
   
+  const miniCode = () => {
+    xen.apps.minimize(processID);
+  };
   const headerBox = document.createElement('div');
   const headerTitle = document.createElement('div');
   const headerTitleText = document.createTextNode(name);
@@ -88,19 +88,24 @@ window.__XEN_WEBPACK.core.System = class System {
   closeSpan.innerHTML = this.getCloseSVG();
   miniSpan.innerHTML = this.getMiniSVG();
   
-  closeSpan.setAttribute('onclick', closeCode);
-  miniSpan.setAttribute('onclick', miniCode);
+  closeSpan.addEventListener("click", closeCode);
+  miniSpan.addEventListener("click", miniCode);
   
   masterWindowContainer.append(headerBox, boxBody);
   boxBody.appendChild(contentFrame);
-  const resizeDivs = ['left', 'top', 'right', 'bottom', 'topLeft', 'topRight', 'bottomRight', 'bottomLeft']
-    .map((direction) => {
+  masterWindowContainer.append(
+    headerBox,
+    boxBody,
+    // Create and add the resizing divs to the container
+    ...['left', 'top', 'right', 'bottom', 'topLeft', 'topRight', 'bottomRight', 'bottomLeft'].map(direction => {
       const div = document.createElement('div');
-      div.classList.add(direction.includes('top') ? 'resize' : 'dresize');
-      div.classList.add(direction + 'Resize');
+      div.classList.add(direction.includes('top') ? 'resize' : 'dresize', direction + 'Resize');
       return div;
-    });
-    masterWindowContainer.append(...resizeDivs);
+    })
+  );
+
+  // Attach the resize listener to the container
+  xen.system.resizeListener(masterWindowContainer); 
 
   // Add event listeners to the content frame
   contentFrame.src = location || 'about:blank';

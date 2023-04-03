@@ -785,6 +785,7 @@ body {
 
 .rightResize {
   right: -5px;
+  height: 100%;
 }
 
 .leftResize:hover,
@@ -811,11 +812,12 @@ body {
 
 .bottomResize {
   bottom: -8px;
+  width: 100%;
 }
 
 .dresize {
-  width: 16px;
-  height: 16px;
+  
+  
   position: absolute;
 }
 

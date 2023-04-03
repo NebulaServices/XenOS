@@ -1,28 +1,30 @@
-// OS MotherBoard API (asus z790)
-window.__XEN_WEBPACK.core.OS = class OS {
+
+const xen = window.__XEN_WEBPACK;
+const core = xen.core;
+xen.core.OS = class OS {
   Native = a => Boolean(a.match(/^Xen\//g));
   
-	constructor() {
-		this.fs = new window.__XEN_WEBPACK.core.VFS();
-		this.windowManager = new window.__XEN_WEBPACK.WindowManager();
-		this.system = new window.__XEN_WEBPACK.core.System();
-		this.browserTool = new window.__XEN_WEBPACK.core.browser();
-		this.notification =
-			new window.__XEN_WEBPACK.core.NotificationComponent();
-		this.apps = new window.__XEN_WEBPACK.core.AppManagerComponent();
-		this.logger = new window.__XEN_WEBPACK.core.LoggerComponent();
-		this.apps.loader = new window.__XEN_WEBPACK.core.AppLoaderComponent();
-		this.dock = new window.__XEN_WEBPACK.core.DockComponent(this.fs);
-		this.settings = new window.__XEN_WEBPACK.core.SettingsComponent();
-    this.x86 = new window.__XEN_WEBPACK.core.x86EngineComponent();
-    this.terminal = new window.__XEN_WEBPACK.core.TerminalEngineComponent();
-    this.error = new window.__XEN_WEBPACK.core.ErrorComponent();
-    this.desktop = new window.__XEN_WEBPACK.core.DesktopComponent(this.fs);
+  constructor() {
+    this.fs = new xen.core.VFS();
+    this.windowManager = new xen.WindowManager();
+    this.system = new xen.core.System();
+    this.browserTool = new xen.core.browser();
+    this.notification = new xen.core.NotificationComponent();
+    this.apps = new xen.core.AppManagerComponent();
+    this.logger = new xen.core.LoggerComponent();
+    this.apps.loader = new xen.core.AppLoaderComponent();
+    this.dock = new xen.core.DockComponent(this.fs);
+    this.settings = new xen.core.SettingsComponent();
+    this.x86 = new xen.core.x86EngineComponent();
+    this.terminal = new xen.core.TerminalEngineComponent();
+    this.error = new xen.core.ErrorComponent();
+    this.desktop = new xen.core.DesktopComponent(this.fs);
     this.information = {"version":0.8, "releaseName":"solace"};
-	}
+  }
 };
+
 
 Object.defineProperty(window, "xen", {
 	configurable: false,
-	value: new window.__XEN_WEBPACK.core.OS(),
-});
+	value: new xen.core.OS(),
+  });
