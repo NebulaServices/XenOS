@@ -8,9 +8,11 @@ window.__XEN_WEBPACK.core.SettingsComponent = class SystemSettings {
       forest: "bg2.jpg",
     };
 
-    this._data = {};
+    this._data = {}
 
     // for now
+
+    
   }
 
   async init() {
@@ -25,52 +27,41 @@ img.src = "./rsc/img/"+xen.settings.background[key];
 */
     for (let name in this.background) {
       var bg = this.background[name];
-      var req = await fetch("/rsc/img/" + bg);
+      var req = await fetch('/rsc/img/'+bg);
 
       var blob = await req.blob();
 
-      this._data[bg] = URL.createObjectURL(blob, {
-        type: req.headers["content-type"],
-      });
+      this._data[bg] = URL.createObjectURL(blob, {type: req.headers['content-type']})
     }
-
-    this.setBg(this.background[localStorage.getItem("xen-bg") || "default"]);
+    
+    this.setBg(this.background[localStorage.getItem('xen-bg') || 'default']);
   }
-
+    
   async setBg(name: string) {
-    if (Object.entries(this.background).find((e) => e[1] == name))
-      localStorage.setItem(
-        "xen-bg",
-        Object.entries(this.background).find((e) => e[1] == name)[0]
-      );
+    if (Object.entries(this.background).find(e => e[1] == name)) localStorage.setItem('xen-bg', Object.entries(this.background).find(e => e[1] == name)[0]);
 
     if (!name) {
-      name = localStorage.getItem("xen-bg");
-      if (name.startsWith("blob:")) {
+      name = localStorage.getItem('xen-bg');
+      if (name.startsWith('blob:')) {
         name = await xen.fs.readFile(name);
       } else {
-        if (Object.entries(this.background).find((e) => e[1] == name))
-          localStorage.setItem(
-            "xen-bg",
-            Object.entries(this.background).find((e) => e[1] == name)[0]
-          );
+        if (Object.entries(this.background).find(e => e[1] == name)) localStorage.setItem('xen-bg', Object.entries(this.background).find(e => e[1] == name)[0]);
       }
     }
 
-    if (name.startsWith("blob:")) {
+    if (name.startsWith('blob:')) {
       var n = await xen.blob64(name);
       await xen.fs.writeFile(name, n);
 
       name = n;
     }
+    
+    if (!name) return console.log('Background Error: 1002');
 
-    if (!name) return console.log("Background Error: 1002");
-
-    if (name.startsWith("blob:") || name.startsWith("data:"))
-      return (document.querySelector(
-        ".os-body"
-      ).style.backgroundImage = `url("${name}")`);
-
+    if (name.startsWith('blob:')||name.startsWith('data:')) return document.querySelector(
+      ".os-body"
+    ).style.backgroundImage = `url("${name}")`;
+    
     document.querySelector(
       ".os-body"
     ).style.backgroundImage = `url("${this._data[name]}")`;
@@ -79,12 +70,12 @@ img.src = "./rsc/img/"+xen.settings.background[key];
   }
 
   async setCustomBg(setting: string) {
-    if (setting.startsWith("blob:")) {
-      localStorage.setItem("xen-bg", setting);
+    if (setting.startsWith('blob:')) {
+      localStorage.setItem('xen-bg', setting);
 
       var n = await xen.blob64(setting);
       await xen.fs.writeFile(setting, n);
-
+      
       document.querySelector(
         ".os-body"
       ).style.backgroundImage = `url("${setting}")`;

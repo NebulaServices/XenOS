@@ -1,6 +1,0 @@
-/**
- * Deep clone an object
- * @param source The object to clone
- */
-export declare function deepClone<T>(source: T): T;
-//# sourceMappingURL=deepClone.d.ts.map

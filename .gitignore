@@ -1,6 +1,9 @@
 node_modules/
 package-lock.json
-
-
-
 replit_zip_error_log.txt
+public/rsc/web/
+.DS_Store
+.cache
+.upm
+.DS_Store
+**/.DS_Store

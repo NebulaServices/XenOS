@@ -9,6 +9,10 @@ const keyBindMenu = document.getElementById("keybinds");
 const finalButton = document.getElementById("doneButtonFinal");
 const setupStatus = localStorage.getItem("setup_status");
 
+
+
+
+
 // Cryptography
 var CryptoJS = require("crypto-js");
 
@@ -53,7 +57,7 @@ function pwOption(status) {
         localStorage.setItem("_SXenPass", ciphertext);
         console.log(ciphertext);
         pwInput.style.display = "none"; // what do i work on
-        // finish the start menu or work on getting the appstore working
+// finish the start menu or work on getting the appstore working 
         step3();
         setTimeout(() => {
           step4();
