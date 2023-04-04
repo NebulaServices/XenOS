@@ -18,11 +18,7 @@ var WindowManager = require("./core/WindowManager");
 var MotherBoardComponent = require("./x86");
 var TerminalBoard = require("./xterminal");
 var DesktopComponent = require('./core/Desktop');
-
 var MotherBoardComponent = require("./core");
-
-// Frameworks 
-
 
 // After
 var LeaderComponent = require("./index");
@@ -31,16 +27,4 @@ var MarkupOrganizer = require("./markup");
 var BatteryComponent = require("./battery");
 var dragComponent = require("./draggable");
 
-var PreloadComponent = require("./preload");
-
-navigator.serviceWorker.register("/sw.js", {
-	scope: "/",
-});
-
-window.onbeforeunload = event => {
-	console.log("Attempted Close");
-
-	event.preventDefault();
-	event.returnValue = false;
-	return false;
-};
+var PreloadComponent = require("./preload")();

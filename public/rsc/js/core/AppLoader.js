@@ -82,28 +82,29 @@ function() {
       data: data,
     });
   }
+  
+  getAllWindows() {
+    return Object.entries(xen.windowManager.windows).map(([name, window]) => {
+      return window.native ? new _NativeWindow(window) : window;
+    });
+  };
 
   loadURL(url) {
     return new Promise(resolve => {
-                  document.getElementById(this.name).querySelector("iframe").onload = function() {
-                    resolve();
-                  }
+      document.getElementById(this.name).querySelector("iframe").onload = function() {
+        resolve();
+      }
       document.getElementById(this.name).querySelector("iframe").src = url;
     });
   }
   loadFile(url) {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
       var _path = path.join(this.path, url);
-  
-      fetch(_path)
-        .then((e) => e.text())
-        .then((e) => {
-                  document.getElementById(this.name).querySelector("iframe").onload = function() {
-                    resolve();
-                  }
+      document.getElementById(this.name).querySelector("iframe").onload = function() {
+        resolve();
+      }
           
-          document.getElementById(this.name).querySelector("iframe").src = _path;
-        });
+        document.getElementById(this.name).querySelector("iframe").src = _path;
     });
   }
   requestFileSystem() {
@@ -118,23 +119,19 @@ function() {
   }
   requestDispatchNotification(notificationName, body, image) {
     const flag = this.name + "_permission_notify";
-    console.log(flag);
     var permCheck = localStorage.getItem(flag);
-    console.log(permCheck);
     if (permCheck == null || permCheck == undefined || permCheck == false) {
       xen.browserTool.fullscreen();
       const requestMessage = confirm(
         this.name +
           " Wants permission to send in-OS notifications. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"
       );
+      
       if (requestMessage == true) {
-        console.log("Permission granted");
         localStorage.setItem(flag, "true");
         setTimeout(function () {
           xen.notification.dispatch(notificationName, body, image);
         }, 600);
-      } else {
-        console.log("permission refused");
       }
       xen.browserTool.fullscreen();
     } else if (permCheck === "true") {
@@ -161,52 +158,41 @@ function() {
   }
   requestFileSystemPermission(){
     const flag = this.name + "_permission_FS";
-    console.log(flag);
     var permCheck = localStorage.getItem(flag);
-      if (permCheck == null || permCheck == undefined || permCheck == false) {
-          const requestMessage = confirm(
-        this.name +
-          " Wants permission to access Filesystem. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"
+    if (permCheck == null || permCheck == undefined || permCheck == false) {
+      const requestMessage = confirm(
+      this.name +
+        " Wants permission to access Filesystem. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"
       );
       if (requestMessage == true) {
-        console.log("Permission granted");
         localStorage.setItem(flag, "true");
-        
       }
-      
-      }
+    }
   }
-  writeFile(name, cont){
-      const flag = this.name + "_permission_FS";
-     var permCheck = localStorage.getItem(flag);
-      if (permCheck == null || permCheck == undefined || permCheck == false) {
-        return
-      } else {
-         xen.fs.writeFile(name, cont)
-      }
-   
+  
+  async writeFile(name, cont){
+    const flag = this.name + "_permission_FS";
+    var permCheck = localStorage.getItem(flag);
+    if (permCheck == null || permCheck == undefined || permCheck == false) {
+      return
+    } else {
+      return await xen.fs.writeFile(name, cont);
+    }
   }
-readFile(file){
-  var result; 
- xen.fs.readFile(file).then((m) => {
-   result = m;
-    return result;
-})
-  return result;
-}
+  
+  async readFile(file){
+    return await xen.fs.readFile(file);
+  }
+  
   requestModifySetting(settingFlag, setting) {
     const flag = this.name + "_permission_settingF";
-    console.log(flag);
     var permCheck = localStorage.getItem(flag);
-    console.log(permCheck);
     if (permCheck == null || permCheck == undefined || permCheck == false) {
       const requestMessage = confirm(
         this.name +
           " Wants permission to modify settings. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"
       );
       if (requestMessage == true) {
-        console.log("Permission granted");
-
         if (settingFlag === "backdrop") {
           xen.settings.setBg(xen.settings.background[setting]);
         }
@@ -216,8 +202,6 @@ readFile(file){
         }
 
         localStorage.setItem(flag, "true");
-      } else {
-        console.log("permission denied");
       }
     } else if (permCheck === "true") {
       if (settingFlag === "backdrop") {
@@ -274,12 +258,6 @@ var _NativeWindow = class NATWIN {
   }
 };
 
-appWin.getAllWindows = function () {
-  return Object.entries(xen.windowManager.windows).map(([name, window]) => {
-    return window.native ? new _NativeWindow(window) : window;
-  });
-};
-
 window.__XEN_WEBPACK.core.AppLoaderComponent = class ALC {
   window = appWin;
 
@@ -310,5 +288,9 @@ window.__XEN_WEBPACK.core.AppLoaderComponent = class ALC {
     } catch(e) {
       console.error(e);
     }
+  }
+
+  requestPermission() {
+    
   }
 };
