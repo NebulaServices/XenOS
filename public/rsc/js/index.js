@@ -272,34 +272,6 @@ document.getElementById('os-desktop').addEventListener('click', function(event){
 const btn = document.getElementById("launchpadButton");
 const lp = document.getElementById("launchpad-overlay");
 
-window.__XEN_WEBPACK.core.platform = async function() {
-  return navigator.userAgentData.platform;
-}
-
-window.xen.awaitAll = async function(...args) {
-  return (await Promise.allSettled(args))?true:false;
-}
-
-window.xen.wait = (ms) => new Promise(e=>setTimeout(()=>e(), ms));
-
-window.xen.system.details = () => {
-  return require('device-uuid')
-}
-
-window.xen.blob64 = function(file) {
-  return new Promise(async (e) => {
-    fetch(file).then(e=>e.blob()).then(blob => {
-      const fr = new FileReader();
-        
-      fr.addEventListener("load", function(evt) {
-        e(evt.target.result);
-      }); 
-        
-      fr.readAsDataURL(blob);
-    });
-  });
-}
-
 /*
 btn.addEventListener("click", () => xen.system.launchpad(lp.style.display !== 'flex'));
 */
