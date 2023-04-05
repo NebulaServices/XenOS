@@ -106,7 +106,7 @@ core.AppManagerComponent = class AMC {
 			// prefetch app details
 			percent += 1;
 			that.clearIntervals();
-			if (log) loaderBegin("FETCHING META: ", "1");
+			if (log) that.loaderBegin("FETCHING META: ", "1");
 
 			var metaBody = {
 				id: pkg,
@@ -122,13 +122,13 @@ core.AppManagerComponent = class AMC {
 			} catch (e) {
 				percent += 19;
 
-				if (log) loaderBegin(`FAILURE: ${meta.name}`, "2");
+				if (log) that.loaderBegin(`FAILURE: ${meta.name}`, "2");
 
 				return;
 			}
 			percent += 19;
 			that.clearIntervals();
-			if (log) loaderBegin(`SUCCESS: ${meta.name}`, "2");
+			if (log) that.loaderBegin(`SUCCESS: ${meta.name}`, "2");
 
 			metaBody.session = meta.session;
 
@@ -142,7 +142,7 @@ core.AppManagerComponent = class AMC {
   				metaBody.asset = asset;
   
   				that.clearIntervals();
-  				if (log) loaderBegin(`FETCH: ${meta.name}/${asset}`, "3");
+  				if (log) that.loaderBegin(`FETCH: ${meta.name}/${asset}`, "3");
   
   				percent += Math.floor(percent);
   
@@ -153,7 +153,7 @@ core.AppManagerComponent = class AMC {
   
   				var body = await resp.blob();
   				that.clearIntervals();
-  				if (log) loaderBegin(`SUCCESS: ${meta.name}/${asset}`, "4");
+  				if (log) that.loaderBegin(`SUCCESS: ${meta.name}/${asset}`, "4");
   
   				await that.#install(
   					author,
@@ -169,7 +169,7 @@ core.AppManagerComponent = class AMC {
 			}
 
 			that.clearIntervals();
-			if (log) loaderBegin(`FETCH: SESSION_CLEAR (END_SESS)`, "5");
+			if (log) that.loaderBegin(`FETCH: SESSION_CLEAR (END_SESS)`, "5");
 
 			await fetch(repo + "/clear", {
 				method: "POST",
@@ -178,8 +178,8 @@ core.AppManagerComponent = class AMC {
 
 			percent += 20;
 
-			if (log) loaderBegin(`SUCCESS: SESSION_CLEAR (SUSSEND)`, "6");
-			if (log) loaderBegin(`SUCCESS: ${meta.name} DOWNLOADED`, "7");
+			if (log) that.loaderBegin(`SUCCESS: SESSION_CLEAR (SUSSEND)`, "6");
+			if (log) that.loaderBegin(`SUCCESS: ${meta.name} DOWNLOADED`, "7");
 
 			return resolve(true);
 		});

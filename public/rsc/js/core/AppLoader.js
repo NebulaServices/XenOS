@@ -32,7 +32,7 @@ var appWin = class WIN {
     this.path = path;
     this.xen = _xen;
 
-    var el = xen.system.register(
+    this.el = xen.system.register(
       name,
       this.opts.x + "px",
       this.opts.y + "px",
@@ -44,15 +44,14 @@ var appWin = class WIN {
 
     if (this.opts.focus) window.xen.windowManager.focus(name);
 
-    this.el = el;
-
-    el.querySelector("iframe").addEventListener('load', 
+    this.el.querySelector("iframe").addEventListener('load', 
 function() {
       that.opts.modules.forEach(module => {
         that.send('__XEN_MODULE_CONNECTION', {name: module});
       });
     });
-    this.registerMessages(el.querySelector("iframe").contentWindow);
+    
+    this.registerMessages(this.el.querySelector("iframe").contentWindow);
   }
   registerMessages(win) {
     var that = this;
@@ -104,7 +103,7 @@ function() {
         resolve();
       }
           
-        document.getElementById(this.name).querySelector("iframe").src = _path;
+      document.getElementById(this.name).querySelector("iframe").src = _path;
     });
   }
   requestFileSystem() {
@@ -118,25 +117,14 @@ function() {
     });
   }
   requestDispatchNotification(notificationName, body, image) {
-    const flag = this.name + "_permission_notify";
-    var permCheck = localStorage.getItem(flag);
-    if (permCheck == null || permCheck == undefined || permCheck == false) {
+    var response = this.#requestPermission('notify', this.name + " Wants permission to send in-OS notifications. \n 'OK' to Grant permissions \n 'cancel' to deny the permission");
+    
+    if (response) {
       xen.browserTool.fullscreen();
-      const requestMessage = confirm(
-        this.name +
-          " Wants permission to send in-OS notifications. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"
-      );
-      
-      if (requestMessage == true) {
-        localStorage.setItem(flag, "true");
-        setTimeout(function () {
-          xen.notification.dispatch(notificationName, body, image);
-        }, 600);
-      }
-      xen.browserTool.fullscreen();
-    } else if (permCheck === "true") {
       xen.notification.dispatch(notificationName, body, image);
     }
+
+    return response;
   }
   retractNotification(id) {
     xen.notification.retract(id);
@@ -157,25 +145,13 @@ function() {
 
   }
   requestFileSystemPermission(){
-    const flag = this.name + "_permission_FS";
-    var permCheck = localStorage.getItem(flag);
-    if (permCheck == null || permCheck == undefined || permCheck == false) {
-      const requestMessage = confirm(
-      this.name +
-        " Wants permission to access Filesystem. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"
-      );
-      if (requestMessage == true) {
-        localStorage.setItem(flag, "true");
-      }
-    }
+    return this.#requestPermission('FS', this.name + " Wants permission to access the FileSystem. \n 'OK' to Grant permissions \n 'cancel' to deny the permission");
   }
   
   async writeFile(name, cont){
-    const flag = this.name + "_permission_FS";
-    var permCheck = localStorage.getItem(flag);
-    if (permCheck == null || permCheck == undefined || permCheck == false) {
-      return
-    } else {
+    var response = this.#requestPermission('FS', this.name + " Wants permission to access the FileSystem. \n 'OK' to Grant permissions \n 'cancel' to deny the permission");
+    
+    if (response) {
       return await xen.fs.writeFile(name, cont);
     }
   }
@@ -185,25 +161,9 @@ function() {
   }
   
   requestModifySetting(settingFlag, setting) {
-    const flag = this.name + "_permission_settingF";
-    var permCheck = localStorage.getItem(flag);
-    if (permCheck == null || permCheck == undefined || permCheck == false) {
-      const requestMessage = confirm(
-        this.name +
-          " Wants permission to modify settings. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"
-      );
-      if (requestMessage == true) {
-        if (settingFlag === "backdrop") {
-          xen.settings.setBg(xen.settings.background[setting]);
-        }
-
-        if (settingFlag == "customBackdrop") {
-          xen.settings.setCustomBg(setting);
-        }
-
-        localStorage.setItem(flag, "true");
-      }
-    } else if (permCheck === "true") {
+    var response = this.#requestPermission('settingF', this.name + " Wants permission to modify settings. \n 'OK' to Grant permissions \n 'cancel' to deny the permission");
+    
+    if (response) {
       if (settingFlag === "backdrop") {
         xen.settings.setBg(xen.settings.background[setting]);
       }
@@ -211,35 +171,36 @@ function() {
         xen.settings.setCustomBg(setting);
       }
     }
-  }
 
-  RequestGetAllApps() {
-    const all = xen.apps.apps.appsInstalled;
-    var response = false;
-    const flag = this.name + "_permission_getApps";
-    var permCheck = localStorage.getItem(flag);
-    console.log(permCheck);
-    if (permCheck == null || permCheck == undefined || permCheck == false) {
-      const requestMessage = confirm(
-        this.name +
-          " Wants permission to see which apps are installed. \n 'OK' to Grant permissions \n 'cancel' to deny the permission"
-      );
-
-      if (requestMessage == true) {
-        console.log("Permission granted");
-        localStorage.setItem(flag, "true");
-        response = all;
-      } else if (requestMessage == false) {
-        localStorage.setItem(flag, "false");
-        response = "denied";
-      }
-    } else if (permCheck === "true") {
-      response = all;
-    }
     return response;
   }
 
-  //end func list
+  RequestGetAllApps() {
+    var all = xen.apps.apps.appsInstalled;
+    var response = this.#requestPermission('getApps', this.name + " Wants permission to see which apps are installed. \n 'OK' to Grant permissions \n 'cancel' to deny the permission");
+    
+    if (response) {
+      response = all;
+    } else response = false;
+    
+    return response;
+  }
+
+  #requestPermission(flag, message) {
+    var flag = this.name + '_permission_'+flag;
+
+    if (localStorage.getItem(flag)) {
+      if (localStorage.getItem(flag)=='true') return true;
+    }
+
+    var check = confirm(
+      message
+    );
+
+    localStorage.setItem(flag, check.toString());
+
+    return check;
+  }
 };
 
 var _NativeWindow = class NATWIN {
@@ -279,7 +240,6 @@ window.__XEN_WEBPACK.core.AppLoaderComponent = class ALC {
 
   load(name, script = "", path, _name = "") {
     try {
-      // Scoping for variables and easy app launching
       eval(`
 (function(name, path, _name) {
 	${script}
@@ -288,9 +248,5 @@ window.__XEN_WEBPACK.core.AppLoaderComponent = class ALC {
     } catch(e) {
       console.error(e);
     }
-  }
-
-  requestPermission() {
-    
   }
 };
