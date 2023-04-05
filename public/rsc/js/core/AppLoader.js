@@ -117,7 +117,7 @@ function() {
     });
   }
   requestDispatchNotification(notificationName, body, image) {
-    const response = this.#requestPermission('notify', this.name + " Wants permission to send in-OS notifications. \n 'OK' to Grant permissions \n 'cancel' to deny the permission");
+    var response = this.#requestPermission('notify', this.name + " Wants permission to send in-OS notifications. \n 'OK' to Grant permissions \n 'cancel' to deny the permission");
     
     if (response) {
       xen.browserTool.fullscreen();
@@ -149,7 +149,7 @@ function() {
   }
   
   async writeFile(name, cont){
-    const response = this.#requestPermission('FS', this.name + " Wants permission to access the FileSystem. \n 'OK' to Grant permissions \n 'cancel' to deny the permission");
+    var response = this.#requestPermission('FS', this.name + " Wants permission to access the FileSystem. \n 'OK' to Grant permissions \n 'cancel' to deny the permission");
     
     if (response) {
       return await xen.fs.writeFile(name, cont);
@@ -176,8 +176,8 @@ function() {
   }
 
   RequestGetAllApps() {
-    const all = xen.apps.apps.appsInstalled;
-    const response = this.#requestPermission('getApps', this.name + " Wants permission to see which apps are installed. \n 'OK' to Grant permissions \n 'cancel' to deny the permission");
+    var all = xen.apps.apps.appsInstalled;
+    var response = this.#requestPermission('getApps', this.name + " Wants permission to see which apps are installed. \n 'OK' to Grant permissions \n 'cancel' to deny the permission");
     
     if (response) {
       response = all;
