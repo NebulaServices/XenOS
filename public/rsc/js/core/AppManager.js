@@ -106,7 +106,7 @@ core.AppManagerComponent = class AMC {
 			// prefetch app details
 			percent += 1;
 			that.clearIntervals();
-			if (log) loaderBegin("FETCHING META: ", "1");
+			if (log) that.loaderBegin("FETCHING META: ", "1");
 
 			var metaBody = {
 				id: pkg,
@@ -122,13 +122,13 @@ core.AppManagerComponent = class AMC {
 			} catch (e) {
 				percent += 19;
 
-				if (log) this.loaderBegin(`FAILURE: ${meta.name}`, "2");
+				if (log) that.loaderBegin(`FAILURE: ${meta.name}`, "2");
 
 				return;
 			}
 			percent += 19;
 			that.clearIntervals();
-			if (log) this.loaderBegin(`SUCCESS: ${meta.name}`, "2");
+			if (log) that.loaderBegin(`SUCCESS: ${meta.name}`, "2");
 
 			metaBody.session = meta.session;
 
