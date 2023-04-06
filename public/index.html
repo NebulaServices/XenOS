@@ -2,18 +2,13 @@
 <html>
 	<head>
     <script integrity="sha256-9NsIanf8jSVFuiPetrZ1jfLPoMPzZuPz2w3GWvQFgIU=">
-	[...document.querySelectorAll('script, link')].forEach(e=>e.onerror = (e) => alert(e));
 	if (navigator.serviceWorker.controller === null) {
   navigator.serviceWorker.register("/sw.js", {
   	scope: "/",
   });
-
   navigator.serviceWorker.ready.then(e=>location.reload());
 }
 </script>
-    <!--<link href="./rsc/font/IBMPlexSans.css" rel="stylesheet" type="text/css"/>
-    <link href="./rsc/font/Inter.css" rel="stylesheet" type="text/css"/
-    <link href="./rsc/font/Montserrat.css" rel="stylesheet" type="text/css"/>-->
 		<link href="./rsc/styles/index.css" rel="stylesheet" type="text/css"/>
 		<link rel="icon" type="image/x-icon" href="./rsc/img/logo-small.png" />
 		<meta charset="utf-8" />

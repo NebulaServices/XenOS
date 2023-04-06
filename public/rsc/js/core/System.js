@@ -1,295 +1,286 @@
-// System SubAPI
-window.__XEN_WEBPACK.core.System = class System {
+const xen = window.__XEN_WEBPACK;
+const core = xen.core;
+
+core.System = class System {
 	constructor() {
 		this.focusedWindow = null;
 		this.osHeader = document.getElementById("osActiveApp");
-    this.desktop = document.getElementById('os-desktop')
+		this.desktop = document.getElementById("os-desktop");
 	}
 
 	begin() {
-  document.querySelector(".os-setup").style.transition = "1s ease-in-out";
-  console.log(
-    "%cWelcome to XenOS",
-    "color:black; background-color:white; padding:5px; border-radius: 5px; line-height: 26px; font-size:30px;"
-  );
+		document.querySelector(".os-setup").style.transition = "1s ease-in-out";
+		console.log(
+			"%cWelcome to XenOS",
+			"color:black; background-color:white; padding:5px; border-radius: 5px; line-height: 26px; font-size:30px;"
+		);
 
-  return true;
-}
-
- getCloseSVG() {
-  return `<svg style="width: 15px;height: 15px;" xmlns="http://www.w3.org/2000/svg" width="188" height="185" viewBox="0 0 188 185" fill="none">
-    <rect width="188" height="185" rx="92.5" fill="#F46868"></rect>
-  </svg>`;
-}
-
- getMiniSVG() {
-  return `<svg style="width: 15px;height: 15px;" xmlns="http://www.w3.org/2000/svg" width="188" height="185" viewBox="0 0 188 185" fill="none">
-    <rect width="188" height="185" rx="92.5" fill="#ffcd5b"></rect>
-  </svg>`;
-}
-
-	register(name, posX, posY, location, native, width = '800px', height = '500px') {
-	const injectCode = () => {
-    const thisAppName = this.dataset.appname;
-    xen.windowManager.focus(thisAppName);
-    xen.windowManager.modWin(thisAppName, 'locX', this.style.left);
-    xen.windowManager.modWin(thisAppName, 'locY', this.style.top);
-  };
-  
- 
-  
-  const masterWindowContainer = document.createElement('div');
-  const contentFrame = document.createElement('iframe');
-  const processID = xen.windowManager.spawnProcess(
-    name,
-    masterWindowContainer,
-    'locX',
-    posX,
-    'locY',
-    posY,
-    native,
-    'contentWindow', 
-    contentFrame
-  );
-  const closeCode = () => {
-    const thisAppName = processID;
-    xen.system.unregister(thisAppName);
-    document.dispatchEvent(new CustomEvent('WindowClose', { window: thisAppName, detail: { text: thisAppName } }));
-  };
-  
-  const miniCode = () => {
-    xen.apps.minimize(processID);
-  };
-  const headerBox = document.createElement('div');
-  const headerTitle = document.createElement('div');
-  const headerTitleText = document.createTextNode(name);
-  const boxBody = document.createElement('div');
-  const closeSpan = document.createElement('span');
-  const miniSpan = document.createElement('span');
-
-  masterWindowContainer.dataset.appname = name;
-  masterWindowContainer.classList.add('drag', 'box');
-  masterWindowContainer.id = processID;
-  masterWindowContainer.style.width = width;
-  masterWindowContainer.style.height = height;
-  this.desktop.appendChild(masterWindowContainer);
-  
-  headerBox.classList.add('box-header');
-  headerTitle.classList.add('box-header-title');
-  boxBody.classList.add('box-body-inner');
-  headerBox.appendChild(headerTitle);
-  headerTitle.appendChild(headerTitleText);
-  headerTitle.appendChild(closeSpan);
-  headerTitle.appendChild(miniSpan);
-  
-  closeSpan.classList.add('os-exit');
-  miniSpan.classList.add('os-mini');
-  
-  closeSpan.innerHTML = this.getCloseSVG();
-  miniSpan.innerHTML = this.getMiniSVG();
-  
-  closeSpan.addEventListener("click", closeCode);
-  miniSpan.addEventListener("click", miniCode);
-  
-  masterWindowContainer.append(headerBox, boxBody);
-  boxBody.appendChild(contentFrame);
-  masterWindowContainer.append(
-    headerBox,
-    boxBody,
-    // Create and add the resizing divs to the container
-    ...['left', 'top', 'right', 'bottom', 'topLeft', 'topRight', 'bottomRight', 'bottomLeft'].map(direction => {
-      const div = document.createElement('div');
-      div.classList.add(direction.includes('top') ? 'resize' : 'dresize', direction + 'Resize');
-      return div;
-    })
-  );
-
-  // Attach the resize listener to the container
-  xen.system.resizeListener(masterWindowContainer); 
-
-  // Add event listeners to the content frame
-  contentFrame.src = location || 'about:blank';
-  contentFrame.classList.add('appFrame');
-  contentFrame.contentWindow.addEventListener('error', (event) => {
-    console.log('An error occurred in the iframe:', event.message);
-  });
-
-    	this.desktop.dispatchEvent(
-						new CustomEvent("NewWindow", {
-							window: processID,
-							detail: { text: processID },
-						})
-					);
-
-
-    
-					return masterWindowContainer;
-        
-		}
-	
-
-  resizeListener(master) {
-    var left = master.querySelector('.leftResize'),
-      right = master.querySelector('.rightResize'),
-      top = master.querySelector('.topResize'),
-      bottom = master.querySelector('.bottomResize');
-
-    var topLeft = master.querySelector('.topLeftResize'),
-      topRight = master.querySelector('.topRightResize'),
-      bottomLeft = master.querySelector('.bottomLeftResize'),
-      bottomRight = master.querySelector('.bottomRightResize');
-
-    [left, right, top, bottom].forEach((side, index) => {
-      var s = ['left', 'right', 'top', 'bottom'][index];
-      
-      var startX;
-      var startY;
-      var computed;
-      var startHeight;
-      var startWidth;
-      var startTop;
-      var startLeft;
-      
-      var mousemove = function(e) {
-
-        requestAnimationFrame(() => {
-          if (s=='top') {
-            var height = (parseInt(startHeight.replace('px', '')) - (e.clientY - startY));
-            master.style.height = (height>70?height:70)+'px';
-            master.style.top = (height>70?parseInt(startTop.replace('px', '')) + (e.clientY - startY):'')+'px';
-          } else if (s=='bottom') {
-            var height = (parseInt(startHeight.replace('px', '')) + (e.clientY - startY));
-            master.style.height = (height>70?height:70)+'px';
-            master.style.top = startTop;
-          } else if (s=='left') {
-            var width = (parseInt(startWidth.replace('px', '')) - (e.clientX - startX));
-            master.style.width = (width>70?width:70)+'px';
-            master.style.left = (width>70?parseInt(startLeft.replace('px', '')) + (e.clientX - startX):'')+'px';
-          } else if (s=='right') {
-            var width = (parseInt(startWidth.replace('px', '')) + (e.clientX - startX));
-            master.style.width = (width>70?width:70)+'px';
-            master.style.left = startLeft;
-          }
-        });
-      };
-    
-      document.addEventListener('mousedown', function(e) {
-        if (e.target!==side) return;
-
-        computed = window.getComputedStyle(master);
-
-        startHeight = computed.height+'';
-        startWidth = computed.width+'';
-        startTop = computed.top+'';
-        startLeft = computed.left+'';
-        
-        startX = e.clientX;
-        startY = e.clientY;
-        
-  			master.querySelectorAll('iframe').forEach(function(iframe) {
-  				iframe.style.pointerEvents = "none";
-  			});
-        
-        document.addEventListener('mousemove', mousemove);
-      });
-
-      document.addEventListener('mouseup', function(e) {
-        if (!startX&&!startY) return
-
-        document.removeEventListener('mousemove', mousemove);   
-        
-  			master.querySelectorAll('iframe').forEach(function(iframe) {
-  				iframe.style.pointerEvents = "all";
-  			});     
-      });
-    });
-
-    [topLeft, topRight, bottomLeft, bottomRight].forEach((side, index) => {
-      var s = ['topLeft', 'topRight', 'bottomLeft', 'bottomRight'][index];
-      
-      var startX;
-      var startY;
-      var computed;
-      var startHeight;
-      var startWidth;
-      var startTop;
-      var startLeft;
-      
-      var mousemove = function(e) {
-        requestAnimationFrame(() => {
-         if (s=='topLeft') {
-            var height = (parseInt(startHeight.replace('px', '')) - (e.clientY - startY));
-            var width = (parseInt(startWidth.replace('px', '')) - (e.clientX - startX));
-            master.style.height = (height>70?height:70)+'px';
-            master.style.top = (height>70?parseInt(startTop.replace('px', '')) + (e.clientY - startY):'')+'px';
-            master.style.width = (width>70?width:70)+'px';
-            master.style.left = (width>70?parseInt(startLeft.replace('px', '')) + (e.clientX - startX):'')+'px';
-          } else if (s=='topRight') {
-            var height = (parseInt(startHeight.replace('px', '')) - (e.clientY - startY));
-            var width = (parseInt(startWidth.replace('px', '')) + (e.clientX - startX));
-            master.style.height = (height>70?height:70)+'px';
-            master.style.top = (height>70?parseInt(startTop.replace('px', '')) + (e.clientY - startY):'')+'px';
-            master.style.width = (width>70?width:70)+'px';
-            master.style.left = startLeft;
-          } else if (s=='bottomLeft') {
-            var height = (parseInt(startHeight.replace('px', '')) + (e.clientY - startY));
-            var width = (parseInt(startWidth.replace('px', '')) - (e.clientX - startX));
-            master.style.height = (height>70?height:70)+'px';
-            master.style.top = startTop
-            master.style.width = (width>70?width:70)+'px';
-            master.style.left = (width>70?parseInt(startLeft.replace('px', '')) + (e.clientX - startX):'')+'px';
-          } else if (s=='bottomRight') {
-            var height = (parseInt(startHeight.replace('px', '')) + (e.clientY - startY));
-            var width = (parseInt(startWidth.replace('px', '')) + (e.clientX - startX));
-            master.style.height = (height>70?height:70)+'px';
-            master.style.top = startTop
-            master.style.width = (width>70?width:70)+'px';
-            master.style.left = startLeft;
-          }
-        });
-      };
-    
-      document.addEventListener('mousedown', function(e) {
-        if (e.target!==side) return;
-
-        computed = window.getComputedStyle(master);
-
-        startHeight = computed.height+'';
-        startWidth = computed.width+'';
-        startTop = computed.top+'';
-        startLeft = computed.left+'';
-        
-        startX = e.clientX;
-        startY = e.clientY;
-        
-  			master.querySelectorAll('iframe').forEach(function(iframe) {
-  				iframe.style.pointerEvents = "none";
-  			});
-        
-        document.addEventListener('mousemove', mousemove);
-      });
-
-      document.addEventListener('mouseup', function(e) {
-        if (!startX&&!startY) return;
-
-        document.removeEventListener('mousemove', mousemove);   
-        
-  			master.querySelectorAll('iframe').forEach(function(iframe) {
-  				iframe.style.pointerEvents = "all";
-  			});     
-      });
-    });
-  }
-
-	unregister(appName) {
-		let win = document.getElementById(appName);
-
-		win.innerHTML = ""; // Clear the content of the div
-		win.remove(); // Remove the div from the DOM
-		xen.windowManager.removeWindow(appName);
-
-		console.log("Sucessfully unregistered window: " + appName);
+		return true;
 	}
 
+	createSVG(width, height, fillColor) {
+		return `<svg style="width: ${width};height: ${height};" xmlns="http://www.w3.org/2000/svg" width="188" height="185" viewBox="0 0 188 185" fill="none">
+      <rect width="188" height="185" rx="92.5" fill="${fillColor}"></rect>
+    </svg>`;
+	}
 
-};
+	getCloseSVG() {
+		return this.createSVG("15px", "15px", "#F46868");
+	}
+
+	getMiniSVG() {
+		return this.createSVG("15px", "15px", "#ffcd5b");
+	}
+
+	createWindowElement(tag, className) {
+		const element = document.createElement(tag);
+		if (className) {
+			element.classList.add(...className.split(" "));
+		}
+		return element;
+	}
+
+	buildHeaderBox(headerTitle) {
+		const headerBox = this.createWindowElement("div", "box-header");
+		headerBox.appendChild(headerTitle);
+		return headerBox;
+	}
+
+	buildCloseSpan(closeCode) {
+		const closeSpan = this.createWindowElement("span", "os-exit");
+		closeSpan.innerHTML = this.getCloseSVG();
+		closeSpan.addEventListener("click", closeCode);
+		return closeSpan;
+	}
+
+	buildMiniSpan(miniCode) {
+		const miniSpan = this.createWindowElement("span", "os-mini");
+		miniSpan.innerHTML = this.getMiniSVG();
+		miniSpan.addEventListener("click", miniCode);
+		return miniSpan;
+	}
+
+	buildBoxBody() {
+		return this.createWindowElement("div", "box-body-inner");
+	}
+
+	handleWindowClose(processID) {
+		this.unregister(processID);
+		document.dispatchEvent(new CustomEvent("WindowClose", {
+			window: processID,
+			detail: {
+				text: processID
+			}
+		}));
+	}
+
+	handleWindowMinimize(processID) {
+		window.xen.apps.minimize(processID);
+	}
+
+	createResizeDivs() {
+		return ['left', 'top', 'right', 'bottom', 'topLeft', 'topRight', 'bottomRight', 'bottomLeft'].map(direction => {
+			const div = document.createElement('div');
+			div.classList.add(direction.includes('top') ? 'resize' : 'dresize', direction + 'Resize');
+			return div;
+		});
+	}
+
+	register(name, posX, posY, location, native, width = "800px", height = "500px") {
+
+		const masterWindowContainer = this.createWindowElement("div", "drag box");
+
+		const contentFrame = this.createWindowElement("iframe", "appFrame");
+		const processID = window.xen.windowManager.spawnProcess(
+			name,
+			masterWindowContainer,
+			"locX",
+			posX,
+			"locY",
+			posY,
+			native,
+			"contentWindow",
+			contentFrame
+		);
+
+		masterWindowContainer.dataset.appname = name;
+		masterWindowContainer.id = processID;
+		masterWindowContainer.style.width = width;
+		masterWindowContainer.style.height = height;
+
+		const headerTitle = this.createWindowElement("div", "box-header-title");
+		const headerTitleText = document.createTextNode(name);
+		headerTitle.appendChild(headerTitleText);
+
+		const headerBox = this.buildHeaderBox(headerTitle);
+		const closeSpan = this.buildCloseSpan(() => this.handleWindowClose(processID));
+		const miniSpan = this.buildMiniSpan(() => this.handleWindowMinimize(processID));
+		const boxBody = this.buildBoxBody();
+
+		headerTitle.appendChild(closeSpan);
+		headerTitle.appendChild(miniSpan);
+		masterWindowContainer.append(headerBox, boxBody, ...this.createResizeDivs());
+
+		this.resizeListener(masterWindowContainer);
+
+		contentFrame.src = location || 'about:blank';
+		contentFrame.name = "frame" + processID;
+		contentFrame.frameBorder = "0";
+		boxBody.appendChild(contentFrame);
+
+		this.desktop.appendChild(masterWindowContainer);
+
+		this.desktop.dispatchEvent(
+			new CustomEvent("NewWindow", {
+				window: processID,
+				detail: {
+					text: processID
+				},
+			})
+		);
+
+		return masterWindowContainer;
+	}
+
+	resizeListener(master) {
+		const sides = ['left', 'right', 'top', 'bottom', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight'];
+
+		const getSideElement = (master, side) => master.querySelector(`.${side}Resize`);
+
+		const handleResizeStart = (e, computed) => {
+			const startX = e.clientX;
+			const startY = e.clientY;
+			const startHeight = parseInt(computed.height);
+			const startWidth = parseInt(computed.width);
+			const startTop = parseInt(computed.top);
+			const startLeft = parseInt(computed.left);
+
+			master.querySelectorAll('iframe').forEach(iframe => {
+				iframe.style.pointerEvents = "none";
+			});
+
+			return {
+				startX,
+				startY,
+				startHeight,
+				startWidth,
+				startTop,
+				startLeft
+			};
+		};
+
+		const handleResizeEnd = (master) => {
+			master.querySelectorAll('iframe').forEach(iframe => {
+				iframe.style.pointerEvents = "all";
+			});
+		};
+
+		const handleResize = (e, side, initial) => {
+			requestAnimationFrame(() => {
+				const {
+					startX,
+					startY,
+					startHeight,
+					startWidth,
+					startTop,
+					startLeft
+				} = initial;
+				const movementX = e.clientX - startX;
+				const movementY = e.clientY - startY;
+				const minSize = 70;
+
+				const resizeFunctions = {
+					'top': () => {
+						const height = Math.max(startHeight - movementY, minSize);
+						master.style.height = `${height}px`;
+						master.style.top = `${startTop + (height > minSize ? movementY : 0)}px`;
+					},
+					'bottom': () => {
+						const height = Math.max(startHeight + movementY, minSize);
+						master.style.height = `${height}px`;
+						master.style.top = `${startTop}px`;
+					},
+					'left': () => {
+						const width = Math.max(startWidth - movementX, minSize);
+						master.style.width = `${width}px`;
+						master.style.left = `${startLeft + (width > minSize ? movementX : 0)}px`;
+					},
+					'right': () => {
+						const width = Math.max(startWidth + movementX, minSize);
+						master.style.width = `${width}px`;
+						master.style.left = `${startLeft}px`;
+					},
+					'topLeft': () => {
+						const height = Math.max(startHeight - movementY, minSize);
+						const width = Math.max(startWidth - movementX, minSize);
+						master.style.height = `${height}px`;
+						master.style.top = `${startTop + (height > minSize ? movementY : 0)}px`;
+						master.style.width = `${width}px`;
+						master.style.left = `${startLeft + (width > minSize ? movementX : 0)}px`;
+					},
+					'topRight': () => {
+						const height = Math.max(startHeight - movementY, minSize);
+						const width = Math.max(startWidth + movementX, minSize);
+						master.style.height = `${height}px`;
+						master.style.top = `${startTop + (height > minSize ? movementY : 0)}px`;
+						master.style.width = `${width}px`;
+						master.style.left = `${startLeft}px`;
+					},
+					'bottomLeft': () => {
+						const height = Math.max(startHeight + movementY, minSize);
+						const width = Math.max(startWidth - movementX, minSize);
+						master.style.height = `${height}px`;
+						master.style.top = `${startTop}px`;
+						master.style.width = `${width}px`;
+						master.style.left = `${startLeft + (width > minSize ? movementX : 0)}px`;
+					},
+					'bottomRight': () => {
+						const height = Math.max(startHeight + movementY, minSize);
+						const width = Math.max(startWidth + movementX, minSize);
+						master.style.height = `${height}px`;
+						master.style.top = `${startTop}px`;
+						master.style.width = `${width}px`;
+						master.style.left = `${startLeft}px`;
+					}
+				};
+
+				if (resizeFunctions.hasOwnProperty(side)) {
+					resizeFunctions[side]();
+				}
+			});
+		};
+
+		sides.forEach(side => {
+			const sideElement = getSideElement(master, side);
+			let initial;
+
+			document.addEventListener('mousedown', (e) => {
+				if (e.target !== sideElement) return;
+
+				const computed = window.getComputedStyle(master);
+				initial = handleResizeStart(e, side, computed);
+				document.addEventListener('mousemove', handleResizeWrapper);
+			});
+
+			const handleResizeWrapper = (e) => {
+				handleResize(e, side, initial);
+			};
+
+			document.addEventListener('mouseup', (e) => {
+				if (!initial) return;
+
+				document.removeEventListener('mousemove', handleResizeWrapper);
+				handleResizeEnd(master);
+			});
+		});
+	}
+
+	unregister(windowID) {
+		const windowElement = document.getElementById(windowID);
+		if (windowElement) {
+			windowElement.remove();
+		} else {
+			console.warn(`Could not unregister window with ID ${windowID}, as it does not exist.`);
+		}
+	}
+}
