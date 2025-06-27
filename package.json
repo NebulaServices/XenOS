@@ -1,0 +1,25 @@
+{
+	"type": "module",
+	"scripts": {
+		"build": "bash ./scripts/build.sh",
+		"start": "node ./scripts/server.js"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.3",
+		"@types/wicg-file-system-access": "^2023.10.6",
+		"esbuild": "^0.25.5",
+		"express": "^5.1.0",
+		"typescript": "^5.8.3",
+		"wisp-server-node": "^1.1.7",
+		"workbox-cli": "^7.3.0"
+	},
+	"dependencies": {
+		"@mercuryworkshop/bare-mux": "^2.1.7",
+		"@titaniumnetwork-dev/ultraviolet": "^3.2.10",
+		"comlink": "^4.4.2",
+		"idb-keyval": "^6.2.2",
+		"libcurl.js": "^0.7.1",
+		"mime": "^4.0.7",
+		"uuid": "^11.1.0"
+	}
+}

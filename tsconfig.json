@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "target": "ESNext",
+        "moduleResolution": "bundler",
+        "module": "ESNext",
+        "esModuleInterop": true,
+        "lib": [
+            "esnext",
+            "dom",
+            "dom.iterable",
+            "webworker",
+            "webworker.importscripts"
+        ]
+    },
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

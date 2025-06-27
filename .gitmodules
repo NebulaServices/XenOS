@@ -1,0 +1,3 @@
+[submodule "wisp-client-js"]
+	path = wisp-client-js
+	url = https://github.com/MercuryWorkshop/wisp-client-js

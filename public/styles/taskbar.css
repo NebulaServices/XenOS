@@ -1,0 +1,105 @@
+.taskbar {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: 80vw;
+    min-width: 40vw;
+    background-color: var(--mocha-surface0);
+    border: 1px solid var(--mocha-surface2);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    z-index: 9000;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.taskbar-windows {
+    display: flex;
+    gap: 10px;
+    height: 40px;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.taskbar-windows::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.taskbar-item {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100%;
+    padding: 0 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    user-select: none;
+    min-width: 40px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    gap: 5px;
+}
+
+.taskbar-item:hover {
+    background-color: var(--mocha-surface1);
+}
+
+.taskbar-item:active {
+    transform: translateY(0);
+    box-shadow: none;
+    background-color: var(--mocha-surface2);
+}
+
+.taskbar-item.dragging {
+    opacity: 0.5;
+}
+
+.taskbar-item-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.taskbar-item-name {
+    font-size: 0.75em;
+    color: var(--mocha-text);
+    opacity: 1;
+    transition: opacity 0.2s ease;
+    flex-grow: 1;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.taskbar-item.is-focused .taskbar-item-indicator {
+    background-color: var(--mocha-lavender);
+    box-shadow: 0 0 6px var(--mocha-lavender);
+}
+
+.taskbar-item.is-pinned:not(.is-open):hover {
+    background-color: var(--mocha-surface1);
+}
+ 

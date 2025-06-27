@@ -1,0 +1,64 @@
+:root {
+    --mocha-rosewater: #f5e0dc;
+    --mocha-flamingo: #f2cdcd;
+    --mocha-pink: #f5c2e7;
+    --mocha-mauve: #cba6f7;
+    --mocha-red: #f38ba8;
+    --mocha-maroon: #eba0ac;
+    --mocha-peach: #fab387;
+    --mocha-yellow: #f9e2af;
+    --mocha-green: #a6e3a1;
+    --mocha-teal: #94e2d5;
+    --mocha-sky: #89dceb;
+    --mocha-sapphire: #74c7ec;
+    --mocha-blue: #89b4fa;
+    --mocha-lavender: #b4befe;
+    --mocha-text: #cdd6f4;
+    --mocha-subtext1: #bac2de;
+    --mocha-subtext0: #a6adcb;
+    --mocha-overlay2: #9399b2;
+    --mocha-overlay1: #7f849c;
+    --mocha-overlay0: #6c7086;
+    --mocha-surface2: #585b70;
+    --mocha-surface1: #45475a;
+    --mocha-surface0: #313244;
+    --mocha-base: #1e1e2e;
+    --mocha-mantle: #181825;
+    --mocha-crust: #11111b;
+    --window-bg: var(--mocha-surface0);
+    --window-border: var(--mocha-surface1);
+    --window-title-bar-bg: var(--mocha-surface1);
+    --window-title-text: var(--mocha-text);
+    --window-controls-text: var(--mocha-base);
+    --minimize-btn-bg: var(--mocha-yellow);
+    --fullscreen-btn-bg: var(--mocha-green);
+    --close-btn-bg: var(--mocha-red);
+    --minimize-btn-hover-bg: #e1ca97;
+    --fullscreen-btn-hover-bg: #94c88e;
+    --close-btn-hover-bg: #dc7d91;
+    --focused-border-glow: #e0b4e7;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--mocha-crust);
+    color: var(--mocha-text);
+    cursor: default;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('/wallpaper.webp');
+}
+
+body.no-select {
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grabbing !important;
+}
