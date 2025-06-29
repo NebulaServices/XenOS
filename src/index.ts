@@ -17,7 +17,8 @@ async function setupDeps() {
     window.Comlink = await import(ComlinkPath);
     window.mime = await import(mimePath);
 
-    window.xen = new Xen();
+    const xen = new Xen();
+    window.xen = xen;
 
     await window.xen.net.init();
     await window.xen.fs.init();
@@ -25,6 +26,8 @@ async function setupDeps() {
 
     shared.xen = window.xen;
     shared.mime = window.mime.default;
+
+    document.addEventListener("DOMContentLoaded", setupDeps);
 }
 
 async function initComlink() {

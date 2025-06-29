@@ -11,7 +11,7 @@ export class ContextMenu {
         this.loadEntries();
 
         document.addEventListener('click', this.handleGlobalClick);
-        document.addEventListener('contextmenu', this.handleGlobalRightClick);
+        // document.addEventListener('contextmenu', this.handleGlobalRightClick);
     }
 
     public registerFunction(funcId: string, func: (...args: any[]) => void): void {
@@ -158,7 +158,5 @@ export class ContextMenu {
         }
     };
 
-    private handleGlobalRightClick = (event: MouseEvent): void => {
-        event.preventDefault();
-    };
+    // private handleGlobalRightClick = (event: MouseEvent): void => {};
 }

@@ -38,7 +38,7 @@ export class Window {
     constructor(opts: WindowOpts, private wm: WindowManager) {
         this.id = uuidv4();
         this.props.title = opts.title;
-        this.props.icon = opts.icon;
+        this.props.icon = this.encodeUrl(opts.icon);
         this.props.url = opts.url;
         this.props.width = opts.width || '600px';
         this.props.height = opts.height || '400px';
@@ -53,6 +53,22 @@ export class Window {
         this.setupButtons();
         this.wm.container.appendChild(this.el.window);
         this.focus();
+    }
+
+    private encodeUrl(url: string): string {
+        let encoded: string;
+
+        if (
+            url.startsWith('http://') ||
+            url.startsWith('https://')
+        ) {
+            //@ts-ignore
+            encoded = __uv$config.prefix + __uv$config.encodeUrl(url)
+        } else {
+            encoded = url;
+        }
+
+        return encoded;
     }
 
     private CreateWindow(): HTMLDivElement {
@@ -79,7 +95,8 @@ export class Window {
 
         this.el.content = document.createElement('iframe');
         this.el.content.classList.add('wm-content-frame');
-        this.el.content.src = this.props.url;
+        this.el.content.src = this.encodeUrl(this.props.url);
+
         this.el.content.setAttribute('loading', 'lazy');
         this.el.content.setAttribute('allowfullscreen', 'true');
 
@@ -315,8 +332,8 @@ export class Window {
         }
     }
     set url(val: string) {
-        this.props.url = val;
-        this.el.content.src = val;
+        this.props.url = this.encodeUrl(val);
+        this.el.content.src = this.encodeUrl(val);
     }
     close(): void {
         this.el.window.classList.add('closing');
