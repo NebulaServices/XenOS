@@ -5,6 +5,7 @@ import { WindowManager } from "./windows/WindowManager";
 import { ContextMenu } from "./ui/ContextMenu";
 import { TaskBar } from "./ui/TaskBar";
 import { Proccesses } from "./process/Processes";
+import { AppManager } from "./process/Apps";
 
 export class Xen {
     public net: LibcurlClient;
@@ -12,6 +13,7 @@ export class Xen {
     public mirror: typeof mirror;
     public wm: WindowManager;
     public process: Proccesses;
+    public apps: AppManager;
     public ui: {
         contextMenu: ContextMenu,
         taskBar: TaskBar
@@ -27,6 +29,7 @@ export class Xen {
             taskBar: null as TaskBar
         };
         this.process = new Proccesses(this);
+        this.apps = new AppManager(this.fs, this.process);
     }
 
     public version = {

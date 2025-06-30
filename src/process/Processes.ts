@@ -1,18 +1,10 @@
 import { Xen } from "../Xen";
-
-interface Shared {
-    xen?: Xen;
-}
-
-interface Process {
-    pid: number;
-    process: Worker;
-}
+import { Process, ProcessShared } from "../global";
 
 export class Proccesses {
     private npid = 0;
     public processes: Process[] = [];
-    public shared: Shared;
+    public shared: ProcessShared;
 
     constructor(xen: Xen) {
         this.shared = {

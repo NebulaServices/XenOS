@@ -117,6 +117,7 @@ if [ "$DO_NM" = true ]; then
     copy_nm "idb-keyval/dist" "libs/idb-keyval"
     copy_nm "comlink/dist" "libs/comlink"
     copy_nm "mime/dist" "libs/mime"
+    copy_nm "jszip/dist" "libs/jszip"
 
     rm -rf build/libs/idb-keyval/test build/libs/idb-keyval/src
 

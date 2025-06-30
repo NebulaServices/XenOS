@@ -17,6 +17,7 @@ interface Stat {
 export class XenFS {
     public cwd: string = '/';
     private root: FileSystemDirectoryHandle;
+    private mounts: Map<string, FileSystemDirectoryHandle> = new Map();
 
     async init(): Promise<void> {
         this.root = await navigator.storage.getDirectory();
@@ -38,6 +39,7 @@ export class XenFS {
 
         for (const part of parts) {
             if (part === '.' || part === '') continue;
+
             if (part === '..') {
                 if (stack.length > 0) stack.pop();
             } else {
@@ -61,6 +63,28 @@ export class XenFS {
 
         let current = this.root;
 
+        for (const [mntPath, mntHandle] of this.mounts.entries()) {
+            if (this.normalizePath(path).startsWith(this.normalizePath(mntPath))) {
+                const relPath = this.normalizePath(path).substring(this.normalizePath(mntPath).length);
+                const relParts = relPath.split('/').filter(Boolean);
+                let current: FileSystemDirectoryHandle = mntHandle;
+
+                for (let i = 0; i < relParts.length - 1; i++) {
+                    const part = relParts[i];
+                    current = await current.getDirectoryHandle(part, { create: opts.recursive });
+                }
+
+                const final = relParts[relParts.length - 1];
+                if (!final) return current;
+
+                try {
+                    return await current.getFileHandle(final, { create: opts.create });
+                } catch {
+                    return await current.getDirectoryHandle(final, { create: false });
+                }
+            }
+        }
+
         for (let i = 0; i < parts.length - 1; i++) {
             const part = parts[i];
             current = await current.getDirectoryHandle(part, { create: opts.recursive });
@@ -78,6 +102,7 @@ export class XenFS {
     async mkdir(path: string): Promise<void> {
         const parts = this.splitPath(path);
         let current = this.root;
+
         for (const part of parts) {
             current = await current.getDirectoryHandle(part, { create: true });
         }
@@ -86,6 +111,7 @@ export class XenFS {
     async rmdir(path: string): Promise<void> {
         const parts = this.splitPath(path);
         const name = parts.pop();
+
         const dir = await this.resolve('/' + parts.join('/')) as FileSystemDirectoryHandle;
         await dir.removeEntry(name!, { recursive: true });
     }
@@ -100,10 +126,12 @@ export class XenFS {
                 isFile: entry.kind === 'file',
                 isDirectory: entry.kind === 'directory',
             };
+
             entries.push(info);
 
             if (recursive && entry.kind === 'directory') {
                 const subEntries = await this.list(this.normalizePath(path + '/' + entry.name), true);
+    
                 entries.push(...subEntries.map(e => ({
                     ...e,
                     name: entry.name + '/' + e.name,
@@ -131,6 +159,7 @@ export class XenFS {
     async read(path: string): Promise<string> {
         const handle = await this.resolve(path) as FileSystemFileHandle;
         const file = await handle.getFile();
+
         const text = await file.text();
         return text;
     }
@@ -138,6 +167,7 @@ export class XenFS {
     async remove(path: string): Promise<void> {
         const parts = this.splitPath(path);
         const name = parts.pop();
+
         const dir = await this.resolve('/' + parts.join('/')) as FileSystemDirectoryHandle;
         await dir.removeEntry(name!, { recursive: true });
     }
@@ -157,6 +187,7 @@ export class XenFS {
 
     async move(src: string, dest: string): Promise<void> {
         const file = await this.read(src);
+
         await this.write(dest, file, { create: true, recursive: true });
         await this.remove(src);
     }
@@ -172,12 +203,56 @@ export class XenFS {
 
     async cd(path: string): Promise<void> {
         const newPath = this.normalizePath(path);
+
         const handle = await this.resolve(newPath);
-        if (handle.kind !== 'directory') {
-            throw new Error(`${newPath} is not a directory`);
-        }
+        if (handle.kind !== 'directory') throw new Error(`${newPath} is not a directory`);
+
         this.cwd = newPath;
     }
+
+    async fetch(url: string, path: string): Promise<void> {
+        const res = await fetch(url); // TODO: UV encoding
+        if (!res.ok) throw new Error(`Fetch failed: ${res.statusText} (${res.status})`)
+    
+        const blob = await res.blob();
+
+        await this.write(path, blob, {
+            create: true,
+            recursive: true
+        });
+    }
+
+    async mount(path: string): Promise<void> {
+        const handle = await window.showDirectoryPicker();
+        this.mounts.set(this.normalizePath(path), handle);
+    }
+
+    async unmount(path: string): Promise<void> {
+        this.mounts.delete(this.normalizePath(path));
+    }
+
+    async upload(path: string): Promise<void> {
+        const [handle] = await window.showOpenFilePicker();
+        const file = await handle.getFile();
+
+        await this.write(path, file, { create: true, recursive: true });
+    }
+
+    async download(path: string): Promise<void> {
+        const handle = (await this.resolve(path)) as FileSystemFileHandle;
+        const file = await handle.getFile();
+    
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(file);
+        a.download = file.name;
+    
+        document.body.appendChild(a);
+        a.click();
+
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+    }
+
     /*
     async stat(path: string): Promise<Stat> {}
     async link(path: string, target: string): Promise<void> {}
@@ -185,12 +260,7 @@ export class XenFS {
     async readlink(path: string): Promise<string> {}
     async chmod(path: string, mode: number): Promise<void> {}
     async chown(path: string, uid: number, gid: number): Promise<void>
-    async mount(path: string): Promise<void> {}
-    async unmount(path: string): Promise<void> {}
     async export(): Promise<void> {}
-    async upload(path: string): Promise<void> {}
-    async download(path: string): Promise<void> {}
-    async fetch(url: string, path: string): Promise<void> {}
     async compress(path: string, dest: string): Promise<void> {}
     async decompress(path: string, dest: string): Promise<void> {}
     async watch(path: string, callback: (event: string, path: string) => void): Promise<void> {}

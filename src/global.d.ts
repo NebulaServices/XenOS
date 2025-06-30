@@ -63,3 +63,24 @@ declare global {
         mime: typeof mime;
     }
 }
+
+export interface AppManifest {
+    title: string;
+    packageId: string;
+    icon: string;
+    type: 'url'
+    source: {
+        url?: string;
+    }
+}
+
+export type RegisteredApps = string[];
+
+export interface ProcessShared {
+    xen?: Xen;
+}
+
+export interface Process {
+    pid: number;
+    process: Worker;
+}
