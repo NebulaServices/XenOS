@@ -9,17 +9,26 @@ export class AppRuntime {
         this.processes = processes;
     }
 
-    public exec(manifest: AppManifest) {
+    public async exec(manifest: AppManifest) {
+        let code: string;
+
         if (manifest.type == 'url') {
-            const code = `
+            code = `
                 await xen.wm.create({
                     title: '${manifest.title}',
                     icon: '${manifest.icon}',
                     url: '${manifest.source.url}'     
                 });
             `;
+        } else if (manifest.type == 'code') {
+            const encodedUrl = new URL(manifest.source.entry, `${location.origin}/fs/apps/${manifest.packageId}/`).href;
 
-            this.processes.spawn(code, true);
+            const req = await fetch(encodedUrl);
+            const res = await req.text();
+            
+            code = res;
         }
+
+        this.processes.spawn(code, true);
     }
 }

@@ -68,9 +68,11 @@ export interface AppManifest {
     title: string;
     packageId: string;
     icon: string;
-    type: 'url'
+    type: 'url' | 'app' | 'code'
     source: {
         url?: string;
+        view?: string;
+        entry?: string
     }
 }
 

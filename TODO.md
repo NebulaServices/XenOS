@@ -1,0 +1,40 @@
+- App launcher
+- App store
+- App store repo's
+- Better types for `AppManifest`
+- `app` type support in `AppRuntime`
+- Fix SW randomly breaking
+- Ability to change wallpaper
+- SOMEHOW let apps access paths willy nilly without it breaking
+- Let apps access `xen` without boilerplate/it breaking
+- Make OOBE
+- Make auto-updater
+- Make default apps
+- Somehow make the site boot from OPFS
+- Implement all XenFS methods
+- Create abstract `FileSystem` and `NetworkingClient` classes
+- Make `FileSystem` and `NetworkingClient` handlers
+- Allow for more options when constructing `LibcurlClient`
+- Allow for socket-based communication in `LibcurlCurl.loopback`
+- Fix the build script
+- Import `jszip` via `cost path = ''; await import(path)`
+- Make the SW a process
+- Make init scripts
+- Make a bootsplash
+- Standardize persistant values
+- Clean up `ContextMenu`
+- Add more `Events` and make them work
+- Add V86
+- Sync V86 <-> XenFS
+- Add V86 support in networking
+- Add desktop icons
+- Add desktop context menu options
+- Registry API
+- Add desktop "selecting"
+- Systray
+- Users API (oh god)
+- Add tests
+- Add clock and battery to dock
+- Allow for more customizations to UI
+- Re-make the SW in Typescript
+- Add `xen.fs.showFilePicker()`

@@ -82,4 +82,6 @@ window.addEventListener('load', async () => {
 
     const connection = new window.BareMux.BareMuxConnection('/libs/bare-mux/worker.js');
     connection.setRemoteTransport(new XenTransport(), 'XenTransport');
+
+    dispatchEvent(new CustomEvent('init'));
 });

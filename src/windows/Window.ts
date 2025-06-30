@@ -58,6 +58,8 @@ export class Window {
     private encodeUrl(url: string): string {
         let encoded: string;
 
+        if (url.startsWith(location.origin)) return url;
+
         if (
             url.startsWith('http://') ||
             url.startsWith('https://')

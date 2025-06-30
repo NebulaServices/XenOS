@@ -109,7 +109,7 @@ export class AppManager {
             if (!regs.includes(packageId)) return;
 
             const manifest = await this.getManifest(packageId);
-            this.runtime.exec(manifest  );
+            await this.runtime.exec(manifest);
         } catch (err) {
             throw err;
         }

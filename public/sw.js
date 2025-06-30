@@ -40,8 +40,11 @@ async function serveFile(url, prefix, dir = '/') {
     });
 }
 
-workbox.routing.registerRoute(/\/fs\//,
-    async ({ req }) => { return await serveFile(req.url, 'fs'); },
+workbox.routing.registerRoute(
+    /\/fs\//,
+    async ({ request }) => {
+        return await serveFile(request.url, 'fs');
+    },
     "GET"
 );
 
@@ -53,9 +56,9 @@ const uv = new UVServiceWorker();
 const methods = ["GET", "POST", "HEAD", "PUT", "DELETE", "OPTIONS", "PATCH"];
 
 methods.forEach((method) => {
-	workbox.routing.registerRoute(/\/proxy\//,
-		async (ev) => { return await uv.fetch(ev) },
-	method);
+    workbox.routing.registerRoute(/\/proxy\//,
+        async (ev) => { return await uv.fetch(ev) },
+        method);
 });
 
 async function init() {
