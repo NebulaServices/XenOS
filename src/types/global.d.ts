@@ -1,4 +1,4 @@
-import { Xen } from "./Xen";
+import { Xen } from "../Xen";
 import { BareMuxConnection } from "@mercuryworkshop/bare-mux";
 import * as idbKv from 'idb-keyval';
 import * as Comlink from 'comlink';
@@ -68,11 +68,11 @@ export interface AppManifest {
     title: string;
     packageId: string;
     icon: string;
-    type: 'url' | 'app' | 'code'
+    type: 'webview' | 'auto' | 'manual'
     source: {
         url?: string;
-        view?: string;
-        entry?: string
+        index?: string;
+        background?: string
     }
 }
 

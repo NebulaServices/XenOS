@@ -1,4 +1,4 @@
-import { ContextMenuEntry, FunctionRegistry } from '../global';
+import { ContextMenuEntry, FunctionRegistry } from '../types/global';
 
 export class ContextMenu {
     private static readonly LOCAL_STORAGE_KEY = 'XEN-CONTEXT-MENU';

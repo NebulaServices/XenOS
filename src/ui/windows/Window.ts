@@ -1,5 +1,5 @@
 // Window.ts
-import { WindowOpts } from '../global';
+import { WindowOpts } from '../../types/global';
 import { WindowManager } from './WindowManager';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -110,6 +110,14 @@ export class Window {
             resizer.classList.add('wm-resizer', `wm-resizer-${direction}`);
             el.appendChild(resizer);
         });
+
+        // KILL YOURSELF
+        this.el.content.onload = () => {
+            const xen = window.xen;
+            Object.assign(this.el.content.contentWindow, {
+                xen
+            });
+        }
 
         return el;
     }

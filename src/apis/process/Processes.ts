@@ -1,5 +1,5 @@
-import { Xen } from "../Xen";
-import { Process, ProcessShared } from "../global";
+import { Xen } from "../../Xen";
+import { Process, ProcessShared } from "../../types/global";
 
 export class Proccesses {
     private npid = 0;

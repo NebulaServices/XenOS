@@ -1,5 +1,5 @@
 import { XenFS } from '../files/XenFS';
-import { RegisteredApps, AppManifest } from '../global';
+import { RegisteredApps, AppManifest } from '../../types/global';
 import { AppRuntime } from './AppRuntime';
 import { Proccesses } from './Processes';
 import JSZip from 'jszip';

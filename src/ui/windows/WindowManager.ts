@@ -1,4 +1,4 @@
-import { WindowOpts } from '../global';
+import { WindowOpts } from '../../types/global';
 import { Window } from './Window';
 
 export class WindowManager {

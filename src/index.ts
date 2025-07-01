@@ -1,5 +1,5 @@
 import { Xen } from "./Xen";
-import { XenTransport } from "./networking/Transport";
+import { XenTransport } from "./apis/networking/Transport";
 
 interface Shared {
     xen?: Xen;
@@ -72,12 +72,7 @@ async function initSw() {
 
 window.addEventListener('load', async () => {
     await setupDeps();
-
-    if (!localStorage.getItem('xen.fs.mirrored')) {
-        await window.xen.mirror();
-        localStorage.setItem('xen.fs.mirrored', 'true');
-    }
-
+    await window.xen.boot();
     await initSw();
 
     const connection = new window.BareMux.BareMuxConnection('/libs/bare-mux/worker.js');

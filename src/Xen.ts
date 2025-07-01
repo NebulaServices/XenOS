@@ -1,16 +1,16 @@
-import { LibcurlClient } from "./networking/LibcurlClient";
-import { XenFS } from "./files/XenFS";
-import { mirror } from "./utils/mirror";
-import { WindowManager } from "./windows/WindowManager";
+import { LibcurlClient } from "./apis/networking/LibcurlClient";
+import { XenFS } from "./apis/files/XenFS";
+import { oobe } from "./oobe/autoUpdate";
+import { WindowManager } from "./ui/windows/WindowManager";
 import { ContextMenu } from "./ui/ContextMenu";
 import { TaskBar } from "./ui/TaskBar";
-import { Proccesses } from "./process/Processes";
-import { AppManager } from "./process/Apps";
+import { Proccesses } from "./apis/process/Processes";
+import { AppManager } from "./apis/process/Apps";
 
 export class Xen {
     public net: LibcurlClient;
     public fs: XenFS;
-    public mirror: typeof mirror;
+    public boot: typeof oobe;
     public wm: WindowManager;
     public process: Proccesses;
     public apps: AppManager;
@@ -22,7 +22,7 @@ export class Xen {
     constructor() {
         this.net = new LibcurlClient((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
         this.fs = new XenFS();
-        this.mirror = mirror;
+        this.boot = oobe;
         this.wm = new WindowManager();
         this.ui = {
             contextMenu: new ContextMenu(),

@@ -1,4 +1,4 @@
-import { WriteOpts } from "../global";
+import { WriteOpts } from "../../types/global";
 
 /*
 interface Stat {

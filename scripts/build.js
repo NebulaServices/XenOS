@@ -15,7 +15,7 @@ await build({
 // Build transport (Needs both cjs and mjs)
 await build({
     entryPoints: {
-        index: 'src/networking/Transport.ts',
+        index: 'src/apis/networking/Transport.ts',
     },
     entryNames: '[name]',
     outfile: './dist-transport/index.js',
@@ -27,7 +27,7 @@ await build({
 
 await build({
     entryPoints: {
-        index: 'src/networking/Transport.ts',
+        index: 'src/apis/networking/Transport.ts',
     },
     entryNames: '[name]',
     outfile: './dist-transport/index.mjs',
