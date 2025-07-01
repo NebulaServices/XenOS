@@ -1,37 +1,24 @@
+# TODO
+If a TODO is not in here, chances it's in a comment in a file
+## Apps
 - App launcher
 - App store
 - App store repo's
-- `app` type support in `AppRuntime`
-- Fix SW randomly breaking
+## Desktop
+- Desktop icons
+- Desktop context menu options
 - Ability to change wallpaper
-- SOMEHOW let apps access paths willy nilly without it breaking
-- Make OOBE
-- Make default apps
-- Somehow make the site boot from OPFS
-- Implement all XenFS methods
-- Create abstract `FileSystem` and `NetworkingClient` classes
-- Make `FileSystem` and `NetworkingClient` handlers
-- Allow for more options when constructing `LibcurlClient`
-- Allow for socket-based communication in `LibcurlCurl.loopback`
-- Fix the build script
-- Import `jszip` via `cost path = ''; await import(path)`
-- Make the SW a process
-- Make init scripts
-- Make a bootsplash
-- Standardize persistant values
-- Clean up `ContextMenu`
-- Add more `Events` and make them work
-- Add V86
-- Sync V86 <-> XenFS
-- Add V86 support in networking
-- Add desktop icons
-- Add desktop context menu options
-- Registry API
 - Add desktop "selecting"
+## Fixes/Features (Misc)
+- Fix the build script
+- A file picker for XenFS
+## Core Features
+- Init scripts
+- V86
+- Registry API
+- Users API
+## UI Fixes/Features
+- OOBE
+- Bootsplash
 - Systray
-- Users API (oh god)
-- Add tests
-- Add clock and battery to dock
-- Allow for more customizations to UI
-- Re-make the SW in Typescript
-- Add `xen.fs.showFilePicker()`
+- More dock customizations

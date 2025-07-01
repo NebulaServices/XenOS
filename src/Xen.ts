@@ -21,7 +21,7 @@ export class Xen {
 
     constructor() {
         this.net = new LibcurlClient((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
-        this.fs = new XenFS();
+        this.fs = new XenFS(this.net);
         this.boot = oobe;
         this.wm = new WindowManager();
         this.ui = {

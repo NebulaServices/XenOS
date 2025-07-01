@@ -1,3 +1,5 @@
+/* TODO: Disect issues */
+
 import type { BareHeaders, TransferrableResponse, BareTransport } from "@mercuryworkshop/bare-mux";
 
 function bareToInit(headers: BareHeaders): HeadersInit {

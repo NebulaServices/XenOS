@@ -1,5 +1,7 @@
 // This is the worst code I have ever written
+/* TODO: Everything*/
 export async function mirror() {
+    /*
     const req = await fetch('/files.json');
     const res = await req.text();
 
@@ -82,4 +84,5 @@ export async function mirror() {
             });
         }
     });
+    */
 }

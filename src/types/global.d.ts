@@ -1,3 +1,5 @@
+/* TODO: Move types to seperate files */
+
 import { Xen } from "../Xen";
 import { BareMuxConnection } from "@mercuryworkshop/bare-mux";
 import * as idbKv from 'idb-keyval';

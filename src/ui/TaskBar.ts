@@ -1,4 +1,10 @@
-// TaskBar.ts (Major Update)
+/*
+TODO:
+- Fix AI slop
+- Simplify API
+- Import CSS
+- Add more functionallity
+*/
 import { WindowManager } from './windows/WindowManager';
 import { Window } from './windows/Window';
 import { ContextMenu } from './ContextMenu';

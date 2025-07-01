@@ -1,3 +1,9 @@
+/*
+TODO:
+- Clean up AI slop
+- Simplify API
+- Improve CSS
+*/
 import { ContextMenuEntry, FunctionRegistry } from '../types/global';
 
 export class ContextMenu {

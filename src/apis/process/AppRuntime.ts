@@ -1,6 +1,11 @@
+/*
+TODO:
+- Support `auto` manifest type
+- Some how allow apps to access paths at like `./` or `.`
+*/
+
 import { Proccesses } from "./Processes";
 import { AppManifest } from "../../types/global";
-
 
 export class AppRuntime {
     private processes: Proccesses;

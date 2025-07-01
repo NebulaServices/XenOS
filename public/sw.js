@@ -1,3 +1,10 @@
+/*
+TODO:
+- Make it actually work but not randomly
+- Make it boot from OPFS
+- Rewrite in Typescript
+*/
+
 Object.defineProperty(globalThis, "crossOriginIsolated", {
     value: true,
     writable: false,

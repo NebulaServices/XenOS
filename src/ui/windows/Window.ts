@@ -1,4 +1,4 @@
-// Window.ts
+/* TODO: clean up */
 import { WindowOpts } from '../../types/global';
 import { WindowManager } from './WindowManager';
 import { v4 as uuidv4 } from 'uuid';

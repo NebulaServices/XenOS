@@ -1,3 +1,8 @@
+/*
+TODO:
+- Get xen via `window.xen`
+- Make the SW a process some how
+*/
 import { Xen } from "../../Xen";
 import { Process, ProcessShared } from "../../types/global";
 

@@ -1,3 +1,9 @@
+/*
+TODO:
+- Import jzip at `window`
+- Use FS and procceses and `window.xen`
+*/
+
 import { XenFS } from '../files/XenFS';
 import { RegisteredApps, AppManifest } from '../../types/global';
 import { AppRuntime } from './AppRuntime';
@@ -18,7 +24,7 @@ export class AppManager {
     private async getRegs(): Promise<RegisteredApps> {
         try {
             if (!await this.fs.exists(this.regFile)) {
-                await this.fs.write(this.regFile, '[]', { create: true, recursive: true });
+                await this.fs.write(this.regFile, '[]');
             }
 
             const content = await this.fs.read(this.regFile);
@@ -30,7 +36,7 @@ export class AppManager {
 
     private async saveRegs(packageIds: RegisteredApps): Promise<void> {
         try {
-            await this.fs.write(this.regFile, JSON.stringify(packageIds, null, 4), { create: true });
+            await this.fs.write(this.regFile, JSON.stringify(packageIds, null, 4));
         } catch (err) {
             throw err;
         }
@@ -73,7 +79,7 @@ export class AppManager {
                     await this.fs.mkdir(targetPath);
                 } else {
                     const content = await entry.async('blob');
-                    await this.fs.write(targetPath, content, { create: true, recursive: true });
+                    await this.fs.write(targetPath, content);
                 }
             }
 
@@ -118,7 +124,7 @@ export class AppManager {
     public async remove(packageId: string): Promise<void> {
         try {
             const path = `${this.basePath}/${packageId}`;
-            if (await this.fs.exists(path)) await this.fs.remove(path);
+            if (await this.fs.exists(path)) await this.fs.rm(path);
 
             let regs = await this.getRegs();
 
