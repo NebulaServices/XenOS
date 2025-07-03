@@ -1,21 +1,9 @@
-/*
-TODO:
-- Get xen via `window.xen`
-- Make the SW a process some how
-*/
 import { Xen } from "../../Xen";
-import { Process, ProcessShared } from "../../types/global";
+import { Process, ProcessShared } from "../../types/Process";
 
 export class Proccesses {
     private npid = 0;
     public processes: Process[] = [];
-    public shared: ProcessShared;
-
-    constructor(xen: Xen) {
-        this.shared = {
-            xen: window.Comlink.proxy(xen) as unknown as Xen,
-        };
-    }
 
     public spawn(code: string, isAsync = false) {
         const prefix = isAsync ? "async" : "";
@@ -61,7 +49,11 @@ export class Proccesses {
             value: port2,
         };
 
-        window.Comlink.expose(this.shared, port1);
+        const shared: ProcessShared = {
+            xen: window.modules.Comlink.proxy(window.xen) as unknown as Xen,
+        };
+
+        window.modules.Comlink.expose(shared, port1);
         worker.postMessage(msg, [port2]);
     }
 

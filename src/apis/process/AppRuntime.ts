@@ -1,19 +1,6 @@
-/*
-TODO:
-- Support `auto` manifest type
-- Some how allow apps to access paths at like `./` or `.`
-*/
-
-import { Proccesses } from "./Processes";
-import { AppManifest } from "../../types/global";
+import { AppManifest } from "../../types/Apps";
 
 export class AppRuntime {
-    private processes: Proccesses;
-
-    constructor(processes: Proccesses) {
-        this.processes = processes;
-    }
-
     public async exec(manifest: AppManifest) {
         let code: string;
 
@@ -32,8 +19,18 @@ export class AppRuntime {
             const res = await req.text();
 
             code = res;
+        } else if (manifest.type == 'auto') {
+            const encodedUrl = new URL(manifest.source.index, `${location.origin}/fs/apps/${manifest.packageId}/`).href;
+
+            code = `
+                const win = await xen.wm.create({
+                    title: '${manifest.title}',
+                    icon: '${manifest.icon}',
+                    url: '${encodedUrl}'     
+                });
+            `;
         }
 
-        this.processes.spawn(code, true);
+        window.xen.process.spawn(code, true);
     }
 }

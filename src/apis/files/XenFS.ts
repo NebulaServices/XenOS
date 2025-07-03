@@ -6,8 +6,6 @@
     - Implement links
     - Write a unit test
     - Allow for less-verbose paths (Ex: xen.fs.fetch('https://example.com/test.txt', '/'))
-    - Import jszip at `window`
-    - Access LibcurlClient at `window.xen`
     - Provide an abstract FileSystem class
     - Implement chown and chmod
     - Implement user support and ~ swapping
@@ -15,17 +13,14 @@
     - Make a FS resolver
 */
 
-import { LibcurlClient } from "../networking/LibcurlClient";
-import JSZip from "jszip";
-
 export class XenFS {
-    public cwd: string = "/";
+    private cwd: string = "/";
     private root: FileSystemDirectoryHandle;
     private mounts: Map<string, FileSystemDirectoryHandle> = new Map();
-    public net: LibcurlClient;
+    private zip: any;
 
-    constructor(net: LibcurlClient) {
-        this.net = net;
+    constructor() {
+        this.zip = new window.JSZip();
     }
 
     async init(): Promise<void> {
@@ -286,7 +281,7 @@ export class XenFS {
     }
 
     async fetch(url: string, path: string): Promise<void> {
-        const res = await this.net.fetch(url);
+        const res = await window.xen.net.fetch(url);
         if (!res.ok) throw new Error(`Fetch failed: ${res.statusText} (${res.status})`);
 
         const blob = await res.blob();
@@ -355,7 +350,6 @@ export class XenFS {
             document.body.removeChild(a);
             URL.revokeObjectURL(a.href);
         } else if (handle.kind === "directory") {
-            const zip = new JSZip();
 
             const addDirectoryToZip = async (
                 dirHandle: FileSystemDirectoryHandle,
@@ -367,7 +361,7 @@ export class XenFS {
                         : entry.name;
                     if (entry.kind === "file") {
                         const file = await (entry as FileSystemFileHandle).getFile();
-                        zip.file(entryZipPath, file);
+                        this.zip.file(entryZipPath, file);
                     } else if (entry.kind === "directory") {
                         await addDirectoryToZip(
                             entry as FileSystemDirectoryHandle,
@@ -379,7 +373,7 @@ export class XenFS {
 
             await addDirectoryToZip(handle as FileSystemDirectoryHandle, fileName);
 
-            const content = await zip.generateAsync({ type: "blob" });
+            const content = await this.zip.generateAsync({ type: "blob" });
             const a = document.createElement("a");
 
             a.href = URL.createObjectURL(content);
@@ -458,8 +452,6 @@ export class XenFS {
     }
 
     async export(fileName: string = "filesystem.zip"): Promise<void> {
-        const zip = new JSZip();
-
         const addDirectoryToZip = async (
             dirHandle: FileSystemDirectoryHandle,
             currentPath: string,
@@ -469,7 +461,7 @@ export class XenFS {
 
                 if (entry.kind === "file") {
                     const file = await (entry as FileSystemFileHandle).getFile();
-                    zip.file(fullPath.substring(1), file);
+                    this.zip.file(fullPath.substring(1), file);
                 } else if (entry.kind === "directory") {
                     await addDirectoryToZip(entry as FileSystemDirectoryHandle, fullPath);
                 }
@@ -477,7 +469,7 @@ export class XenFS {
         };
 
         await addDirectoryToZip(this.root, "/");
-        const content = await zip.generateAsync({ type: "blob" });
+        const content = await this.zip.generateAsync({ type: "blob" });
 
         const a = document.createElement("a");
 
@@ -497,7 +489,7 @@ export class XenFS {
         });
 
         const file = await fileHandle.getFile();
-        const zip = await JSZip.loadAsync(file);
+        const zip = await this.zip.loadAsync(file);
 
         for (const relativePath in zip.files) {
             const zipEntry = zip.files[relativePath];
@@ -524,11 +516,10 @@ export class XenFS {
 
     async compress(path: string, dest: string): Promise<void> {
         const handle = await this.resolveHandle(path);
-        const zip = new JSZip();
 
         if (handle.kind === "file") {
             const file = await (handle as FileSystemFileHandle).getFile();
-            zip.file(handle.name, file);
+            this.zip.file(handle.name, file);
         } else if (handle.kind === "directory") {
             const addDirectoryToZip = async (
                 dirHandle: FileSystemDirectoryHandle,
@@ -540,7 +531,7 @@ export class XenFS {
                         : entry.name;
                     if (entry.kind === "file") {
                         const file = await (entry as FileSystemFileHandle).getFile();
-                        zip.file(entryZipPath, file);
+                        this.zip.file(entryZipPath, file);
                     } else if (entry.kind === "directory") {
                         await addDirectoryToZip(
                             entry as FileSystemDirectoryHandle,
@@ -553,7 +544,7 @@ export class XenFS {
             await addDirectoryToZip(handle as FileSystemDirectoryHandle, "");
         }
 
-        const content = await zip.generateAsync({ type: "blob" });
+        const content = await this.zip.generateAsync({ type: "blob" });
         await this.write(dest, content);
     }
 
@@ -566,7 +557,7 @@ export class XenFS {
         )) as FileSystemFileHandle;
 
         const file = await fileHandle.getFile();
-        const zip = await JSZip.loadAsync(file);
+        const zip = await this.zip.loadAsync(file);
 
         await this.mkdir(dest);
 

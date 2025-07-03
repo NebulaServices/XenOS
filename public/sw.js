@@ -25,32 +25,36 @@ addEventListener('message', async (ev) => {
     if (ev.data?.target == 'comlink-init') self.shared = Comlink.wrap(ev.data.value);
 });
 
-async function serveFile(url, prefix, dir = '/') {
-    if (!shared.xen) return new Response(`Service not ready`, { status: 503 });
-    const path = new URL(url).pathname.replace(new RegExp(`^/${prefix}`), '');
+async function serveFile(url) {
+    if (!self.shared.xen.fs) return new Response(`Service not ready`, { status: 503 });
+
+    const fsPath = new URL(url).pathname.replace(/^\/fs/, '');
+    console.log(`${url}: ${fsPath}`);
     let content;
 
     try {
-        content = await shared.xen.fs.read(dir + path);
+        content = await shared.xen.fs.read(fsPath);
     } catch (err) {
-        return new Response(`File not found: ${path}`, {
+        return new Response(`File not found: ${fsPath}`, {
             status: 404,
             statusText: 'Not Found'
         });
     }
 
-    let mime = shared.mime.getType(path.split('.').pop()) || 'application/octet-stream';
-    if (mime == 'video/mp2t') mime = 'text/javascript';
+    const extension = fsPath.split('.').pop();
+    const mime = (shared.mime && shared.mime.getType(extension)) || 'application/octet-stream';
+    if (mime === 'video/mp2t') return new Response(content, { headers: { 'Content-Type': 'text/javascript' } });
+    if (extension == 'css') return new Response(content, { headers: { 'Content-Type': 'text/css' } }); // ????????????
 
     return new Response(content, {
-        headers: { 'Content-Type': mime, }
+        headers: { 'Content-Type': mime },
     });
 }
 
 workbox.routing.registerRoute(
     /\/fs\//,
     async ({ request }) => {
-        return await serveFile(request.url, 'fs');
+        return await serveFile(request.url);
     },
     "GET"
 );

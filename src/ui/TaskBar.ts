@@ -8,7 +8,7 @@ TODO:
 import { WindowManager } from './windows/WindowManager';
 import { Window } from './windows/Window';
 import { ContextMenu } from './ContextMenu';
-import { PinnedWindowEntry, TaskBarDisplayMode, TaskBarEntry } from '../types/global';
+import { PinnedWindowEntry, TaskBarDisplayMode, TaskBarEntry } from '../types/TaskBar';
 
 export class TaskBar {
     private static readonly LOCAL_STORAGE = {

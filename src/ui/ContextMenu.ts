@@ -4,7 +4,7 @@ TODO:
 - Simplify API
 - Improve CSS
 */
-import { ContextMenuEntry, FunctionRegistry } from '../types/global';
+import { ContextMenuEntry, FunctionRegistry } from '../types/ContextMenu';
 
 export class ContextMenu {
     private static readonly LOCAL_STORAGE_KEY = 'XEN-CONTEXT-MENU';

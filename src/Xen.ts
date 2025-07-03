@@ -21,15 +21,15 @@ export class Xen {
 
     constructor() {
         this.net = new LibcurlClient((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
-        this.fs = new XenFS(this.net);
+        this.fs = new XenFS();
         this.boot = oobe;
         this.wm = new WindowManager();
         this.ui = {
             contextMenu: new ContextMenu(),
             taskBar: null as TaskBar
         };
-        this.process = new Proccesses(this);
-        this.apps = new AppManager(this.fs, this.process);
+        this.apps = new AppManager();
+        this.process = new Proccesses();
     }
 
     public version = {

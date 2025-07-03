@@ -1,5 +1,5 @@
 /* TODO: clean up */
-import { WindowOpts } from '../../types/global';
+import { WindowOpts } from '../../types/Window';
 import { WindowManager } from './WindowManager';
 import { v4 as uuidv4 } from 'uuid';
 

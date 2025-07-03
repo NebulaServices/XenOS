@@ -1,33 +1,26 @@
-/*
-TODO:
-- Import jzip at `window`
-- Use FS and procceses and `window.xen`
-*/
-
-import { XenFS } from '../files/XenFS';
-import { RegisteredApps, AppManifest } from '../../types/global';
+import { RegisteredApps, AppManifest } from '../../types/Apps';
 import { AppRuntime } from './AppRuntime';
-import { Proccesses } from './Processes';
-import JSZip from 'jszip';
 
 export class AppManager {
-    private fs: XenFS;
     private regFile = '/apps/registrations.json';
     private basePath = '/apps';
     private runtime: AppRuntime;
+    private zip: any;
 
-    constructor(fs: XenFS, processes: Proccesses) {
-        this.fs = fs;
-        this.runtime = new AppRuntime(processes);
+    constructor() {
+        this.runtime = new AppRuntime();
+        this.zip = new window.JSZip();
     }
 
     private async getRegs(): Promise<RegisteredApps> {
+        const fs = window.xen.fs;
+
         try {
-            if (!await this.fs.exists(this.regFile)) {
-                await this.fs.write(this.regFile, '[]');
+            if (!await fs.exists(this.regFile)) {
+                await fs.write(this.regFile, '[]');
             }
 
-            const content = await this.fs.read(this.regFile);
+            const content = await fs.read(this.regFile);
             return JSON.parse(content);
         } catch (err) {
             throw err;
@@ -35,14 +28,18 @@ export class AppManager {
     }
 
     private async saveRegs(packageIds: RegisteredApps): Promise<void> {
+        const fs = window.xen.fs;
+
         try {
-            await this.fs.write(this.regFile, JSON.stringify(packageIds, null, 4));
+            await fs.write(this.regFile, JSON.stringify(packageIds, null, 4));
         } catch (err) {
             throw err;
         }
     }
 
     public async install(): Promise<void> {
+        const fs = window.xen.fs;
+
         try {
             const [handle] = await window.showOpenFilePicker({
                 types: [{
@@ -54,7 +51,7 @@ export class AppManager {
             });
 
             const file = await handle.getFile();
-            const zip = await JSZip.loadAsync(file);
+            const zip = await this.zip.loadAsync(file);
             let manifest: AppManifest | undefined;
 
             for (const entry in zip.files) {
@@ -69,17 +66,17 @@ export class AppManager {
             if (!manifest) throw new Error('manifest.json not found');
 
             const appPath = `${this.basePath}/${manifest.packageId}`;
-            await this.fs.mkdir(appPath);
+            await fs.mkdir(appPath);
 
             for (const entryPath in zip.files) {
                 const entry = zip.files[entryPath];
                 const targetPath = `${appPath}/${entryPath}`;
 
                 if (entry.dir) {
-                    await this.fs.mkdir(targetPath);
+                    await fs.mkdir(targetPath);
                 } else {
                     const content = await entry.async('blob');
-                    await this.fs.write(targetPath, content);
+                    await fs.write(targetPath, content);
                 }
             }
 
@@ -95,11 +92,13 @@ export class AppManager {
     }
 
     public async getManifest(packageId: string): Promise<AppManifest | undefined> {
+        const fs = window.xen.fs;
+
         try {
             const path = `${this.basePath}/${packageId}/manifest.json`;
 
-            if (await this.fs.exists(path)) {
-                const content = await this.fs.read(path);
+            if (await fs.exists(path)) {
+                const content = await fs.read(path);
                 return JSON.parse(content);
             }
 
@@ -122,9 +121,11 @@ export class AppManager {
     }
 
     public async remove(packageId: string): Promise<void> {
+        const fs = window.xen.fs;
+
         try {
             const path = `${this.basePath}/${packageId}`;
-            if (await this.fs.exists(path)) await this.fs.rm(path);
+            if (await fs.exists(path)) await fs.rm(path);
 
             let regs = await this.getRegs();
 

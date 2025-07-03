@@ -1,11 +1,7 @@
 /* TODO: Break this file up into multiple files; currently its a hacked together mess, and the SW is buggy as shit */
 import { Xen } from "./Xen";
 import { XenTransport } from "./apis/networking/Transport";
-
-interface Shared { // Move this to types
-    xen?: Xen;
-    mime?: any;
-}
+import { Shared } from "./types/Shared";
 
 let shared: Shared = {};
 
@@ -13,10 +9,14 @@ async function setupDeps() {
     const idbKvPath = '/libs/idb-keyval/index.js';
     const ComlinkPath = '/libs/comlink/esm/comlink.min.mjs';
     const mimePath = '/libs/mime/src/index.js'
+    const jszPath = '/libs/jszip/jszip.js';
 
-    window.idbKv = await import(idbKvPath);
-    window.Comlink = await import(ComlinkPath);
-    window.mime = await import(mimePath);
+    //@ts-ignore
+    window.modules = {}
+    window.modules.idbKv = await import(idbKvPath);
+    window.modules.Comlink = await import(ComlinkPath);
+    window.modules.mime = await import(mimePath);
+    window.modules.jszip = await import(jszPath);
 
     const xen = new Xen();
     window.xen = xen;
@@ -26,7 +26,7 @@ async function setupDeps() {
     await window.xen.init();
 
     shared.xen = window.xen;
-    shared.mime = window.mime.default;
+    shared.mime = window.modules.mime.default;
 
     document.addEventListener("DOMContentLoaded", setupDeps);
 }
@@ -38,7 +38,7 @@ async function initComlink() {
         value: port2
     };
 
-    window.Comlink.expose(shared, port1);
+    window.modules.Comlink.expose(shared, port1);
 
     if (navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage(msg, [port2]);
@@ -78,6 +78,4 @@ window.addEventListener('load', async () => {
 
     const connection = new window.BareMux.BareMuxConnection('/libs/bare-mux/worker.js');
     connection.setRemoteTransport(new XenTransport(), 'XenTransport');
-
-    dispatchEvent(new CustomEvent('init'));
 });
