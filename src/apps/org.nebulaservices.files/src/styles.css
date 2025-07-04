@@ -1,0 +1,190 @@
+:root {
+    --bg-opacity: 0.85;
+}
+
+.sidebar {
+    background: rgba(30, 30, 46, var(--bg-opacity));
+    width: 200px;
+    padding: 16px;
+    border-right: 1px solid var(--mocha-surface1);
+}
+
+.logo {
+    font-size: 24px;
+    color: var(--mocha-blue);
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+#mount-btn {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+    background: var(--mocha-surface1);
+    border: none;
+    color: var(--mocha-text);
+    border-radius: 6px;
+}
+
+.main {
+    flex: 1;
+    background: rgba(49, 50, 68, var(--bg-opacity));
+    backdrop-filter: blur(10px);
+}
+
+.toolbar {
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+    background: rgba(69, 71, 90, var(--bg-opacity));
+}
+
+.file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+    padding: 20px;
+}
+
+.file-item {
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.file-item.selected {
+    background: var(--mocha-surface2);
+}
+
+.context-menu {
+    position: fixed;
+    background: rgba(30, 30, 46, 0.95);
+    border: 1px solid var(--mocha-surface1);
+    border-radius: 8px;
+    padding: 4px;
+    backdrop-filter: blur(10px);
+}
+
+.context-menu-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.context-menu-item:hover {
+    background: var(--mocha-surface1);
+}
+
+.dialog {
+    background: rgba(30, 30, 46, 0.95);
+    border-radius: 12px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--mocha-surface1);
+}
+
+.dialog input {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    background: var(--mocha-surface0);
+    border: 1px solid var(--mocha-surface2);
+    color: var(--mocha-text);
+    border-radius: 4px;
+}
+
+.dialog-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.file-container {
+    padding: 20px;
+}
+
+.file-container.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.file-container.list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.file-item {
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.file-item:hover {
+    background: var(--mocha-surface1);
+}
+
+.file-item.selected {
+    background: var(--mocha-surface2);
+}
+
+.file-item.grid {
+    text-align: center;
+}
+
+.file-item.list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.file-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.file-item.list .file-icon {
+    margin-bottom: 0;
+}
+
+.file-info {
+    flex: 1;
+}
+
+.file-name {
+    margin-bottom: 4px;
+}
+
+.file-details {
+    font-size: 0.9em;
+    color: var(--mocha-subtext0);
+}
+
+.separator {
+    margin: 0 8px;
+}
+
+.mount-item {
+    padding: 8px;
+    margin: 4px 0;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.mount-item:hover {
+    background: var(--mocha-surface1);
+}
+
+#view-toggle {
+    padding: 8px;
+    background: var(--mocha-surface1);
+    border: none;
+    color: var(--mocha-text);
+    border-radius: 6px;
+    cursor: pointer;
+}
