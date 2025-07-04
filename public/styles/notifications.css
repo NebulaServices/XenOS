@@ -1,0 +1,85 @@
+.notification-container {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 9999;
+}
+
+.notification {
+    width: 300px;
+    background: rgba(49, 50, 68, 0.5);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--mocha-surface1);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    transform: translateY(120%);
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.notification.show {
+    transform: translateY(0);
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.notification-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.notification-title {
+    flex: 1;
+    color: var(--mocha-text);
+    font-weight: 500;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: var(--mocha-red);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: color 0.2s;
+}
+
+.notification-close:hover {
+    color: var(--mocha-maroon);
+}
+
+.notification-body {
+    color: var(--mocha-subtext0);
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.notification-progress {
+    height: 3px;
+    background: rgba(137, 180, 250, 0.2);
+    border-radius: 1.5px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--mocha-blue);
+    animation: progress linear forwards;
+}
+
+@keyframes progress {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}

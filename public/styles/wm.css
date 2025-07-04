@@ -51,21 +51,16 @@
 
 .wm-window.wm-fullscreen {
     border-radius: 0;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
     box-shadow: none;
     z-index: 9999 !important;
 }
 
 @keyframes window-close-animation {
-    0% {
+    from {
         opacity: 1;
         transform: scale(1);
     }
-
-    100% {
+    to {
         opacity: 0;
         transform: scale(0.8);
     }
@@ -137,25 +132,20 @@
 }
 
 .wm-title-right .wm-minimize-btn {
-    background-color: var(--minimize-btn-bg);
+    background-color: var(--mocha-yellow);
 }
-
 .wm-title-right .wm-minimize-btn:hover {
     background-color: var(--minimize-btn-hover-bg);
 }
-
 .wm-title-right .wm-fullscreen-btn {
-    background-color: var(--fullscreen-btn-bg);
+    background-color: var(--mocha-green);
 }
-
 .wm-title-right .wm-fullscreen-btn:hover {
     background-color: var(--fullscreen-btn-hover-bg);
 }
-
 .wm-title-right .wm-close-btn {
-    background-color: var(--close-btn-bg);
+    background-color: var(--mocha-red);
 }
-
 .wm-title-right .wm-close-btn:hover {
     background-color: var(--close-btn-hover-bg);
 }
@@ -177,9 +167,8 @@
     width: 100%;
     height: 100%;
     border: none;
-    background-color: white;
+    background-color: var(--mocha-base);
     pointer-events: auto;
-    transition: pointer-events 0s linear 0.1s;
 }
 
 .wm-content-frame.wm-iframe-no-pointer {
@@ -190,7 +179,6 @@
     position: absolute;
     z-index: 10;
 }
-
 .wm-resizer-n,
 .wm-resizer-s {
     left: 10px;
@@ -198,17 +186,14 @@
     height: 10px;
     cursor: ns-resize;
 }
-
 .wm-resizer-n {
     top: 0;
     transform: translateY(-50%);
 }
-
 .wm-resizer-s {
     bottom: 0;
     transform: translateY(50%);
 }
-
 .wm-resizer-e,
 .wm-resizer-w {
     top: 10px;
@@ -216,17 +201,14 @@
     width: 10px;
     cursor: ew-resize;
 }
-
 .wm-resizer-e {
     right: 0;
     transform: translateX(50%);
 }
-
 .wm-resizer-w {
     left: 0;
     transform: translateX(-50%);
 }
-
 .wm-resizer-nw,
 .wm-resizer-ne,
 .wm-resizer-sw,
@@ -235,28 +217,24 @@
     height: 16px;
     border-radius: 50%;
 }
-
 .wm-resizer-nw {
     top: 0;
     left: 0;
     cursor: nwse-resize;
     transform: translate(-50%, -50%);
 }
-
 .wm-resizer-ne {
     top: 0;
     right: 0;
     cursor: nesw-resize;
     transform: translate(50%, -50%);
 }
-
 .wm-resizer-sw {
     bottom: 0;
     left: 0;
     cursor: nesw-resize;
     transform: translate(-50%, 50%);
 }
-
 .wm-resizer-se {
     bottom: 0;
     right: 0;

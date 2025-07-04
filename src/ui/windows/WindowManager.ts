@@ -45,4 +45,8 @@ export class WindowManager {
 
         this.onFocused?.(win);
     }
+
+    public update(): void {
+        window.xen.ui.taskBar.render();
+    }
 }

@@ -3,6 +3,7 @@ TODO:
 - Fix spacing and alignment for app entries
 - Allow for toggling modules to the right (Time, date, battery)
 - Fix dragging
+- Add inedcators for what apps are focused or minimized
 */
 import { WindowManager } from './windows/WindowManager';
 import { Window } from './windows/Window';

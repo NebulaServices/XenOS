@@ -1,5 +1,9 @@
-// TODO: Better icons
-
+/* 
+TODO: 
+- Better icons
+- Fix fullscreen behavior
+- Fix apps being able to go below dock
+*/
 import { WindowOpts } from '../../types/UI';
 import { WindowManager } from './WindowManager';
 import { v4 as uuidv4 } from 'uuid';

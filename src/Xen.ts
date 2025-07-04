@@ -6,6 +6,8 @@ import { ContextMenu } from "./ui/ContextMenu";
 import { TaskBar } from "./ui/TaskBar";
 import { Proccesses } from "./apis/process/Processes";
 import { AppManager } from "./apis/process/Apps";
+import { Notifications } from "./ui/Notifications";
+import { Wallpaper } from "./ui/Wallpaper";
 
 export class Xen {
     public net: LibcurlClient;
@@ -17,6 +19,8 @@ export class Xen {
     public ui: {
         contextMenu: ContextMenu,
         taskBar: TaskBar
+        notifications: Notifications,
+        wallpaper: Wallpaper
     };
 
     constructor() {
@@ -26,7 +30,9 @@ export class Xen {
         this.wm = new WindowManager();
         this.ui = {
             contextMenu: new ContextMenu(),
-            taskBar: null as TaskBar
+            taskBar: null as TaskBar,
+            notifications: new Notifications(),
+            wallpaper: new Wallpaper()
         };
         this.apps = new AppManager();
         this.process = new Proccesses();

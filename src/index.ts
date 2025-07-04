@@ -48,7 +48,6 @@ async function initComlink() {
 
 async function initSw() {
     await navigator.serviceWorker.register('/xen-sw.js');
-    console.log('SW Registered');
 
     if (!navigator.serviceWorker.controller) {
         await new Promise<void>((resolve) => {
@@ -78,3 +77,4 @@ window.addEventListener('load', async () => {
     const connection = new window.BareMux.BareMuxConnection('/libs/bare-mux/worker.js');
     connection.setRemoteTransport(new XenTransport(), 'XenTransport');
 });
+

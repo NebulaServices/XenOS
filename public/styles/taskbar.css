@@ -6,7 +6,7 @@
     width: auto;
     max-width: 85vw;
     min-width: 50vw;
-    background-color: rgba(49, 50, 68, 0.7);
+    background-color: rgba(49, 50, 68, 0.4);
     border: 1px solid var(--mocha-surface2);
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -14,8 +14,8 @@
     display: flex;
     align-items: center;
     z-index: 9000;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .taskbar-windows {
@@ -92,15 +92,6 @@
     white-space: nowrap;
     margin-top: auto;
     margin-bottom: auto;
-}
-
-.taskbar-item.is-focused .taskbar-item-indicator {
-    background-color: var(--mocha-lavender);
-    box-shadow: 0 0 6px var(--mocha-lavender);
-}
-
-.taskbar-item.is-pinned:not(.is-open):hover {
-    background-color: var(--mocha-surface1);
 }
 
 .launcher-button {
