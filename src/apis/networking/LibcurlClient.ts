@@ -1,6 +1,5 @@
 /*
 TODO:
-- Provide a more customizable configuration via:
 const client = new LibcurlClient({
     options: {
         url: (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/",
@@ -19,10 +18,7 @@ const client = new LibcurlClient({
         }
     }
 });
-- Provide an abstract NetworkingClient class
-- Make a NetworkClient resolver
-- Make socket-like loopbacks
-- V86 support (future)
+- Socket-like loopbacks
 */
 
 export class LibcurlClient {

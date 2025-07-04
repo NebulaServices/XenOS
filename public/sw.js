@@ -1,10 +1,4 @@
-/*
-TODO:
-- Make it actually work but not randomly
-- Make it boot from OPFS
-- Rewrite in Typescript
-*/
-
+// TODO: Make SW boot from OPFS
 Object.defineProperty(globalThis, "crossOriginIsolated", {
     value: true,
     writable: false,
@@ -25,6 +19,7 @@ addEventListener('message', async (ev) => {
     if (ev.data?.target == 'comlink-init') self.shared = Comlink.wrap(ev.data.value);
 });
 
+// This whole function is wonky really, not sure if its a XenFS issue or this function actually
 async function serveFile(url) {
     if (!self.shared.xen.fs) return new Response(`Service not ready`, { status: 503 });
 
@@ -41,6 +36,7 @@ async function serveFile(url) {
         });
     }
 
+    // Mime types are a bit broken, needs to be fixed
     const extension = fsPath.split('.').pop();
     const mime = (shared.mime && shared.mime.getType(extension)) || 'application/octet-stream';
     if (mime === 'video/mp2t') return new Response(content, { headers: { 'Content-Type': 'text/javascript' } });

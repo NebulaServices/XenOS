@@ -1,0 +1,136 @@
+.app-launcher {
+    position: fixed;
+    width: 500px;
+    height: 65vh;
+    max-height: 500px;
+    background-color: rgba(49, 50, 68, 0.5);
+    border: 1px solid var(--mocha-surface2);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    z-index: 9500;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    transform-origin: bottom left;
+    pointer-events: none;
+    transition:
+        opacity 0.25s ease-out,
+        transform 0.25s ease-out;
+}
+
+.app-launcher.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.launcher-search-container {
+    position: relative;
+    padding: 16px;
+    flex-shrink: 0;
+}
+
+.launcher-search-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 16px 0 48px;
+    background-color: var(--mocha-surface0);
+    border: 1px solid transparent;
+    border-radius: 22px;
+    color: var(--mocha-text);
+    font-size: 0.9rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.launcher-search-input:focus {
+    border-color: var(--mocha-mauve);
+}
+
+.launcher-search-input::placeholder {
+    color: var(--mocha-subtext0);
+}
+
+.launcher-search-icon {
+    position: absolute;
+    left: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--mocha-subtext0);
+    pointer-events: none;
+}
+
+.app-grid {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 16px;
+    padding: 0 16px 16px 16px;
+    overflow-y: auto;
+    align-content: start;
+}
+
+.app-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.app-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.app-grid::-webkit-scrollbar-thumb {
+    background-color: var(--mocha-surface2);
+    border-radius: 3px;
+}
+
+.app-grid::-webkit-scrollbar-thumb:hover {
+    background-color: var(--mocha-overlay0);
+}
+
+.app-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+        background-color 0.2s ease,
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.app-launcher.visible .app-entry {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.app-entry:hover {
+    background-color: var(--mocha-surface0);
+}
+
+.app-entry img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.app-entry span {
+    font-size: 0.75rem;
+    color: var(--mocha-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}

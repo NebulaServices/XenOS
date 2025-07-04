@@ -1,4 +1,5 @@
-/* TODO: clean up */
+// TODO: Better icons
+
 import { WindowOpts } from '../../types/Window';
 import { WindowManager } from './WindowManager';
 import { v4 as uuidv4 } from 'uuid';

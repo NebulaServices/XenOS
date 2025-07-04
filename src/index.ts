@@ -1,4 +1,3 @@
-/* TODO: Break this file up into multiple files; currently its a hacked together mess, and the SW is buggy as shit */
 import { Xen } from "./Xen";
 import { XenTransport } from "./apis/networking/Transport";
 import { Shared } from "./types/Shared";

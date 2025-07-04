@@ -1,9 +1,4 @@
-/*
-TODO:
-- Clean up AI slop
-- Simplify API
-- Improve CSS
-*/
+// TODO: Translucent
 import { ContextMenuEntry, FunctionRegistry } from '../types/ContextMenu';
 
 export class ContextMenu {
@@ -11,13 +6,10 @@ export class ContextMenu {
     private entries: ContextMenuEntry[] = [];
     public registry: FunctionRegistry = {};
     private menuEl: HTMLDivElement | null = null;
-    private currentDomain: string | null = null;
 
     constructor() {
         this.loadEntries();
-
-        document.addEventListener('click', this.handleGlobalClick);
-        // document.addEventListener('contextmenu', this.handleGlobalRightClick);
+        document.addEventListener('click', this.handleClick);
     }
 
     public registerFunction(funcId: string, func: (...args: any[]) => void): void {
@@ -73,7 +65,6 @@ export class ContextMenu {
             event.preventDefault();
             event.stopPropagation();
 
-            this.currentDomain = domain;
             this.closeMenu();
             this.renderMenu(event.clientX, event.clientY, domain);
         });
@@ -124,7 +115,6 @@ export class ContextMenu {
         if (this.menuEl) {
             this.menuEl.remove();
             this.menuEl = null;
-            this.currentDomain = null;
         }
     }
 
@@ -147,6 +137,7 @@ export class ContextMenu {
     private loadEntries(): void {
         try {
             const stored = localStorage.getItem(ContextMenu.LOCAL_STORAGE_KEY);
+
             if (stored) {
                 this.entries = JSON.parse(stored);
                 this.entries.forEach((entry) => {
@@ -158,11 +149,7 @@ export class ContextMenu {
             this.entries = [];
         }
     }
-    private handleGlobalClick = (event: MouseEvent): void => {
-        if (this.menuEl && !this.menuEl.contains(event.target as Node)) {
-            this.closeMenu();
-        }
+    private handleClick = (event: MouseEvent): void => {
+        if (this.menuEl && !this.menuEl.contains(event.target as Node)) this.closeMenu();
     };
-
-    // private handleGlobalRightClick = (event: MouseEvent): void => {};
 }
