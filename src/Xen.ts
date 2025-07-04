@@ -1,6 +1,6 @@
 import { LibcurlClient } from "./apis/networking/LibcurlClient";
 import { XenFS } from "./apis/files/XenFS";
-import { oobe } from "./oobe/autoUpdate";
+import { oobe } from "./ui/oobe/autoUpdate";
 import { WindowManager } from "./ui/windows/WindowManager";
 import { ContextMenu } from "./ui/ContextMenu";
 import { TaskBar } from "./ui/TaskBar";

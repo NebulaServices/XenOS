@@ -71,7 +71,7 @@ section "Starting Build..."
 if [ "$DO_ESM" = true ]; then
     section "Building source code"
 
-    rm -rf ./build/ ./dist/ ./dist-transport/ ./wisp-client-js/dist/
+    rm -rf ./build/ ./dist/ ./dist-transport/ ./dist-sw/ ./wisp-client-js/dist/
 
     pushd ./wisp-client-js/ >/dev/null
     if [ ! -d "node_modules" ]; then
@@ -94,6 +94,8 @@ if [ "$DO_ESM" = true ]; then
 
     mkdir -p ./build/libs/transport/
     mv ./dist-transport/* ./build/libs/transport/
+
+    mv ./dist-sw/xen-sw.js ./build/xen-sw.js
 
     mkdir -p ./build/libs/wisp-client-js/
     mv ./wisp-client-js/dist/* ./build/libs/wisp-client-js/
@@ -148,7 +150,7 @@ if [ "$DO_UUID" = true ]; then
 fi
 
 if [ "$DO_ESM" = true ]; then
-    rm -rf ./dist/ ./dist-transport/
+    rm -rf ./dist/ ./dist-transport/ ./dist-sw/
 fi
 
 echo ""

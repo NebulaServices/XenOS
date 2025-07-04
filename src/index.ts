@@ -1,8 +1,6 @@
 import { Xen } from "./Xen";
 import { XenTransport } from "./apis/networking/Transport";
-import { Shared } from "./types/Shared";
-
-let shared: Shared = {};
+// import { oobe } from "./ui/oobe/autoUpdate";
 
 async function setupDeps() {
     const idbKvPath = '/libs/idb-keyval/index.js';
@@ -24,10 +22,11 @@ async function setupDeps() {
     await window.xen.fs.init();
     await window.xen.init();
 
-    shared.xen = window.xen;
-    shared.mime = window.modules.mime.default;
+    // await oobe();
 
-    document.addEventListener("DOMContentLoaded", setupDeps);
+    window.shared = {};
+    window.shared.xen = window.xen;
+    window.shared.mime = window.modules.mime.default;
 }
 
 async function initComlink() {
@@ -37,7 +36,7 @@ async function initComlink() {
         value: port2
     };
 
-    window.modules.Comlink.expose(shared, port1);
+    window.modules.Comlink.expose(window.shared, port1);
 
     if (navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage(msg, [port2]);
@@ -48,7 +47,8 @@ async function initComlink() {
 }
 
 async function initSw() {
-    await navigator.serviceWorker.register('/sw.js');
+    await navigator.serviceWorker.register('/xen-sw.js');
+    console.log('SW Registered');
 
     if (!navigator.serviceWorker.controller) {
         await new Promise<void>((resolve) => {

@@ -1,4 +1,4 @@
-import { RegisteredApps, AppManifest } from '../../types/Apps';
+import { RegisteredApps, AppManifest } from '../../types/Process';
 import { AppRuntime } from './AppRuntime';
 
 export class AppManager {
@@ -20,7 +20,7 @@ export class AppManager {
                 await fs.write(this.regFile, '[]');
             }
 
-            const content = await fs.read(this.regFile);
+            const content = await fs.read(this.regFile, 'text') as string;
             return JSON.parse(content);
         } catch (err) {
             throw err;
@@ -98,7 +98,7 @@ export class AppManager {
             const path = `${this.basePath}/${packageId}/manifest.json`;
 
             if (await fs.exists(path)) {
-                const content = await fs.read(path);
+                const content = await fs.read(path, 'text') as string;
                 return JSON.parse(content);
             }
 

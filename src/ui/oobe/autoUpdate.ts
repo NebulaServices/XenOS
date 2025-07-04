@@ -1,9 +1,10 @@
-import { mirror } from "./mirror";
+import { mirrorFS } from "./mirror";
 
 export async function oobe() {
     if (!localStorage.getItem('xen.fs.mirrored')) {
         console.log('[oobe] init oobe')
-        await mirror();
+        await mirrorFS();
+        console.log('[oobe] update finished');
         localStorage.setItem('xen.fs.mirrored', 'true');
     }
 
@@ -14,7 +15,8 @@ export async function oobe() {
 
     if (window.xen.version.build != localStorage.getItem('xen.cache.build')) {
         console.log('[oobe] update deps');
-        await mirror();
+        await mirrorFS();
+        console.log('[oobe] update finished');
         localStorage.setItem('xen.cache.build', window.xen.version.build);
     }
 }

@@ -1,4 +1,5 @@
-import { WindowOpts } from '../../types/Window';
+// TODO: Window "clamper" like in Windows 11 or ChromeOS
+import { WindowOpts } from '../../types/UI';
 import { Window } from './Window';
 
 export class WindowManager {

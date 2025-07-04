@@ -1,5 +1,5 @@
 // TODO: Translucent
-import { ContextMenuEntry, FunctionRegistry } from '../types/ContextMenu';
+import { ContextMenuEntry, FunctionRegistry } from '../types/UI';
 
 export class ContextMenu {
     private static readonly LOCAL_STORAGE_KEY = 'XEN-CONTEXT-MENU';

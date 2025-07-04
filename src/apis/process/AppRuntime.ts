@@ -1,4 +1,4 @@
-import { AppManifest } from "../../types/Apps";
+import { AppManifest } from "../../types/Process";
 
 export class AppRuntime {
     public async exec(manifest: AppManifest) {

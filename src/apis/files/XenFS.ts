@@ -193,17 +193,32 @@ export class XenFS {
         await writable.close();
     }
 
-    async read(path: string): Promise<string> {
+    async read(
+        path: string, 
+        format: "text" | "arrayBuffer" | "uint8array" | "blob" = "text"
+    ): Promise<string | ArrayBuffer | Uint8Array | Blob> {
         const fileHandle = (await this.resolveHandle(
             path,
             false,
             false,
-            "file",
+            "file"
         )) as FileSystemFileHandle;
 
         const file = await fileHandle.getFile();
-        return await file.text();
+
+        switch (format) {
+            case "text":
+                return await file.text();
+            case "arrayBuffer":
+                return await file.arrayBuffer();
+            case "uint8array":
+                return new Uint8Array(await file.arrayBuffer());
+            case "blob":
+            default:
+                return file;
+        }
     }
+
 
     async rm(path: string): Promise<void> {
         const parts = this.splitPath(path);

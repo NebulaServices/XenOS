@@ -5,7 +5,7 @@
 */
 
 import { AppManager } from '../apis/process/Apps';
-import { AppManifest } from '../types/Apps';
+import { AppManifest } from '../types/Process';
 
 export class AppLauncher {
     private el: {
@@ -126,7 +126,7 @@ export class AppLauncher {
         entry.title = app.title;
 
         const icon = document.createElement('img');
-        icon.src = app.icon; // TODO: Make this path be `/fs/apps/PACKAGE_ID`, it's currently not due to a SW or XenFS issue, not sure which one yet
+        icon.src = `/fs/apps/${app.packageId}/${app.icon}`;
         icon.alt = app.title;
 
         const name = document.createElement('span');

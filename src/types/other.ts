@@ -18,5 +18,14 @@ declare global {
             BareMuxConnection: typeof BareMuxConnection;
         }
         JSZip: jszip;
+        shared: {
+            xen?: Xen;
+            mime?: any;
+        }
     }
+}
+
+export interface Shared {
+    xen?: Xen;
+    mime?: any;
 }

@@ -2,6 +2,7 @@
 TODO:
 - Fix spacing and alignment for app entries
 - Allow for toggling modules to the right (Time, date, battery)
+- Fix dragging
 */
 import { WindowManager } from './windows/WindowManager';
 import { Window } from './windows/Window';
@@ -10,7 +11,7 @@ import {
     PinnedWindowEntry,
     TaskBarDisplayMode,
     TaskBarEntry,
-} from '../types/TaskBar';
+} from '../types/UI';
 import { AppManager } from '../apis/process/Apps';
 import { AppLauncher } from './AppLauncher';
 

@@ -1,6 +1,6 @@
 // TODO: Better icons
 
-import { WindowOpts } from '../../types/Window';
+import { WindowOpts } from '../../types/UI';
 import { WindowManager } from './WindowManager';
 import { v4 as uuidv4 } from 'uuid';
 

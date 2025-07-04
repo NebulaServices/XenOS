@@ -19,6 +19,7 @@ const client = new LibcurlClient({
     }
 });
 - Socket-like loopbacks
+- Fix not ready bug
 */
 
 export class LibcurlClient {

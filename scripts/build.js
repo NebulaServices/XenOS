@@ -37,6 +37,19 @@ await build({
     sourcemap: true
 });
 
+// Service Worker
+await build({
+    entryPoints: {
+        index: 'src/sw/xen-sw.ts'
+    },
+    entryNames: '[name]',
+    outfile: 'dist-sw/xen-sw.js',
+    bundle: true,
+    //logLevel: 'info',
+    format: 'esm',
+    sourcemap: true
+})
+
 // wisp-client-js
 await build({
     entryPoints: {
