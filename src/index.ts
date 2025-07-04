@@ -1,6 +1,6 @@
 import { Xen } from "./Xen";
 import { XenTransport } from "./apis/networking/Transport";
-// import { oobe } from "./ui/oobe/autoUpdate";
+import { oobe } from "./ui/oobe/autoUpdate";
 
 async function setupDeps() {
     const idbKvPath = '/libs/idb-keyval/index.js';
@@ -22,7 +22,7 @@ async function setupDeps() {
     await window.xen.fs.init();
     await window.xen.init();
 
-    // await oobe();
+    await oobe();
 
     window.shared = {};
     window.shared.xen = window.xen;

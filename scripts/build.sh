@@ -39,6 +39,7 @@ DO_NM=false
 DO_WB=false
 DO_UUID=false
 DO_FILES=false
+DO_CA=true
 
 if [ $# -eq 0 ]; then
     echo "$HELP"
@@ -53,6 +54,7 @@ for arg in "$@"; do
             DO_WB=true
             DO_UUID=true
             DO_FILES=true
+            DO_CA=true
             ;;
         --help)
             echo "$HELP"
@@ -124,6 +126,12 @@ if [ "$DO_NM" = true ]; then
     rm -rf build/libs/idb-keyval/test build/libs/idb-keyval/src
 
     success "Copied node_modules dependencies"
+fi
+
+if [ "$DO_CA" = true ]; then
+    section "Copying included apps"
+    cp -r ./apps/ ./build/apps/
+    success "Copied apps"
 fi
 
 if [ "$DO_WB" = true ]; then

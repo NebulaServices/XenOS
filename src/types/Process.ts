@@ -17,8 +17,12 @@ export interface AppManifest {
     source: {
         url?: string;
         index?: string;
-        background?: string
-    }
+        background?: string;
+    };
+    window?: {
+        width?: string;
+        height?: string;
+    };
 }
 
 export type RegisteredApps = string[];

@@ -1,9 +1,0 @@
-{
-    "title": "Test",
-    "icon": "/logo.png",
-    "packageId": "dev.scaratek.test",
-    "type": "auto",
-    "source": {
-        "index": "index.html"
-    }
-}

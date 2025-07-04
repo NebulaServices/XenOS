@@ -1,22 +1,33 @@
-//import { mirrorFS } from "./mirror";
-
 export async function oobe() {
-    if (!localStorage.getItem('xen.fs.mirrored')) {
-        //console.log('[oobe] init oobe')
-        //await mirrorFS();
-        //console.log('[oobe] update finished');
-        localStorage.setItem('xen.fs.mirrored', 'true');
-    }
+    if (!localStorage.getItem('XEN-OOBE')) {
+        const req = await fetch('/files.json');
+        const res = await req.json();
 
-    if (!localStorage.getItem('xen.cache.build')) {
-        //console.log('[oobe] set init cache build')
-        localStorage.setItem('xen.cache.build', window.xen.version.build);
-    }
+        Object.entries(res)[1].forEach(async (el) => {
+            if (el == '/apps') return;
 
-    if (window.xen.version.build != localStorage.getItem('xen.cache.build')) {
-        //console.log('[oobe] update deps');
-        //await mirrorFS();
-        //console.log('[oobe] update finished');
-        localStorage.setItem('xen.cache.build', window.xen.version.build);
+            const filename = el[0];
+            const dirname = filename.replace(/\.zip$/, '');
+
+            const req = await fetch(`/apps/${filename}`);
+            const arrBuff = await req.arrayBuffer();
+            const buffer = new Uint8Array(arrBuff);
+
+            if (!(await window.xen.fs.exists('/apps'))) {
+                await window.xen.fs.mkdir('/apps');
+                await window.xen.fs.write('/apps/registrations.json', '[]');
+            }
+
+            let regs = JSON.parse(await window.xen.fs.read('/apps/registrations.json', 'text') as string);
+            regs.push(dirname);
+            await window.xen.fs.write('/apps/registrations.json', JSON.stringify(regs));
+
+            await window.xen.fs.write(`/apps/${filename}`, buffer);
+            await window.xen.fs.mkdir(`/apps/${dirname}`);
+            await window.xen.fs.decompress(`/apps/${filename}`, `/apps/${dirname}/`);
+            await window.xen.fs.rm(`/apps/${filename}`);
+        });
+
+        localStorage.setItem('XEN-OOBE', 'true');
     }
 }

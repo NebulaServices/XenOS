@@ -3,13 +3,17 @@ import { AppManifest } from "../../types/Process";
 export class AppRuntime {
     public async exec(manifest: AppManifest) {
         let code: string;
+        const width = manifest.window?.width || '600px';
+        const height = manifest.window?.height || '400px';
 
         if (manifest.type == 'webview') {
             code = `
                 const win = await xen.wm.create({
                     title: '${manifest.title}',
                     icon: '${manifest.icon}',
-                    url: '${manifest.source.url}'     
+                    url: '${manifest.source.url}',
+                    width: '${width}',
+                    height: '${height}'   
                 });
             `;
         } else if (manifest.type == 'manual') {
@@ -26,7 +30,9 @@ export class AppRuntime {
                 const win = await xen.wm.create({
                     title: '${manifest.title}',
                     icon: '${manifest.icon}',
-                    url: '${encodedUrl}'     
+                    url: '${encodedUrl}',   
+                    width: '${width}',
+                    height: '${height}'     
                 });
             `;
         }
