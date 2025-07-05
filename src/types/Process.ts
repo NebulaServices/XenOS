@@ -22,6 +22,7 @@ export interface AppManifest {
     window?: {
         width?: string;
         height?: string;
+        resizable?: boolean;
     };
 }
 

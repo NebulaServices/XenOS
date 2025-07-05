@@ -10,6 +10,5 @@
 - Libraries
 ## UI
 - OOBE
-- Bootsplash
 - Systray
 - Dialog

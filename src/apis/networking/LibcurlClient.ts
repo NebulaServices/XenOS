@@ -140,4 +140,9 @@ export class LibcurlClient {
 
         return this.direct.libcurl.fetch(url, options);
     }
+
+    public encodeUrl(url: string): string {
+        //@ts-ignore
+        return window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
+    }
 }

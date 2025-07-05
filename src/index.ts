@@ -1,6 +1,7 @@
 import { Xen } from "./Xen";
 import { XenTransport } from "./apis/networking/Transport";
 import { oobe } from "./ui/oobe/autoUpdate";
+import { bootSplash } from "./ui/bootsplash";
 
 async function setupDeps() {
     const idbKvPath = '/libs/idb-keyval/index.js';
@@ -70,11 +71,27 @@ async function initSw() {
 }
 
 window.addEventListener('load', async () => {
+    const splash = bootSplash();
+
     await setupDeps();
     await window.xen.boot();
-    await initSw();
+    await initSw().then(() => {
+        window.xen.ui.wallpaper.set();
+    });
+
+    const loadingBar = document.getElementById("loading-bar") as HTMLDivElement;
+    loadingBar.style.animation = "none";
+    loadingBar.style.width = "100%";
+    loadingBar.style.transition = "width 0.2s ease-out";
 
     const connection = new window.BareMux.BareMuxConnection('/libs/bare-mux/worker.js');
     connection.setRemoteTransport(new XenTransport(), 'XenTransport');
+
+    setTimeout(() => {
+        splash.style.opacity = "0";
+        splash.addEventListener("transitionend", () => {
+            splash.remove();
+        });
+    }, 500);
 });
 

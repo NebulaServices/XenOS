@@ -8,7 +8,7 @@
 export class XenFS {
     private cwd: string = "/";
     private root: FileSystemDirectoryHandle;
-    private mounts: Map<string, FileSystemDirectoryHandle> = new Map();
+    public mounts: Map<string, FileSystemDirectoryHandle> = new Map();
     private zip: any;
 
     constructor() { this.zip = new window.JSZip(); }

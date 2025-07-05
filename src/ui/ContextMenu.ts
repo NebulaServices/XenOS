@@ -70,7 +70,7 @@ export class ContextMenu {
         });
     }
 
-    private renderMenu(x: number, y: number, domain: string): void {
+    public renderMenu(x: number, y: number, domain: string): void {
         const entries = this.entries.filter((entry) => entry.domain === domain);
         if (entries.length === 0) return;
 
