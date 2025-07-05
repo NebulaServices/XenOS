@@ -5,15 +5,18 @@ export class AppRuntime {
         let code: string;
         const width = manifest.window?.width || '600px';
         const height = manifest.window?.height || '400px';
+        let resizable: boolean = manifest.window?.resizable ?? true;
 
         if (manifest.type == 'webview') {
+            const encodedIcon = new URL(manifest.icon, `${location.origin}/fs/apps/${manifest.packageId}/`).href;
             code = `
                 const win = await xen.wm.create({
                     title: '${manifest.title}',
-                    icon: '${manifest.icon}',
+                    icon: '${encodedIcon}',
                     url: '${manifest.source.url}',
                     width: '${width}',
-                    height: '${height}'   
+                    height: '${height}',
+                    resizable: ${resizable}
                 });
             `;
         } else if (manifest.type == 'manual') {
@@ -25,14 +28,15 @@ export class AppRuntime {
             code = res;
         } else if (manifest.type == 'auto') {
             const encodedUrl = new URL(manifest.source.index, `${location.origin}/fs/apps/${manifest.packageId}/`).href;
-
+            const encodedIcon = new URL(manifest.icon, `${location.origin}/fs/apps/${manifest.packageId}/`).href;
             code = `
                 const win = await xen.wm.create({
                     title: '${manifest.title}',
-                    icon: '${manifest.icon}',
+                    icon: '${encodedIcon}',
                     url: '${encodedUrl}',   
                     width: '${width}',
-                    height: '${height}'     
+                    height: '${height}',
+                    resizable: ${resizable}     
                 });
             `;
         }

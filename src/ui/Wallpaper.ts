@@ -1,9 +1,5 @@
 export class Wallpaper {
-    constructor() {
-        this.set();
-    }
-
-    public set(url?: string) {
+   public set(url?: string) {
         let final = url;
 
         if (!final) {

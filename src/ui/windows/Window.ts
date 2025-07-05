@@ -18,7 +18,9 @@ export class Window {
         height: string;
         title: string;
         icon?: string;
-        url: string;
+        url?: string;
+        content?: string;
+        resizable?: boolean;
     } = {};
     //@ts-ignore
     public is: {
@@ -49,6 +51,11 @@ export class Window {
         this.props.height = opts.height || '400px';
         this.props.x = opts.x || Math.random() * (window.innerWidth - 600 - 50);
         this.props.y = opts.y || Math.random() * (window.innerHeight - 400 - 50);
+        if (opts.resizable) {
+            this.props.resizable = opts.resizable;
+        } else {
+            opts.resizable = true;
+        }
         this.og.width = this.props.width;
         this.og.height = this.props.height;
         this.og.x = this.props.x;
@@ -100,21 +107,29 @@ export class Window {
             </div>
         `;
 
-        this.el.content = document.createElement('iframe');
-        this.el.content.classList.add('wm-content-frame');
-        this.el.content.src = this.encodeUrl(this.props.url);
-
-        this.el.content.setAttribute('loading', 'lazy');
-        this.el.content.setAttribute('allowfullscreen', 'true');
+        if (this.props.url) {
+            this.el.content = document.createElement('iframe');
+            this.el.content.classList.add('wm-content-frame');
+            this.el.content.src = this.encodeUrl(this.props.url);
+            this.el.content.setAttribute('loading', 'lazy');
+            this.el.content.setAttribute('allowfullscreen', 'true');
+        } else if (this.props.content) {
+            const div = document.createElement('div');
+            div.classList.add('wm-content');
+            div.innerHTML = this.props.content || '';
+            this.el.content = div as any;
+        }
 
         el.appendChild(this.el.bar);
         el.appendChild(this.el.content);
 
-        ['n', 's', 'e', 'w', 'nw', 'ne', 'sw', 'se'].forEach((direction) => {
-            const resizer = document.createElement('div');
-            resizer.classList.add('wm-resizer', `wm-resizer-${direction}`);
-            el.appendChild(resizer);
-        });
+        if (this.props.resizable == true) {
+            ['n', 's', 'e', 'w', 'nw', 'ne', 'sw', 'se'].forEach((direction) => {
+                const resizer = document.createElement('div');
+                resizer.classList.add('wm-resizer', `wm-resizer-${direction}`);
+                el.appendChild(resizer);
+            });
+        }
 
         // KILL YOURSELF
         this.el.content.onload = () => {

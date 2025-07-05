@@ -6,7 +6,7 @@ import http from 'http';
 
 const app = express();
 const server = http.createServer(app);
-const port = 3001;  
+const port = 3000;  
 const path = join(dirname(fileURLToPath(import.meta.url)), '..', 'build');
 
 app.use(express.static(path));
