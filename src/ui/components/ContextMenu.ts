@@ -129,7 +129,7 @@ export class ContextMenu {
         }));
 
         try {
-            settings.set(ContextMenu.STORAGE_KEY, JSON.stringify(serializable));
+            settings.set(ContextMenu.STORAGE_KEY, serializable);
         } catch (err) {
             console.error('Failed to save entries:', err);
         }
