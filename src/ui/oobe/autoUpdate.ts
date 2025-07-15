@@ -27,15 +27,15 @@ async function update() {
 }
 
 export async function oobe() {
-    if (!localStorage.getItem('XEN-OOBE')) {
+    if (!window.xen.settings.get('oobe')) {
         await update();
 
-        localStorage.setItem('XEN-OOBE', 'true');
-        localStorage.setItem('XEN-BUILD-CACHE', window.xen.version.build);
+        window.xen.settings.set('oobe', true);
+        window.xen.settings.set('build-cache', window.xen.version.build);
     }
 
-    if (window.xen.version.build != localStorage.getItem('XEN-BUILD-CACHE')) {
+    if (window.xen.version.build != window.xen.settings.get('build-cache')) {
         await update();
-        localStorage.setItem('XEN-BUILD-CACHE', window.xen.version.build);
+        window.xen.settings.set('build-cache', window.xen.version.build);
     }
 }

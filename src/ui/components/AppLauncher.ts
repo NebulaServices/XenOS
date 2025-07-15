@@ -4,8 +4,8 @@
 - Make launcher resizable
 */
 
-import { AppManager } from '../apis/process/Apps';
-import { AppManifest } from '../types/Process';
+import { AppManager } from '../../apis/process/Apps';
+import { AppManifest } from '../../types/Process';
 
 export class AppLauncher {
     private el: {
