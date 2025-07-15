@@ -24,9 +24,7 @@ function error() {
 }
 
 section "Starting Build..."
-
 section "Building source code"
-
 rm -rf ./build/ ./dist/ ./dist-transport/ ./dist-sw/ ./wisp-client-js/dist/ ./apps/
 
 pushd ./wisp-client-js/ >/dev/null
@@ -39,6 +37,7 @@ if [ ! -d "node_modules" ]; then
     else
         warn "pnpm not found, falling back to npm"
         echo "Tip: Run 'npm i -g pnpm' to install pnpm"
+
         npm install &>/dev/null
     fi
 fi
@@ -60,7 +59,6 @@ mkdir -p ./build/libs/wisp-client-js/
 mv ./wisp-client-js/dist/* ./build/libs/wisp-client-js/
 
 success "Built source code (Including transport & wisp-client-js)"
-
 section "Copying node_modules dependencies"
 
 function copy_nm() {
@@ -82,7 +80,6 @@ copy_nm "jszip/dist" "libs/jszip"
 rm -rf build/libs/idb-keyval/test build/libs/idb-keyval/src
 
 success "Copied node_modules dependencies"
-
 section "Copying included apps"
 
 mkdir ./apps/
@@ -96,11 +93,9 @@ function copy_app() {
 }
 
 copy_app "org.nebulaservices.about"
-
 cp -r ./apps/ ./build/apps/
 
 success "Copied apps"
-
 section "Building Workbox libraries"
 
 mkdir -p build/libs/workbox/
@@ -109,7 +104,6 @@ mv build/libs/workbox/workbox-v7.3.0/* build/libs/workbox/
 rm -r build/libs/workbox/workbox-v7.3.0
 
 success "Built Workbox"
-
 
 section "Generating files.json"
 node ./scripts/generate.cjs

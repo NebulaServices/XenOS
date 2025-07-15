@@ -140,7 +140,7 @@ export class ContextMenu {
             const stored = settings.get(ContextMenu.STORAGE_KEY);
 
             if (stored) {
-                this.entries = JSON.parse(stored);
+                this.entries = stored;
                 this.entries.forEach((entry) => {
                     if (!entry.funcArgs) entry.funcArgs = [];
                 });
