@@ -1,16 +1,9 @@
-/* 
-TODO: 
-- Better icons
-- Fix fullscreen behavior
-- Fix apps being able to go below dock
-*/
 import { WindowOpts } from '../../types/UI';
 import { WindowManager } from './WindowManager';
 import { v4 as uuidv4 } from 'uuid';
 
 export class Window {
     public readonly id: string;
-    //@ts-ignore
     public props: {
         x: number;
         y: number;
@@ -21,28 +14,28 @@ export class Window {
         url?: string;
         content?: string;
         resizable?: boolean;
-    } = {};
-    //@ts-ignore
+    } = {} as any;
     public is: {
         minimized: boolean;
         fullscreened: boolean;
         focused: boolean;
-    } = {};
-    //@ts-ignore
+    } = {} as any;
     public el: {
         window: HTMLDivElement;
         bar: HTMLDivElement;
-        content: HTMLIFrameElement;
-    } = {};
-    //@ts-ignore
+        content: HTMLIFrameElement | HTMLDivElement;
+    } = {} as any;
     public og: {
         width: string;
         height: string;
         x: number;
         y: number;
-    } = {};
+    } = {} as any;
 
-    constructor(opts: WindowOpts, private wm: WindowManager) {
+    constructor(
+        opts: WindowOpts,
+        private wm: WindowManager,
+    ) {
         this.id = uuidv4();
         this.props.title = opts.title;
         this.props.icon = this.encodeUrl(opts.icon);
@@ -50,7 +43,8 @@ export class Window {
         this.props.width = opts.width || '600px';
         this.props.height = opts.height || '400px';
         this.props.x = opts.x || Math.random() * (window.innerWidth - 600 - 50);
-        this.props.y = opts.y || Math.random() * (window.innerHeight - 400 - 50);
+        this.props.y =
+            opts.y || Math.random() * (window.innerHeight - 400 - 50);
         if (opts.resizable) {
             this.props.resizable = opts.resizable;
         } else {
@@ -60,10 +54,11 @@ export class Window {
         this.og.height = this.props.height;
         this.og.x = this.props.x;
         this.og.y = this.props.y;
-        this.el.window = this.CreateWindow();
+        this.el.window = this.createWindowShell();
+        this.wm.container.appendChild(this.el.window);
+        this.createWindowContent();
         this.applyProps();
         this.setupButtons();
-        this.wm.container.appendChild(this.el.window);
         this.focus();
     }
 
@@ -72,12 +67,9 @@ export class Window {
 
         if (url.startsWith(location.origin)) return url;
 
-        if (
-            url.startsWith('http://') ||
-            url.startsWith('https://')
-        ) {
-            //@ts-ignore
-            encoded = __uv$config.prefix + __uv$config.encodeUrl(url)
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            // @ts-ignore
+            encoded = __uv$config.prefix + __uv$config.encodeUrl(url);
         } else {
             encoded = url;
         }
@@ -85,7 +77,7 @@ export class Window {
         return encoded;
     }
 
-    private CreateWindow(): HTMLDivElement {
+    private createWindowShell(): HTMLDivElement {
         const el = document.createElement('div');
         el.classList.add('wm-window');
         el.style.zIndex = '1';
@@ -107,21 +99,7 @@ export class Window {
             </div>
         `;
 
-        if (this.props.url) {
-            this.el.content = document.createElement('iframe');
-            this.el.content.classList.add('wm-content-frame');
-            this.el.content.src = this.encodeUrl(this.props.url);
-            this.el.content.setAttribute('loading', 'lazy');
-            this.el.content.setAttribute('allowfullscreen', 'true');
-        } else if (this.props.content) {
-            const div = document.createElement('div');
-            div.classList.add('wm-content');
-            div.innerHTML = this.props.content || '';
-            this.el.content = div as any;
-        }
-
         el.appendChild(this.el.bar);
-        el.appendChild(this.el.content);
 
         if (this.props.resizable == true) {
             ['n', 's', 'e', 'w', 'nw', 'ne', 'sw', 'se'].forEach((direction) => {
@@ -131,15 +109,31 @@ export class Window {
             });
         }
 
-        // KILL YOURSELF
-        this.el.content.onload = () => {
-            const xen = window.xen;
-            Object.assign(this.el.content.contentWindow, {
-                xen
-            });
-        }
-
         return el;
+    }
+
+    private createWindowContent(): void {
+        if (this.props.url) {
+            this.el.content = document.createElement('iframe');
+            this.el.content.classList.add('wm-content-frame');
+            this.el.content.setAttribute('loading', 'lazy');
+            this.el.content.setAttribute('allowfullscreen', 'true');
+
+            this.el.window.appendChild(this.el.content);
+            (this.el.content as HTMLIFrameElement).src = this.encodeUrl(this.props.url);
+
+            this.el.content.onload = () => {
+                Object.assign((this.el.content as HTMLIFrameElement).contentWindow, {
+                    xen: window.xen,
+                });
+            }
+        } else if (this.props.content) {
+            const div = document.createElement('div');
+            div.classList.add('wm-content');
+            div.innerHTML = this.props.content || '';
+            this.el.content = div;
+            this.el.window.appendChild(this.el.content);
+        }
     }
 
     private applyProps(): void {
@@ -214,7 +208,9 @@ export class Window {
 
                 const dx = e.clientX - startX;
                 const dy = e.clientY - startY;
-                const direction = Array.from(resizer.classList).find((cls) => cls.startsWith('wm-resizer-'))!;
+                const direction = Array.from(resizer.classList).find((cls) =>
+                    cls.startsWith('wm-resizer-'),
+                )!;
                 const minWidth = 200;
                 const minHeight = 100;
                 let newWidth = startWidth;
@@ -305,16 +301,36 @@ export class Window {
             ?.addEventListener('click', () => this.fullscreen());
     }
 
-    get x(): number { return this.props.x; }
-    get y(): number { return this.props.y; }
-    get width(): string { return this.props.width; }
-    get height(): string { return this.props.height; }
-    get title(): string { return this.props.title; }
-    get icon(): string | undefined { return this.props.icon; }
-    get url(): string { return this.props.url; }
-    get isFullscreened(): boolean { return this.is.fullscreened; }
-    get isMinimized(): boolean { return this.is.minimized; }
-    get isFocused(): boolean { return this.is.focused; }
+    get x(): number {
+        return this.props.x;
+    }
+    get y(): number {
+        return this.props.y;
+    }
+    get width(): string {
+        return this.props.width;
+    }
+    get height(): string {
+        return this.props.height;
+    }
+    get title(): string {
+        return this.props.title;
+    }
+    get icon(): string | undefined {
+        return this.props.icon;
+    }
+    get url(): string {
+        return this.props.url!;
+    }
+    get isFullscreened(): boolean {
+        return this.is.fullscreened;
+    }
+    get isMinimized(): boolean {
+        return this.is.minimized;
+    }
+    get isFocused(): boolean {
+        return this.is.focused;
+    }
     set x(val: number) {
         const maxX = window.innerWidth - this.el.window.offsetWidth;
         this.props.x = Math.min(Math.max(0, val), maxX);
@@ -340,8 +356,11 @@ export class Window {
         const el = this.el.bar.querySelector('.wm-title') as HTMLSpanElement;
 
         if (el) el.textContent = val;
-        if (this.el.content.contentDocument) this.el.content.contentDocument.title = val;
-
+        if (
+            this.el.content instanceof HTMLIFrameElement &&
+            this.el.content.contentDocument
+        )
+            this.el.content.contentDocument.title = val;
     }
     set icon(val: string | undefined) {
         this.props.icon = val;
@@ -363,7 +382,9 @@ export class Window {
     }
     set url(val: string) {
         this.props.url = this.encodeUrl(val);
-        this.el.content.src = this.encodeUrl(val);
+        if (this.el.content instanceof HTMLIFrameElement) {
+            this.el.content.src = this.encodeUrl(val);
+        }
     }
     close(): void {
         this.el.window.classList.add('closing');
@@ -414,7 +435,9 @@ export class Window {
             this.focus();
         }, dur);
     }
-    focus(): void { if (!this.is.minimized) this.wm.focus(this); }
+    focus(): void {
+        if (!this.is.minimized) this.wm.focus(this);
+    }
     _setFocusState(is: boolean): void {
         this.is.focused = is;
         this.el.window.classList.toggle('wm-focused', is);

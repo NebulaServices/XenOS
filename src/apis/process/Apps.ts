@@ -16,11 +16,11 @@ export class AppManager {
         const fs = window.xen.fs;
 
         try {
-            if (!await fs.exists(this.regFile)) {
+            if (!(await fs.exists(this.regFile))) {
                 await fs.write(this.regFile, '[]');
             }
 
-            const content = await fs.read(this.regFile, 'text') as string;
+            const content = (await fs.read(this.regFile, 'text')) as string;
             return JSON.parse(content);
         } catch (err) {
             throw err;
@@ -37,21 +37,40 @@ export class AppManager {
         }
     }
 
-    public async install(): Promise<void> {
+    public async install(
+        source: 'prompt' | 'opfs',
+        opfsPath?: string,
+    ): Promise<void> {
         const fs = window.xen.fs;
+        let file: File | null = null;
+        let content: ArrayBuffer | Blob;
 
         try {
-            const [handle] = await window.showOpenFilePicker({
-                types: [{
-                    description: 'Zip Archives',
-                    accept: {
-                        'application/zip': ['.zip'],
-                    },
-                }],
-            });
+            if (source === 'prompt') {
+                const [handle] = await window.showOpenFilePicker({
+                    types: [
+                        {
+                            description: 'Zip Archives',
+                            accept: {
+                                'application/zip': ['.zip'],
+                            },
+                        },
+                    ],
+                });
 
-            const file = await handle.getFile();
-            const zip = await this.zip.loadAsync(file);
+                file = await handle.getFile();
+                content = await file.arrayBuffer();
+            } else if (source === 'opfs' && opfsPath) {
+                if (!(await fs.exists(opfsPath))) {
+                    throw new Error(`Couldn't find OPFS path: ${opfsPath}`);
+                }
+
+                content = (await fs.read(opfsPath, 'blob')) as Blob;
+            } else {
+                throw new Error('Invalid install source or missing OPFS path');
+            }
+
+            const zip = await this.zip.loadAsync(content);
             let manifest: AppManifest | undefined;
 
             for (const entry in zip.files) {
@@ -64,6 +83,12 @@ export class AppManager {
             }
 
             if (!manifest) throw new Error('manifest.json not found');
+
+            const regs = await this.getRegs();
+
+            if (regs.includes(manifest.packageId)) {
+                await this.remove(manifest.packageId);
+            }
 
             const appPath = `${this.basePath}/${manifest.packageId}`;
             await fs.mkdir(appPath);
@@ -80,25 +105,27 @@ export class AppManager {
                 }
             }
 
-            const regs = await this.getRegs();
+            const updatedRegs = await this.getRegs();
 
-            if (!regs.includes(manifest.packageId)) {
-                regs.push(manifest.packageId);
-                await this.saveRegs(regs);
+            if (!updatedRegs.includes(manifest.packageId)) {
+                updatedRegs.push(manifest.packageId);
+                await this.saveRegs(updatedRegs);
             }
         } catch (err) {
             throw err;
         }
     }
 
-    public async getManifest(packageId: string): Promise<AppManifest | undefined> {
+    public async getManifest(
+        packageId: string,
+    ): Promise<AppManifest | undefined> {
         const fs = window.xen.fs;
 
         try {
             const path = `${this.basePath}/${packageId}/manifest.json`;
 
             if (await fs.exists(path)) {
-                const content = await fs.read(path, 'text') as string;
+                const content = (await fs.read(path, 'text')) as string;
                 return JSON.parse(content);
             }
 
@@ -130,7 +157,7 @@ export class AppManager {
             let regs = await this.getRegs();
 
             const length = regs.length;
-            regs = regs.filter(id => id !== packageId);
+            regs = regs.filter((id) => id !== packageId);
 
             if (regs.length < length) await this.saveRegs(regs);
         } catch (err) {

@@ -5,3 +5,5 @@ dist-sw/
 dist-transport/
 pnpm-lock.yaml
 package-lock.json
+apps/
+.vscode/

@@ -1,0 +1,14 @@
+{
+    "title": "About XenOS",
+    "packageId": "org.nebulaservices.about",
+    "icon": "logo.png",
+    "type": "auto",
+    "source": {
+        "index": "index.html"
+    },
+    "window": {
+        "width": "451px",
+        "height": "350px",
+        "resizable": "false"
+    }
+}
