@@ -93,5 +93,7 @@ window.addEventListener('load', async () => {
             splash.remove();
         });
     }, 500);
+
+    await window.xen.initSystem.execute();
 });
 

@@ -9,6 +9,7 @@ import { AppManager } from "./apis/process/Apps";
 import { Notifications } from "./ui/components/Notifications";
 import { Wallpaper } from "./ui/Wallpaper";
 import { settings } from "./apis/settings";
+import { InitSystem } from "./apis/process/InitSystem";
 
 export class Xen {
     public settings: typeof settings;
@@ -23,7 +24,8 @@ export class Xen {
         taskBar: TaskBar
         notifications: Notifications,
         wallpaper: Wallpaper
-    };
+    }
+    public initSystem: InitSystem;
 
     constructor() {
         this.settings = settings;
@@ -39,6 +41,7 @@ export class Xen {
         };
         this.apps = new AppManager();
         this.process = new Proccesses();
+        this.initSystem = new InitSystem();
     }
 
     public version = {
