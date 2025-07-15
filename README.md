@@ -4,6 +4,6 @@
 $ git clone https://github.com/nebulaservices/xenos-new.git
 $ cd xenos-new
 $ pnpm i
-$ pnpm build --all
+$ pnpm build
 $ pnpm start
 ```

@@ -33,10 +33,10 @@ export class AppRuntime {
                 const win = await xen.wm.create({
                     title: '${manifest.title}',
                     icon: '${encodedIcon}',
-                    url: '${encodedUrl}',   
+                    url: '${encodedUrl}',
                     width: '${width}',
                     height: '${height}',
-                    resizable: ${resizable}     
+                    resizable: ${resizable}
                 });
             `;
         }
