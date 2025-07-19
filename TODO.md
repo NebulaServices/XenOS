@@ -5,7 +5,6 @@
 - Users API
 - V86
 - URI API
-- Libraries
 ## UI
 - OOBE
 - Systray

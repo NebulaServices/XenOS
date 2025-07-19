@@ -13,7 +13,7 @@ export interface Manifest {
     id: string;
     version: string;
 
-    title: string;
+    title?: string;
     description?: string;
     icon?: string;
 

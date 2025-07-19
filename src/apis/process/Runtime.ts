@@ -42,4 +42,24 @@ export class Runtime {
 
         window.xen.process.spawn(code, true);
     }
+
+    public async import(manifest: Manifest) {
+        const path = `/libs/${manifest.id}/${manifest.source}`;
+
+        try {
+            const code = await window.xen.fs.read(path, 'text');
+            const blob = new Blob([code], { type: 'application/javascript' });
+            const blobUrl = URL.createObjectURL(blob);
+
+            try {
+                const module = await import(blobUrl);
+                return module;
+            } finally {
+                URL.revokeObjectURL(blobUrl);
+            }
+        } catch (err) {
+            console.error(`Error importing library ${manifest.id}:`, err);
+            throw err;
+        }
+    }
 }

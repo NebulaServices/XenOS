@@ -153,6 +153,36 @@ export class PackageManager {
                 if (manifest) await this.runtime.exec(manifest);
                 return;
             }
+
+            regs = await this.getRegs('libs');
+
+            if (regs.includes(packageId)) {
+                throw new Error(`Cannot 'open' a library (${packageId}). Use 'import' instead.`,);
+            }
+
+            throw new Error(`Package ${packageId} not found`);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    public async import(packageId: string) {
+        try {
+            let regs = await this.getRegs('libs');
+
+            if (regs.includes(packageId)) {
+                const manifest = await this.getManifest(packageId, 'libs');
+                if (manifest) return await this.runtime.import(manifest);
+                return;
+            }
+
+            regs = await this.getRegs('apps');
+
+            if (regs.includes(packageId)) {
+                throw new Error(`Cannot 'import' an app (${packageId}). Use 'open' instead.`);
+            }
+
+            throw new Error(`Package ${packageId} not found`);
         } catch (err) {
             throw err;
         }
