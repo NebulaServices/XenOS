@@ -1,5 +1,5 @@
 export class Wallpaper {
-   public set(url?: string) {
+    public set(url?: string) {
         let final = url;
 
         if (!final) {
@@ -7,21 +7,21 @@ export class Wallpaper {
 
             if (!final) {
                 final = '/wallpaper.webp';
-                localStorage.setItem('XEN-WALLPAPER', final);
+                window.xen.settings.set('wallpaper', final);
             }
         } else {
-            localStorage.setItem('XEN-WALLPAPER', final);
+            window.xen.settings.set('wallpaper', final);
         }
 
         this.update();
     }
 
     public get(): string | null {
-        return localStorage.getItem('XEN-WALLPAPER');
+        return window.xen.settings.get('wallpaper');
     }
 
     public remove() {
-        localStorage.removeItem('XEN-WALLPAPER');
+        window.xen.settings.remove('wallpaper');
         this.set();
     }
 

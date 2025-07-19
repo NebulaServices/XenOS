@@ -1,7 +1,7 @@
 import { Xen } from "./Xen";
 import { XenTransport } from "./apis/networking/Transport";
 import { oobe } from "./ui/oobe/autoUpdate";
-import { bootSplash } from "./ui/bootsplash";
+import { bootSplash } from "./ui/bootSplash";
 
 async function setupDeps() {
     const idbKvPath = '/libs/idb-keyval/index.js';
@@ -93,5 +93,7 @@ window.addEventListener('load', async () => {
             splash.remove();
         });
     }, 500);
+
+    await window.xen.initSystem.execute();
 });
 

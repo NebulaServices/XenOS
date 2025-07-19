@@ -1,0 +1,1 @@
+TODO (how to develop apps, explain manifest.json, go over good practices (DOM load -> main -> setTimeout))

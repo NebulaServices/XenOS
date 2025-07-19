@@ -2,14 +2,17 @@ import { LibcurlClient } from "./apis/networking/LibcurlClient";
 import { XenFS } from "./apis/files/XenFS";
 import { oobe } from "./ui/oobe/autoUpdate";
 import { WindowManager } from "./ui/windows/WindowManager";
-import { ContextMenu } from "./ui/ContextMenu";
-import { TaskBar } from "./ui/TaskBar";
+import { ContextMenu } from "./ui/components/ContextMenu";
+import { TaskBar } from "./ui/components/TaskBar";
 import { Proccesses } from "./apis/process/Processes";
 import { AppManager } from "./apis/process/Apps";
-import { Notifications } from "./ui/Notifications";
+import { Notifications } from "./ui/components/Notifications";
 import { Wallpaper } from "./ui/Wallpaper";
+import { settings } from "./apis/settings";
+import { InitSystem } from "./apis/process/InitSystem";
 
 export class Xen {
+    public settings: typeof settings;
     public net: LibcurlClient;
     public fs: XenFS;
     public boot: typeof oobe;
@@ -21,9 +24,11 @@ export class Xen {
         taskBar: TaskBar
         notifications: Notifications,
         wallpaper: Wallpaper
-    };
+    }
+    public initSystem: InitSystem;
 
     constructor() {
+        this.settings = settings;
         this.net = new LibcurlClient((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
         this.fs = new XenFS();
         this.boot = oobe;
@@ -36,6 +41,7 @@ export class Xen {
         };
         this.apps = new AppManager();
         this.process = new Proccesses();
+        this.initSystem = new InitSystem();
     }
 
     public version = {

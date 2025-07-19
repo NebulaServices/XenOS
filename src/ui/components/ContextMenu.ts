@@ -1,8 +1,9 @@
 // TODO: Translucent
-import { ContextMenuEntry, FunctionRegistry } from '../types/UI';
+import { ContextMenuEntry, FunctionRegistry } from '../../types/UI';
+import { settings } from '../../apis/settings';
 
 export class ContextMenu {
-    private static readonly LOCAL_STORAGE_KEY = 'XEN-CONTEXT-MENU';
+    private static readonly STORAGE_KEY = 'context-menu';
     private entries: ContextMenuEntry[] = [];
     public registry: FunctionRegistry = {};
     private menuEl: HTMLDivElement | null = null;
@@ -128,7 +129,7 @@ export class ContextMenu {
         }));
 
         try {
-            localStorage.setItem(ContextMenu.LOCAL_STORAGE_KEY, JSON.stringify(serializable));
+            settings.set(ContextMenu.STORAGE_KEY, serializable);
         } catch (err) {
             console.error('Failed to save entries:', err);
         }
@@ -136,10 +137,10 @@ export class ContextMenu {
 
     private loadEntries(): void {
         try {
-            const stored = localStorage.getItem(ContextMenu.LOCAL_STORAGE_KEY);
+            const stored = settings.get(ContextMenu.STORAGE_KEY);
 
             if (stored) {
-                this.entries = JSON.parse(stored);
+                this.entries = stored;
                 this.entries.forEach((entry) => {
                     if (!entry.funcArgs) entry.funcArgs = [];
                 });

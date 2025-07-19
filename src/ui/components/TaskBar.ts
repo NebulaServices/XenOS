@@ -6,22 +6,22 @@ TODO:
 - Add inedcators for what apps are focused or minimized (A little broken rn)
 - Fix icon paths
 */
-import { WindowManager } from './windows/WindowManager';
-import { Window } from './windows/Window';
+import { WindowManager } from '../windows/WindowManager';
+import { Window } from '../windows/Window';
 import { ContextMenu } from './ContextMenu';
 import {
     PinnedWindowEntry,
     TaskBarDisplayMode,
     TaskBarEntry,
-} from '../types/UI';
-import { AppManager } from '../apis/process/Apps';
+} from '../../types/UI';
+import { AppManager } from '../../apis/process/Apps';
 import { AppLauncher } from './AppLauncher';
 
 export class TaskBar {
-    private static readonly LOCAL_STORAGE = {
-        PINNED_WINDOWS: 'XEN-TASKBAR-PINNED_WINDOWS',
-        DISPLAY_MODE: 'XEN-TASKBAR-DISPLAY_MODE',
-    };
+    private static readonly SETTINGS_KEY = 'taskbar';
+    private static readonly PINNED_WINDOWS_KEY = 'pinned-windows';
+    private static readonly DISPLAY_MODE_KEY = 'display-mode';
+
     //@ts-ignore
     private el: {
         taskbar: HTMLDivElement;
@@ -78,11 +78,13 @@ export class TaskBar {
                 <path d="M20 20V16H16V20H20Z" fill="currentColor"></path>
             </svg>
         `;
-        this.el.launcherBtn.addEventListener('click', () => this.appLauncher.toggle());
+        this.el.launcherBtn.addEventListener('click', () =>
+            this.appLauncher.toggle(),
+        );
         this.el.taskbar.appendChild(this.el.launcherBtn);
         this.el.windowList.classList.add('taskbar-windows');
         this.el.taskbar.appendChild(this.el.windowList);
-        this.contextMenu.attach(this.el.taskbar, 'XEN-TASKBAR');
+        this.contextMenu.attach(this.el.taskbar, 'taskbar');
     }
 
     private attachListeners(): void {
@@ -153,7 +155,7 @@ export class TaskBar {
 
             this.el.windowList.appendChild(item);
             this.createContextMenu(entry);
-            this.contextMenu.attach(item, `XEN-TASKBAR-ITEM_${entry.itemId}`);
+            this.contextMenu.attach(item, `taskbar-item_${entry.itemId}`);
         });
     }
 
@@ -241,7 +243,9 @@ export class TaskBar {
             .querySelectorAll('.taskbar-item')
             .forEach((item) => item.classList.remove('is-focused'));
 
-        const item = this.el.windowList.querySelector(`[data-id="${windowInstance.id}"]`);
+        const item = this.el.windowList.querySelector(
+            `[data-id="${windowInstance.id}"]`,
+        );
         if (item) item.classList.add('is-focused');
     };
 
@@ -251,7 +255,7 @@ export class TaskBar {
         this.contextMenu.create(
             {
                 id: 'toggleTBDM',
-                domain: 'XEN-TASKBAR',
+                domain: 'taskbar',
                 title: 'Toggle Window Names',
             },
             this.contextMenu.registry['toggleTBDM'],
@@ -268,16 +272,20 @@ export class TaskBar {
         isOpen: boolean;
         isPinned: boolean;
     }): void {
-        const domain = `XEN-TASKBAR-ITEM_${entry.itemId}`;
+        const domain = `taskbar-item_${entry.itemId}`;
 
-        this.contextMenu.registerFunction('togglePin',
+        this.contextMenu.registerFunction(
+            'togglePin',
             (appId: string, title: string, icon?: string, url?: string) =>
-                this.togglePin(appId, title, icon, url));
+                this.togglePin(appId, title, icon, url),
+        );
 
-        this.contextMenu.registerFunction('closeWindow', (id: string) => this.closeWindow(id));
+        this.contextMenu.registerFunction('closeWindow', (id: string) =>
+            this.closeWindow(id),
+        );
 
         this.contextMenu.create({
-            id: `XEN-TASKBAR-PIN_${entry.appId}`,
+            id: `taskbar-pin_${entry.appId}`,
             domain: domain,
             title: entry.isPinned ? 'Unpin from Dock' : 'Pin to Dock',
             funcId: 'togglePin',
@@ -286,24 +294,25 @@ export class TaskBar {
 
         if (entry.isOpen && entry.instanceId) {
             this.contextMenu.create({
-                id: `XEN-TASKBAR-CLOSE_${entry.instanceId}`,
+                id: `taskbar-close_${entry.instanceId}`,
                 domain: domain,
                 title: 'Close Window',
                 funcId: 'closeWindow',
                 funcArgs: [entry.instanceId],
             });
         } else {
-            if (entry.instanceId) this.contextMenu.delete(`XEN-TASKBAR-CLOSE_${entry.instanceId}`);
+            if (entry.instanceId)
+                this.contextMenu.delete(`taskbar-close_${entry.instanceId}`);
         }
     }
 
     private toggleDM(): void {
-        this.displayMode = this.displayMode === 'iconOnly' ? 'iconAndName' : 'iconOnly';
+        this.displayMode =
+            this.displayMode === 'iconOnly' ? 'iconAndName' : 'iconOnly';
 
-        localStorage.setItem(
-            TaskBar.LOCAL_STORAGE.DISPLAY_MODE,
-            this.displayMode,
-        );
+        window.xen.settings.set(TaskBar.SETTINGS_KEY, {
+            [TaskBar.DISPLAY_MODE_KEY]: this.displayMode,
+        });
 
         this.render();
     }
@@ -347,10 +356,10 @@ export class TaskBar {
 
     private savePinned(): void {
         try {
-            localStorage.setItem(
-                TaskBar.LOCAL_STORAGE.PINNED_WINDOWS,
-                JSON.stringify(this.pinned),
-            );
+            const taskbarSettings =
+                window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
+            taskbarSettings[TaskBar.PINNED_WINDOWS_KEY] = this.pinned;
+            window.xen.settings.set(TaskBar.SETTINGS_KEY, taskbarSettings);
         } catch (err) {
             console.error('Failed to save pinned windows:', err);
         }
@@ -358,20 +367,21 @@ export class TaskBar {
 
     private loadState(): void {
         try {
-            const stored = localStorage.getItem(
-                TaskBar.LOCAL_STORAGE.PINNED_WINDOWS,
-            );
+            const taskbarSettings =
+                window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
 
-            if (stored) {
-                this.pinned = JSON.parse(stored);
+            const storedPinned =
+                taskbarSettings[TaskBar.PINNED_WINDOWS_KEY] || [];
+            if (storedPinned) {
+                this.pinned = storedPinned;
                 this.pinned.forEach(
                     (p, i) => (p.order = p.order === undefined ? i : p.order),
                 );
                 this.pinned.sort((a, b) => a.order - b.order);
             }
 
-            const DM = localStorage.getItem(TaskBar.LOCAL_STORAGE.DISPLAY_MODE);
-            if (DM) this.displayMode = DM as TaskBarDisplayMode;
+            const storedDM = taskbarSettings[TaskBar.DISPLAY_MODE_KEY];
+            if (storedDM) this.displayMode = storedDM as TaskBarDisplayMode;
         } catch (err) {
             console.error('Failed to load taskbar:', err);
 
@@ -409,7 +419,9 @@ export class TaskBar {
         e.preventDefault();
 
         if (this.draggedItem && e.target instanceof HTMLDivElement) {
-            const target = e.target.closest('.taskbar-item') as HTMLDivElement | null;
+            const target = e.target.closest(
+                '.taskbar-item',
+            ) as HTMLDivElement | null;
 
             if (target && target !== this.draggedItem) {
                 const targetRect = target.getBoundingClientRect();
@@ -478,7 +490,9 @@ export class TaskBar {
 
         this.pinned = this.pinned
             .filter((p) => unique.has(p.id))
-            .concat(order.filter((p) => !this.pinned.some((orig) => orig.id === p.id)))
+            .concat(
+                order.filter((p) => !this.pinned.some((orig) => orig.id === p.id)),
+            )
             .sort((a, b) => a.order - b.order);
     }
 }
