@@ -9,7 +9,7 @@ import { AppManager } from "./apis/process/Apps";
 import { Notifications } from "./ui/components/Notifications";
 import { Wallpaper } from "./ui/Wallpaper";
 import { settings } from "./apis/settings";
-import { InitSystem } from "./apis/process/InitSystem";
+import { initScripts } from "./apis/process/InitSystem";
 
 export class Xen {
     public settings: typeof settings;
@@ -25,7 +25,7 @@ export class Xen {
         notifications: Notifications,
         wallpaper: Wallpaper
     }
-    public initSystem: InitSystem;
+    public initSystem: typeof initScripts;
 
     constructor() {
         this.settings = settings;
@@ -41,7 +41,7 @@ export class Xen {
         };
         this.apps = new AppManager();
         this.process = new Proccesses();
-        this.initSystem = new InitSystem();
+        this.initSystem = initScripts;
     }
 
     public version = {

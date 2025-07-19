@@ -14,12 +14,7 @@ async function update() {
                     if (!filename.endsWith('.zip')) continue;
 
                     const appPath = `/apps/${filename}`;
-                    const req = await fetch(appPath);
-                    const buffer = new Uint8Array(await req.arrayBuffer());
-
-                    await fs.write(appPath, buffer);
-                    await window.xen.apps.install('opfs', appPath);
-                    await fs.rm(appPath);
+                    await window.xen.apps.install('url', appPath);
                 }
             }
         }

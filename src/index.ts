@@ -94,6 +94,6 @@ window.addEventListener('load', async () => {
         });
     }, 500);
 
-    await window.xen.initSystem.execute();
+    await window.xen.initSystem();
 });
 

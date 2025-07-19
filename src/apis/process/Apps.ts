@@ -1,5 +1,5 @@
-import { RegisteredApps, AppManifest } from '../../types/Process';
-import { AppRuntime } from './AppRuntime';
+import { Manifest } from '../../types/Process';
+import { AppRuntime } from './Runtime';
 
 export class AppManager {
     private regFile = '/apps/registrations.json';
@@ -12,7 +12,7 @@ export class AppManager {
         this.zip = new window.JSZip();
     }
 
-    private async getRegs(): Promise<RegisteredApps> {
+    private async getRegs(): Promise<string[]> {
         const fs = window.xen.fs;
 
         try {
@@ -27,7 +27,7 @@ export class AppManager {
         }
     }
 
-    private async saveRegs(packageIds: RegisteredApps): Promise<void> {
+    private async saveRegs(packageIds: string[]): Promise<void> {
         const fs = window.xen.fs;
 
         try {
@@ -38,8 +38,8 @@ export class AppManager {
     }
 
     public async install(
-        source: 'prompt' | 'opfs',
-        opfsPath?: string,
+        source: 'prompt' | 'opfs' | 'url',
+        path?: string,
     ): Promise<void> {
         const fs = window.xen.fs;
         let file: File | null = null;
@@ -60,18 +60,26 @@ export class AppManager {
 
                 file = await handle.getFile();
                 content = await file.arrayBuffer();
-            } else if (source === 'opfs' && opfsPath) {
-                if (!(await fs.exists(opfsPath))) {
-                    throw new Error(`Couldn't find OPFS path: ${opfsPath}`);
+            } else if (source === 'opfs' && path) {
+                if (!(await fs.exists(path))) {
+                    throw new Error(`Couldn't find OPFS path: ${path}`);
                 }
 
-                content = (await fs.read(opfsPath, 'blob')) as Blob;
+                content = (await fs.read(path, 'blob')) as Blob;
+            } else if (source === 'url' && path) {
+                const response = await fetch(path);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch from URL: ${path}`);
+                }
+
+                content = await response.blob(); 
             } else {
                 throw new Error('Invalid install source or missing OPFS path');
             }
 
             const zip = await this.zip.loadAsync(content);
-            let manifest: AppManifest | undefined;
+            let manifest: Manifest | undefined;
 
             for (const entry in zip.files) {
                 if (entry === 'manifest.json') {
@@ -86,11 +94,11 @@ export class AppManager {
 
             const regs = await this.getRegs();
 
-            if (regs.includes(manifest.packageId)) {
-                await this.remove(manifest.packageId);
+            if (regs.includes(manifest.id)) {
+                await this.remove(manifest.id);
             }
 
-            const appPath = `${this.basePath}/${manifest.packageId}`;
+            const appPath = `${this.basePath}/${manifest.id}`;
             await fs.mkdir(appPath);
 
             for (const entryPath in zip.files) {
@@ -107,8 +115,8 @@ export class AppManager {
 
             const updatedRegs = await this.getRegs();
 
-            if (!updatedRegs.includes(manifest.packageId)) {
-                updatedRegs.push(manifest.packageId);
+            if (!updatedRegs.includes(manifest.id)) {
+                updatedRegs.push(manifest.id);
                 await this.saveRegs(updatedRegs);
             }
         } catch (err) {
@@ -118,7 +126,7 @@ export class AppManager {
 
     public async getManifest(
         packageId: string,
-    ): Promise<AppManifest | undefined> {
+    ): Promise<Manifest | undefined> {
         const fs = window.xen.fs;
 
         try {
@@ -136,6 +144,8 @@ export class AppManager {
     }
 
     public async open(packageId: string): Promise<void> {
+        console.log(packageId);
+
         try {
             const regs = await this.getRegs();
             if (!regs.includes(packageId)) return;
@@ -165,8 +175,8 @@ export class AppManager {
         }
     }
 
-    public async listApps(): Promise<AppManifest[]> {
-        const apps: AppManifest[] = [];
+    public async listApps(): Promise<Manifest[]> {
+        const apps: Manifest[] = [];
         try {
             const regs = await this.getRegs();
 

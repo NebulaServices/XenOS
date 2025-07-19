@@ -5,7 +5,7 @@
 */
 
 import { AppManager } from '../../apis/process/Apps';
-import { AppManifest } from '../../types/Process';
+import { Manifest } from '../../types/Process';
 
 export class AppLauncher {
     private el: {
@@ -16,7 +16,7 @@ export class AppLauncher {
     };
 
     private isVisible = false;
-    private apps: AppManifest[] = [];
+    private apps: Manifest[] = [];
 
     constructor(
         private appManager: AppManager,
@@ -105,7 +105,7 @@ export class AppLauncher {
         this.renderApps(filtered);
     }
 
-    private renderApps(apps: AppManifest[]): void {
+    private renderApps(apps: Manifest[]): void {
         this.el.grid.innerHTML = '';
 
         try {
@@ -120,13 +120,13 @@ export class AppLauncher {
         }
     }
 
-    private createEntry(app: AppManifest): HTMLDivElement {
+    private createEntry(app: Manifest): HTMLDivElement {
         const entry = document.createElement('div');
         entry.classList.add('app-entry');
         entry.title = app.title;
 
         const icon = document.createElement('img');
-        icon.src = `/fs/apps/${app.packageId}/${app.icon}`;
+        icon.src = `/fs/apps/${app.id}/${app.icon}`;
         icon.alt = app.title;
 
         const name = document.createElement('span');
@@ -136,7 +136,7 @@ export class AppLauncher {
         entry.appendChild(name);
 
         entry.addEventListener('click', () => {
-            this.appManager.open(app.packageId);
+            this.appManager.open(app.id);
             this.hide();
         });
 

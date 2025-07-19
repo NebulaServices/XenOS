@@ -1,10 +1,14 @@
 {
+    "id": "org.nebulaservices.about",
+    "version": "1.0.0",
+    "type": "app",
+    "source": "index.html",
     "title": "About XenOS",
-    "packageId": "org.nebulaservices.about",
     "icon": "logo.png",
-    "type": "auto",
-    "source": {
-        "index": "index.html"
+    "maintainer": {
+        "name": "Nebula Services",
+        "email": "contact@nebulaservices.org",
+        "website": "https://nebulaservices.org"
     },
     "window": {
         "width": "451px",
