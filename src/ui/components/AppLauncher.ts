@@ -4,7 +4,7 @@
 - Make launcher resizable
 */
 
-import { AppManager } from '../../apis/process/Apps';
+import { PackageManager } from '../../apis/process/Packages';
 import { Manifest } from '../../types/Process';
 
 export class AppLauncher {
@@ -19,7 +19,7 @@ export class AppLauncher {
     private apps: Manifest[] = [];
 
     constructor(
-        private appManager: AppManager,
+        private packageManager: PackageManager,
         private launcher: HTMLElement,
         private taskbar: HTMLElement,
     ) {
@@ -65,7 +65,7 @@ export class AppLauncher {
         this.el.launcher.style.left = `${taskbarRect.left}px`;
         this.el.launcher.style.bottom = `${window.innerHeight - taskbarRect.top + 8}px`;
         this.el.launcher.classList.add('visible');
-        this.apps = await this.appManager.listApps();
+        this.apps = await this.packageManager.listApps();
         this.renderApps(this.apps);
         this.el.searchInput.focus();
 
@@ -136,7 +136,7 @@ export class AppLauncher {
         entry.appendChild(name);
 
         entry.addEventListener('click', () => {
-            this.appManager.open(app.id);
+            this.packageManager.open(app.id);
             this.hide();
         });
 

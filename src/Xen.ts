@@ -5,7 +5,7 @@ import { WindowManager } from "./ui/windows/WindowManager";
 import { ContextMenu } from "./ui/components/ContextMenu";
 import { TaskBar } from "./ui/components/TaskBar";
 import { Proccesses } from "./apis/process/Processes";
-import { AppManager } from "./apis/process/Apps";
+import { PackageManager } from "./apis/process/Packages";
 import { Notifications } from "./ui/components/Notifications";
 import { Wallpaper } from "./ui/Wallpaper";
 import { settings } from "./apis/settings";
@@ -18,7 +18,7 @@ export class Xen {
     public boot: typeof oobe;
     public wm: WindowManager;
     public process: Proccesses;
-    public apps: AppManager;
+    public packages: PackageManager;
     public ui: {
         contextMenu: ContextMenu,
         taskBar: TaskBar
@@ -39,7 +39,7 @@ export class Xen {
             notifications: new Notifications(),
             wallpaper: new Wallpaper()
         };
-        this.apps = new AppManager();
+        this.packages = new PackageManager();
         this.process = new Proccesses();
         this.initSystem = initScripts;
     }

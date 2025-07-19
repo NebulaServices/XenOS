@@ -1,6 +1,6 @@
 import { Manifest } from "../../types/Process";
 
-export class AppRuntime {
+export class Runtime {
     public async exec(manifest: Manifest) {
         let code: string;
         const width = manifest.window?.width || '600px';

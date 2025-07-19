@@ -14,7 +14,7 @@ import {
     TaskBarDisplayMode,
     TaskBarEntry,
 } from '../../types/UI';
-import { AppManager } from '../../apis/process/Apps';
+import { PackageManager } from '../../apis/process/Packages';
 import { AppLauncher } from './AppLauncher';
 
 export class TaskBar {
@@ -31,18 +31,18 @@ export class TaskBar {
     private pinned: PinnedWindowEntry[] = [];
     private displayMode: TaskBarDisplayMode = 'iconOnly';
     private current: Map<string, Window> = new Map();
-    private appManager: AppManager;
+    private packageManager: PackageManager;
     private appLauncher: AppLauncher;
 
     constructor(private wm: WindowManager, private contextMenu: ContextMenu) {
-        this.appManager = new AppManager();
+        this.packageManager = new PackageManager();
 
         this.el.taskbar = document.createElement('div');
         this.el.windowList = document.createElement('div');
         this.el.launcherBtn = document.createElement('div');
 
         this.appLauncher = new AppLauncher(
-            this.appManager,
+            this.packageManager,
             this.el.launcherBtn,
             this.el.taskbar,
         );
