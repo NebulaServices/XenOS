@@ -53,7 +53,6 @@ export class Notifications {
 
         this.container.appendChild(notification);
         
-        // Trigger entrance animation
         requestAnimationFrame(() => {
             notification.classList.add('show');
         });
@@ -61,13 +60,12 @@ export class Notifications {
         const timeout = opts.timeout || 5000;
         const progressBar = notification.querySelector('.progress-bar') as HTMLElement;
         
-        // Start progress bar animation after entrance animation
         setTimeout(() => {
             if (progressBar) {
                 progressBar.style.animationDuration = `${timeout}ms`;
                 progressBar.classList.add('animate');
             }
-        }, 400); // Match entrance animation duration
+        }, 400);
         
         const close = () => {
             notification.classList.add('closing');
