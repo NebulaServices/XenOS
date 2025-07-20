@@ -3,7 +3,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: calc(100vh - var(--dock-height, 60px));
     overflow: hidden;
 }
 
@@ -31,6 +31,19 @@
     user-select: none;
 }
 
+.wm-window:not(.wm-fullscreen) {
+    transition:
+        left 0.25s ease-out,
+        top 0.25s ease-out,
+        width 0.25s ease-out,
+        height 0.25s ease-out,
+        transform 0.15s ease-out,
+        opacity 0.15s ease-out,
+        border-color 0.15s ease-out,
+        box-shadow 0.15s ease-out,
+        border-radius 0.15s ease-out;
+}
+
 .wm-window.dragging,
 .wm-window.resizing {
     transition: none !important;
@@ -50,9 +63,14 @@
 }
 
 .wm-window.wm-fullscreen {
-    border-radius: 0;
-    box-shadow: none;
-    z-index: 9999 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
 }
 
 @keyframes window-close-animation {

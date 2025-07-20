@@ -142,7 +142,11 @@ export class LibcurlClient {
     }
 
     public encodeUrl(url: string): string {
-        //@ts-ignore
-        return window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            return url;
+        } else {
+            //@ts-ignore
+            return window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
+        }
     }
 }

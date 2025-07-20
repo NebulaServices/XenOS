@@ -33,13 +33,13 @@ export class WindowManager {
 
     focus(win: Window): void {
         this.windows.forEach((w) => { if (w !== win && w.isFocused) w._setFocusState(false); });
+
         win.el.window.style.zIndex = String(this.nzi++);
         win._setFocusState(true);
 
         this.windows.sort((a, b) => {
             const zA = parseInt(a.el.window.style.zIndex || '0');
             const zB = parseInt(b.el.window.style.zIndex || '0');
-
             return zA - zB;
         });
 

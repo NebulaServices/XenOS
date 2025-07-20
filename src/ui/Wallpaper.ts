@@ -1,6 +1,14 @@
 export class Wallpaper {
-    public set(url?: string) {
-        let final = url;
+    public set(url?: string, type: 'url' | 'opfs' = 'url') {
+        let final: string | null = null;
+
+        if (url) {
+            if (type === 'opfs') {
+                final = '/fs/' + url;
+            } else if (type === 'url') {
+                final = window.xen.net.encodeUrl(url);
+            }
+        }
 
         if (!final) {
             final = this.get();

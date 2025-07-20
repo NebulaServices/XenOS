@@ -145,12 +145,13 @@ export class Window {
     private setupButtons(): void {
         let isDragging = false;
         let oX: number, oY: number;
+        let dragStartY: number;
 
         this.el.bar.addEventListener('mousedown', (e: MouseEvent) => {
-            if (this.isMinimized || this.isFullscreened || !this.props.display)
-                return;
+            if (this.isMinimized || !this.props.display) return;
 
             isDragging = true;
+            dragStartY = e.clientY;
             oX = e.clientX - this.el.window.getBoundingClientRect().left;
             oY = e.clientY - this.el.window.getBoundingClientRect().top;
 
@@ -162,8 +163,20 @@ export class Window {
 
         document.addEventListener('mousemove', (e: MouseEvent) => {
             if (!isDragging) return;
-            this.x = e.clientX - oX;
-            this.y = e.clientY - oY;
+
+            // If fullscreened and dragged down more than 50px, unfullscreen
+            if (this.isFullscreened && e.clientY - dragStartY > 50) {
+                this.fullscreen();
+                // Adjust offset for new window position
+                oX = this.el.window.offsetWidth / 2;
+                oY = 20;
+                return;
+            }
+
+            if (!this.isFullscreened) {
+                this.x = e.clientX - oX;
+                this.y = e.clientY - oY;
+            }
         });
 
         document.addEventListener('mouseup', () => {
@@ -434,23 +447,32 @@ export class Window {
             this.og.height = this.props.height;
             this.og.x = this.props.x;
             this.og.y = this.props.y;
-            this.width = '100vw';
-            this.height = '100vh';
-            this.x = 0;
-            this.y = 0;
-        } else {
-            this.width = this.og.width;
-            this.height = this.og.height;
-            this.x = this.og.x;
-            this.y = this.og.y;
-        }
 
-        const d = 250;
+            this.el.window.style.width = '100%';
+            this.el.window.style.height = '100%';
+            this.el.window.style.left = '0px';
+            this.el.window.style.top = '0px';
+
+            this.props.width = '100%';
+            this.props.height = '100%';
+            this.props.x = 0;
+            this.props.y = 0;
+        } else {
+            this.el.window.style.width = this.og.width;
+            this.el.window.style.height = this.og.height;
+            this.el.window.style.left = `${this.og.x}px`;
+            this.el.window.style.top = `${this.og.y}px`;
+
+            this.props.width = this.og.width;
+            this.props.height = this.og.height;
+            this.props.x = this.og.x;
+            this.props.y = this.og.y;
+        }
 
         setTimeout(() => {
             this.el.content.classList.remove('wm-iframe-no-pointer');
             this.focus();
-        }, d);
+        }, 300);
     }
     focus(): void {
         if (!this.is.minimized && this.props.display) this.wm.focus(this);

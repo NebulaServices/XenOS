@@ -1,8 +1,8 @@
+// This file is COMPLETELY AI generated
 /*
 TODO:
 - Fix spacing and alignment for app entries
 - Allow for toggling modules to the right (Time, date, battery)
-- Fix dragging
 - Add inedcators for what apps are focused or minimized (A little broken rn)
 - Fix icon paths
 */
@@ -64,7 +64,8 @@ export class TaskBar {
         this.el.taskbar.classList.add('taskbar');
         this.el.launcherBtn.id = 'launcher-button';
         this.el.launcherBtn.classList.add('taskbar-item', 'launcher-button');
-        // Shoutout Gemini 2.5 (also needs a real icon!!)
+        this.el.launcherBtn.draggable = false;
+
         this.el.launcherBtn.innerHTML = `
             <svg class="taskbar-item-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--mocha-subtext1);">
                 <path d="M4 8V4H8V8H4Z" fill="currentColor"></path>
@@ -78,9 +79,7 @@ export class TaskBar {
                 <path d="M20 20V16H16V20H20Z" fill="currentColor"></path>
             </svg>
         `;
-        this.el.launcherBtn.addEventListener('click', () =>
-            this.appLauncher.toggle(),
-        );
+        this.el.launcherBtn.addEventListener('click', () => this.appLauncher.toggle());
         this.el.taskbar.appendChild(this.el.launcherBtn);
         this.el.windowList.classList.add('taskbar-windows');
         this.el.taskbar.appendChild(this.el.windowList);
@@ -92,16 +91,27 @@ export class TaskBar {
         this.el.windowList.addEventListener('dragover', this.handleDragOver);
         this.el.windowList.addEventListener('drop', this.handleDrop);
         this.el.windowList.addEventListener('dragend', this.handleDragEnd);
+        this.el.windowList.addEventListener('dragenter', this.handleDragEnter);
+        this.el.windowList.addEventListener('dragleave', this.handleDragLeave);
     }
 
     public render(): void {
-        this.el.windowList.innerHTML = '';
         const entries: TaskBarEntry[] = [];
         const processed = new Set<string>();
         const current = new Map<string, Window>();
+        const items = new Map<string, HTMLDivElement>();
+
+        this.el.windowList.querySelectorAll('.taskbar-item').forEach(item => {
+            const id = (item as HTMLDivElement).dataset.id;
+
+            if (id) {
+                items.set(id, item as HTMLDivElement);
+            }
+        });
 
         this.wm.windows.forEach((win) => {
             current.set(win.id, win);
+
             if (win.props.display) {
                 const isPinned = this.pinned.some((p) => p.id === win.props.url);
 
@@ -152,12 +162,33 @@ export class TaskBar {
             return a.title.localeCompare(b.title);
         });
 
+        const newItems = new Set(sorted.map(entry => entry.itemId));
+
+        items.forEach((item, id) => {
+            if (!newItems.has(id)) {
+                this.animateItemOut(item);
+            }
+        });
+
+        const animOut = this.el.windowList.querySelectorAll('.taskbar-item.animate-out');
+
+        this.el.windowList.innerHTML = '';
+
+        animOut.forEach(item => {
+            this.el.windowList.appendChild(item);
+        });
+
         sorted.forEach((entry) => {
-            const item = this.createItem(entry);
+            const existing = items.has(entry.itemId);
+            const item = this.createItem(entry, !existing);
 
             this.el.windowList.appendChild(item);
             this.createContextMenu(entry);
             this.contextMenu.attach(item, `taskbar-item_${entry.itemId}`);
+
+            if (!existing) {
+                this.animateItemIn(item);
+            }
         });
     }
 
@@ -170,16 +201,24 @@ export class TaskBar {
         url: string;
         isOpen: boolean;
         isPinned: boolean;
-    }): HTMLDivElement {
+    }, isNew: boolean = false): HTMLDivElement {
         const item = document.createElement('div');
         item.classList.add('taskbar-item');
         item.dataset.id = entry.itemId;
         item.draggable = true;
 
+        if (isNew) {
+            item.classList.add('animate-in');
+            item.style.transform = 'scale(0)';
+            item.style.opacity = '0';
+        }
+
         const icon = document.createElement('img');
+
         icon.classList.add('taskbar-item-icon');
         icon.src = entry.icon || './assets/app.png';
         icon.alt = `${entry.title} icon`;
+        icon.draggable = false;
 
         item.appendChild(icon);
 
@@ -201,16 +240,48 @@ export class TaskBar {
 
         if (entry.isPinned) item.classList.add('is-pinned');
 
-        item.addEventListener('click', () => {
-            this.handleClick(
-                entry.instanceId,
-                entry.appId,
-                entry.title,
-                entry.icon,
-            );
+        item.addEventListener('click', (e) => {
+            if (!item.classList.contains('dragging')) {
+                this.handleClick(
+                    entry.instanceId,
+                    entry.appId,
+                    entry.title,
+                    entry.icon,
+                );
+            }
         });
 
         return item;
+    }
+
+    private animateItemIn(item: HTMLDivElement): void {
+        item.offsetHeight;
+
+        requestAnimationFrame(() => {
+            item.style.transform = 'scale(1)';
+            item.style.opacity = '1';
+
+            setTimeout(() => {
+                item.classList.remove('animate-in');
+                item.style.transform = '';
+                item.style.opacity = '';
+            }, 300);
+        });
+    }
+
+    private animateItemOut(item: HTMLDivElement): void {
+        item.classList.add('animate-out');
+
+        requestAnimationFrame(() => {
+            item.style.transform = 'scale(0) rotate(180deg)';
+            item.style.opacity = '0';
+
+            setTimeout(() => {
+                if (item.parentNode) {
+                    item.parentNode.removeChild(item);
+                }
+            }, 300);
+        });
     }
 
     private handleClick(
@@ -237,17 +308,22 @@ export class TaskBar {
             this.wm.create({ url: appId, title, icon });
         }
     }
-
-    public onWindowCreated = (): void => this.render();
-    public onWindowClosed = (): void => this.render();
+    public onWindowCreated = (): void => {
+        setTimeout(() => {
+            this.render();
+        }, 50);
+    };
+    public onWindowClosed = (): void => {
+        setTimeout(() => {
+            this.render();
+        }, 100);
+    };
     public onWindowFocused = (windowInstance: Window): void => {
         this.el.windowList
             .querySelectorAll('.taskbar-item')
             .forEach((item) => item.classList.remove('is-focused'));
 
-        const item = this.el.windowList.querySelector(
-            `[data-id="${windowInstance.id}"]`,
-        );
+        const item = this.el.windowList.querySelector(`[data-id="${windowInstance.id}"]`);
         if (item && windowInstance.props.display) item.classList.add('is-focused');
     };
 
@@ -303,14 +379,12 @@ export class TaskBar {
                 funcArgs: [entry.instanceId],
             });
         } else {
-            if (entry.instanceId)
-                this.contextMenu.delete(`taskbar-close_${entry.instanceId}`);
+            if (entry.instanceId) this.contextMenu.delete(`taskbar-close_${entry.instanceId}`);
         }
     }
 
     private toggleDM(): void {
-        this.displayMode =
-            this.displayMode === 'iconOnly' ? 'iconAndName' : 'iconOnly';
+        this.displayMode = this.displayMode === 'iconOnly' ? 'iconAndName' : 'iconOnly';
 
         window.xen.settings.set(TaskBar.SETTINGS_KEY, {
             [TaskBar.DISPLAY_MODE_KEY]: this.displayMode,
@@ -349,7 +423,16 @@ export class TaskBar {
         const win = this.wm.windows.find((win) => win.id === id);
 
         if (win) {
-            win.close();
+            const item = this.el.windowList.querySelector(`[data-id="${id}"]`) as HTMLDivElement;
+            if (item) {
+                this.animateItemOut(item);
+
+                setTimeout(() => {
+                    win.close();
+                }, 150);
+            } else {
+                win.close();
+            }
         } else {
             this.current.delete(id);
             this.render();
@@ -393,51 +476,91 @@ export class TaskBar {
     }
 
     private draggedItem: HTMLDivElement | null = null;
+    private dragPlaceholder: HTMLDivElement | null = null;
+    private lastDragOverTime: number = 0;
+    private dragOverThrottle: number = 50;
+
+    private createDragPlaceholder(): HTMLDivElement {
+        const placeholder = document.createElement('div');
+
+        placeholder.classList.add('taskbar-item', 'drag-placeholder');
+        placeholder.style.width = '40px';
+        placeholder.style.height = '40px';
+
+        return placeholder;
+    }
 
     private handleDragStart = (e: DragEvent): void => {
-        const target = e.target as HTMLDivElement;
+        const target = (e.target as HTMLElement).closest('.taskbar-item') as HTMLDivElement;
 
-        if (!target.classList.contains('taskbar-item')) {
+        if (!target || target.classList.contains('launcher-button')) {
             e.preventDefault();
             return;
         }
 
         this.draggedItem = target;
-
-        if (e.dataTransfer) {
-            e.dataTransfer.setData(
-                'text/plain',
-                this.draggedItem.dataset.id ?? '',
-            );
-            e.dataTransfer.effectAllowed = 'move';
-        }
+        this.dragPlaceholder = this.createDragPlaceholder();
 
         setTimeout(() => {
-            this.draggedItem?.classList.add('dragging');
+            target.classList.add('dragging');
         }, 0);
+
+        if (e.dataTransfer) {
+            e.dataTransfer.setData('text/plain', target.dataset.id ?? '');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+    };
+
+    private handleDragEnter = (e: DragEvent): void => {
+        e.preventDefault();
+    };
+
+    private handleDragLeave = (e: DragEvent): void => {
+        if (!this.el.windowList.contains(e.relatedTarget as Node)) {
+            this.clearDragEffects();
+        }
     };
 
     private handleDragOver = (e: DragEvent): void => {
         e.preventDefault();
+    
+        const now = Date.now();
+        if (now - this.lastDragOverTime < this.dragOverThrottle) {
+            return;
+        }
 
-        if (this.draggedItem && e.target instanceof HTMLDivElement) {
-            const target = e.target.closest(
-                '.taskbar-item',
-            ) as HTMLDivElement | null;
+        this.lastDragOverTime = now;
 
-            if (target && target !== this.draggedItem) {
-                const targetRect = target.getBoundingClientRect();
-                const mouseX = e.clientX;
-                const middle = targetRect.left + targetRect.width / 2;
+        if (!this.draggedItem || !this.dragPlaceholder) return;
 
-                if (mouseX < middle) {
-                    this.el.windowList.insertBefore(this.draggedItem, target);
-                } else {
-                    this.el.windowList.insertBefore(
-                        this.draggedItem,
-                        target.nextSibling,
-                    );
+        const target = (e.target as HTMLElement).closest('.taskbar-item') as HTMLDivElement;
+
+        if (target && target !== this.draggedItem && !target.classList.contains('launcher-button') && !target.classList.contains('drag-placeholder')) {
+            const targetRect = target.getBoundingClientRect();
+            const mouseX = e.clientX;
+            const deadzone = targetRect.width * 0.3;
+            const leftThreshold = targetRect.left + deadzone;
+            const rightThreshold = targetRect.right - deadzone;
+            let insertBefore: Element | null = null;
+
+            if (mouseX < leftThreshold) {
+                insertBefore = target;
+            } else if (mouseX > rightThreshold) {
+                insertBefore = target.nextElementSibling;
+            } else {
+                return;
+            }
+
+            const next = this.dragPlaceholder.nextElementSibling;
+
+            if (insertBefore !== next) {
+                if (this.dragPlaceholder.parentNode) {
+                    this.dragPlaceholder.parentNode.removeChild(this.dragPlaceholder);
                 }
+
+                this.clearDrops();
+                target.classList.add('drag-over');
+                this.el.windowList.insertBefore(this.dragPlaceholder, insertBefore);
             }
         }
     };
@@ -445,56 +568,79 @@ export class TaskBar {
     private handleDrop = (e: DragEvent): void => {
         e.preventDefault();
 
-        if (this.draggedItem) {
-            this.reoder();
+        if (this.draggedItem && this.dragPlaceholder) {
+            // Move the dragged item to placeholder position
+            this.el.windowList.insertBefore(this.draggedItem, this.dragPlaceholder);
+
+            this.reorder();
             this.savePinned();
         }
+
+        this.clearDragEffects();
     };
 
     private handleDragEnd = (): void => {
-        this.draggedItem?.classList.remove('dragging');
-        this.draggedItem = null;
-        this.render();
+        this.clearDragEffects();
+
+        setTimeout(() => {
+            this.render();
+        }, 100);
     };
 
-    private reoder(): void {
+    private clearDragEffects(): void {
+        if (this.dragPlaceholder && this.dragPlaceholder.parentNode) {
+            this.dragPlaceholder.parentNode.removeChild(this.dragPlaceholder);
+        }
+
+        if (this.draggedItem) {
+            this.draggedItem.classList.remove('dragging');
+        }
+
+        this.clearDrops();
+
+        this.draggedItem = null;
+        this.dragPlaceholder = null;
+    }
+
+    private clearDrops(): void {
+        this.el.windowList.querySelectorAll('.drag-over').forEach(item => {
+            item.classList.remove('drag-over');
+        });
+    }
+
+    private reorder(): void {
         const order: PinnedWindowEntry[] = [];
-        const items = Array.from(
-            this.el.windowList.children,
-        ) as HTMLDivElement[];
+        const items = Array.from(this.el.windowList.children) as HTMLDivElement[];
 
         items.forEach((itemEl, index) => {
-            const itemId = (itemEl as HTMLElement).dataset.id;
+            if (itemEl.classList.contains('drag-placeholder')) return;
 
-            if (itemId) {
-                const instance = this.wm.windows.find((win) => win.id === itemId);
+            const itemId = itemEl.dataset.id;
+            if (!itemId) return;
 
-                if (instance) {
-                    const appId = instance.props.url;
-                    const entry = this.pinned.find((p) => p.id === appId);
+            const instance = this.wm.windows.find((win) => win.id === itemId);
 
-                    if (entry) {
-                        entry.order = index;
-                        order.push(entry);
-                    }
-                } else {
-                    const entry = this.pinned.find((p) => p.id === itemId);
+            if (instance) {
+                const appId = instance.props.url;
+                const entry = this.pinned.find((p) => p.id === appId);
 
-                    if (entry) {
-                        entry.order = index;
-                        order.push(entry);
-                    }
+                if (entry) {
+                    entry.order = index;
+                    order.push(entry);
+                }
+            } else {
+                const entry = this.pinned.find((p) => p.id === itemId);
+
+                if (entry) {
+                    entry.order = index;
+                    order.push(entry);
                 }
             }
         });
 
-        const unique = new Set(order.map((p) => p.id));
-
-        this.pinned = this.pinned
-            .filter((p) => unique.has(p.id))
-            .concat(
-                order.filter((p) => !this.pinned.some((orig) => orig.id === p.id)),
-            )
-            .sort((a, b) => a.order - b.order);
+        this.pinned = this.pinned.map(p => {
+            const updated = order.find(o => o.id === p.id);
+            return updated || p;
+        }).sort((a, b) => a.order - b.order);
     }
 }

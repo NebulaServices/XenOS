@@ -16,7 +16,7 @@
     },
     "include": [
         "src"
-, "apps"    ],
+    ],
     "exclude": [
         "node_modules",
         "dist"
