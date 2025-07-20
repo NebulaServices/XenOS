@@ -1,7 +1,6 @@
 /*
     TODO:
     - Array arguments
-    - Symlinks
     - Less-verbose paths
 */
 
@@ -11,8 +10,12 @@ export class XenFS {
     public mounts: Map<string, FileSystemDirectoryHandle> = new Map();
     private zip: any;
 
-    constructor() { this.zip = new window.JSZip(); }
-    async init(): Promise<void> { this.root = await navigator.storage.getDirectory(); }
+    constructor() {
+        this.zip = new window.JSZip();
+    }
+    async init(): Promise<void> {
+        this.root = await navigator.storage.getDirectory();
+    }
 
     private normalizePath(path: string): string {
         if (!path) return this.cwd;
@@ -37,23 +40,36 @@ export class XenFS {
         return normalized;
     }
 
-    private splitPath(path: string): string[] { return this.normalizePath(path).split("/").filter(Boolean); }
+    private splitPath(path: string): string[] {
+        return this.normalizePath(path).split("/").filter(Boolean);
+    }
 
     private async resolveHandle(
         path: string,
         create: boolean = false,
         recursive: boolean = false,
         kind: "file" | "directory" | "any" = "any",
+        resolveLink: boolean = true,
     ): Promise<FileSystemHandle> {
-        const parts = this.splitPath(path);
+        let currentPath = this.normalizePath(path);
+
+        if (resolveLink) {
+            const symlinks =
+                window.xen.settings.get("symlinks") || {};
+            if (symlinks[currentPath]) {
+                currentPath = symlinks[currentPath];
+            }
+        }
+
+        const parts = this.splitPath(currentPath);
         if (parts.length === 0) return this.root;
 
         let current: FileSystemDirectoryHandle = this.root;
 
         for (const [mntPath, mntHandle] of this.mounts.entries()) {
             const normalized = this.normalizePath(mntPath);
-            if (this.normalizePath(path).startsWith(normalized)) {
-                const relPath = this.normalizePath(path).substring(normalized.length);
+            if (currentPath.startsWith(normalized)) {
+                const relPath = currentPath.substring(normalized.length);
                 const relParts = relPath.split("/").filter(Boolean);
                 current = mntHandle;
 
@@ -81,18 +97,28 @@ export class XenFS {
                         create: create,
                     });
                 } else if (kind === "file") {
-                    return await current.getFileHandle(finalPart, { create: create });
+                    return await current.getFileHandle(finalPart, {
+                        create: create,
+                    });
                 } else {
                     try {
-                        return await current.getFileHandle(finalPart, { create: create });
+                        return await current.getFileHandle(finalPart, {
+                            create: create,
+                        });
                     } catch (err) {
-                        if (err instanceof DOMException && err.name === "TypeMismatchError") {
+                        if (
+                            err instanceof DOMException &&
+                            err.name === "TypeMismatchError"
+                        ) {
                             return await current.getDirectoryHandle(finalPart, {
                                 create: create,
                             });
                         }
 
-                        if (create) return await current.getFileHandle(finalPart, { create: true });
+                        if (create)
+                            return await current.getFileHandle(finalPart, {
+                                create: true,
+                            });
                         throw err;
                     }
                 }
@@ -106,7 +132,9 @@ export class XenFS {
                 current = await current.getDirectoryHandle(part);
             } catch (err: any) {
                 if (err.name === "NotFoundError" && recursive) {
-                    current = await current.getDirectoryHandle(part, { create: true });
+                    current = await current.getDirectoryHandle(part, {
+                        create: true,
+                    });
                 } else {
                     throw err;
                 }
@@ -117,34 +145,49 @@ export class XenFS {
         if (!finalPart) return this.root;
 
         if (kind === "directory") {
-            return await current.getDirectoryHandle(finalPart, { create: create });
+            return await current.getDirectoryHandle(finalPart, {
+                create: create,
+            });
         } else if (kind === "file") {
             return await current.getFileHandle(finalPart, { create: create });
         } else {
             try {
-                return await current.getFileHandle(finalPart, { create: create });
+                return await current.getFileHandle(finalPart, {
+                    create: create,
+                });
             } catch (err) {
-                if (err instanceof DOMException && err.name === "TypeMismatchError") {
+                if (
+                    err instanceof DOMException &&
+                    err.name === "TypeMismatchError"
+                ) {
                     return await current.getDirectoryHandle(finalPart, {
                         create: create,
                     });
                 }
 
-                if (create) return await current.getFileHandle(finalPart, { create: true });
+                if (create)
+                    return await current.getFileHandle(finalPart, {
+                        create: true,
+                    });
                 throw err;
             }
         }
     }
 
-    async mkdir(path: string): Promise<void> { await this.resolveHandle(path, true, true, "directory"); }
+    async mkdir(path: string): Promise<void> {
+        await this.resolveHandle(path, true, true, "directory");
+    }
 
     // TODO: More simplified output
     async list(
         path: string,
         recursive: boolean = false,
     ): Promise<{ name: string; isFile: boolean; isDirectory: boolean }[]> {
-        const dirHandle = (await this.resolveHandle(path)) as FileSystemDirectoryHandle;
-        const entries: { name: string; isFile: boolean; isDirectory: boolean }[] = [];
+        const dirHandle = (await this.resolveHandle(
+            path,
+        )) as FileSystemDirectoryHandle;
+        const entries: { name: string; isFile: boolean; isDirectory: boolean }[] =
+            [];
 
         for await (const entry of dirHandle.values()) {
             const info = {
@@ -194,14 +237,14 @@ export class XenFS {
     }
 
     async read(
-        path: string, 
-        format: "text" | "arrayBuffer" | "uint8array" | "blob" = "text"
+        path: string,
+        format: "text" | "arrayBuffer" | "uint8array" | "blob" = "text",
     ): Promise<string | ArrayBuffer | Uint8Array | Blob> {
         const fileHandle = (await this.resolveHandle(
             path,
             false,
             false,
-            "file"
+            "file",
         )) as FileSystemFileHandle;
 
         const file = await fileHandle.getFile();
@@ -219,8 +262,14 @@ export class XenFS {
         }
     }
 
-
     async rm(path: string): Promise<void> {
+        const symlinks =
+            window.xen.settings.get("symlinks") || {};
+        if (symlinks[this.normalizePath(path)]) {
+            this.unlink(path);
+            return;
+        }
+
         const parts = this.splitPath(path);
         const name = parts.pop();
 
@@ -237,7 +286,9 @@ export class XenFS {
         }
 
         const parentPath = "/" + parts.join("/");
-        const dirHandle = (await this.resolveHandle(parentPath)) as FileSystemDirectoryHandle;
+        const dirHandle = (await this.resolveHandle(
+            parentPath,
+        )) as FileSystemDirectoryHandle;
 
         await dirHandle.removeEntry(name, { recursive: true });
     }
@@ -251,7 +302,9 @@ export class XenFS {
         }
     }
 
-    async pwd(): Promise<string> { return this.cwd; }
+    async pwd(): Promise<string> {
+        return this.cwd;
+    }
 
     async cd(path: string): Promise<void> {
         const newPath = this.normalizePath(path);
@@ -280,7 +333,7 @@ export class XenFS {
 
     private async addDirContents(
         dirHandle: FileSystemDirectoryHandle,
-        currentPath: string
+        currentPath: string,
     ) {
         for await (const entry of dirHandle.values()) {
             const entryPath = this.normalizePath(`${currentPath}/${entry.name}`);
@@ -296,7 +349,7 @@ export class XenFS {
                 );
             }
         }
-    };
+    }
 
     async upload(type: "file" | "directory", path: string): Promise<void> {
         if (type === "file") {
@@ -310,7 +363,7 @@ export class XenFS {
             await this.mkdir(path);
             await this.addDirContents(handle, path);
         } else {
-            throw new Error('Invalid type specified for upload');
+            throw new Error("Invalid type specified for upload");
         }
     }
 
@@ -319,20 +372,17 @@ export class XenFS {
         curr: string,
     ) {
         for await (const entry of handle.values()) {
-            const path = curr
-                ? `${curr}/${entry.name}`
-                : entry.name;
+            const path = curr ?
+                `${curr}/${entry.name}` :
+                entry.name;
             if (entry.kind === "file") {
                 const file = await (entry as FileSystemFileHandle).getFile();
                 this.zip.file(path, file);
             } else if (entry.kind === "directory") {
-                await this.dirToZip(
-                    entry as FileSystemDirectoryHandle,
-                    path
-                );
+                await this.dirToZip(entry as FileSystemDirectoryHandle, path);
             }
         }
-    };
+    }
 
     async download(path: string): Promise<void> {
         const handle = await this.resolveHandle(path);
@@ -385,7 +435,11 @@ export class XenFS {
                 const fullDest = this.normalizePath(`${dest}/${entry.name}`);
 
                 if (entry.isFile) {
-                    const file = await ((await this.resolveHandle(fullSrc)) as FileSystemFileHandle).getFile();
+                    const file = await (
+                        (await this.resolveHandle(
+                            fullSrc,
+                        )) as FileSystemFileHandle
+                    ).getFile();
                     await this.write(fullDest, file);
                 } else if (entry.isDirectory) {
                     await this.mkdir(fullDest);
@@ -468,5 +522,31 @@ export class XenFS {
                 await this.mkdir(fullDest);
             }
         }
+    }
+
+    async link(src: string, dest: string): Promise<void> {
+        const nmSrc = this.normalizePath(src);
+        const nmDest = this.normalizePath(dest);
+        const symlinks = window.xen.settings.get("symlinks") || {};
+
+        symlinks[nmDest] = nmSrc;
+        window.xen.settings.set("symlinks", symlinks);
+    }
+
+    async unlink(path: string): Promise<void> {
+        const nmPath = this.normalizePath(path);
+        const symlinks =window.xen.settings.get("symlinks") || {};
+
+        delete symlinks[nmPath];
+        window.xen.settings.set("symlinks", symlinks);
+    }
+
+    async readlink(path: string): Promise<string> {
+        const nmPath = this.normalizePath(path);
+        const symlinks = window.xen.settings.get("symlinks") || {};
+        const target = symlinks[nmPath];
+
+        if (!target) throw new Error(`${path} is not a symbolic link`);
+        return target;
     }
 }
