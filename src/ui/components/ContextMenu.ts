@@ -1,156 +1,236 @@
-// TODO: Translucent
-import { ContextMenuEntry, FunctionRegistry } from '../../types/UI';
-import { settings } from '../../apis/settings';
+interface ContextMenuEntry {
+	title: string;
+	icon?: string;
+	toggle?: boolean;
+	once?: boolean;
+	onClick?: (...args: any[]) => void;
+}
+
+interface ContextMenuOptions {
+	[folder: string]: ContextMenuEntry[];
+}
 
 export class ContextMenu {
-    private static readonly STORAGE_KEY = 'context-menu';
-    private entries: ContextMenuEntry[] = [];
-    public registry: FunctionRegistry = {};
-    private menuEl: HTMLDivElement | null = null;
+	private menuEl: HTMLDivElement | null = null;
+	private submenuEl: HTMLDivElement | null = null;
+	private attachments = new Map<HTMLElement, ContextMenuOptions>();
 
-    constructor() {
-        this.loadEntries();
-        document.addEventListener('click', this.handleClick);
-    }
+	constructor() {
+		document.addEventListener('click', this.handleClick);
+	}
 
-    public registerFunction(funcId: string, func: (...args: any[]) => void): void {
-        this.registry[funcId] = func;
-    }
+	public attach(elementOrId: string | HTMLElement, options: ContextMenuOptions): void {
+		let el: HTMLElement | null;
+		
+		if (typeof elementOrId === 'string') {
+			el = document.getElementById(elementOrId);
+		} else {
+			el = elementOrId;
+		}
+		
+		if (!el) return;
 
-    public unregisterFunction(funcId: string): void {
-        delete this.registry[funcId];
-    }
+		this.attachments.delete(el);
+		this.attachments.set(el, options);
 
-    public create(
-        entryOpts: Omit<ContextMenuEntry, 'funcId' | 'funcArgs'> & { funcId?: string; funcArgs?: any[] },
-        func?: (...args: any[]) => void,
-    ): void {
-        const id = entryOpts.funcId || entryOpts.id;
-        const index = this.entries.findIndex((e) => e.id === entryOpts.id);
-        if (index !== -1) {this.entries.splice(index, 1);}
+		el.addEventListener('contextmenu', (e: MouseEvent) => {
+			e.preventDefault();
+			e.stopPropagation();
+			this.closeMenu();
+			this.renderMenu(e.clientX, e.clientY, options);
+		});
+	}
 
-        if (func && this.registry[id] !== func) {
-            this.registerFunction(id, func);
-        } else if (func && !this.registry[id]) {
-            this.registerFunction(id, func);
-        }
+	private renderMenu(x: number, y: number, opts: ContextMenuOptions): void {
+		this.menuEl = document.createElement('div');
+		this.menuEl.classList.add('context-menu');
 
-        this.entries.push({
-            ...entryOpts,
-            funcId: id,
-            funcArgs: entryOpts.funcArgs || [],
-        });
+		const rootEntries = opts.root || [];
+		const folders = Object.keys(opts).filter(k => k !== 'root');
 
-        this.saveEntries();
-    }
+		rootEntries.forEach(entry => {
+			this.createMenuItem(entry);
+		});
 
-    public list(domain?: string): ContextMenuEntry[] {
-        if (domain) return this.entries.filter((entry) => entry.domain === domain);
-        return [...this.entries];
-    }
+		if (rootEntries.length > 0 && folders.length > 0) {
+			this.createSeparator();
+		}
 
-    public delete(id: string): boolean {
-        const length = this.entries.length;
-        this.entries = this.entries.filter((entry) => entry.id !== id);
+		folders.forEach(folderName => {
+			this.createFolderItem(folderName, opts[folderName]);
+		});
 
-        if (this.entries.length < length) {
-            this.saveEntries();
-            return true;
-        }
+		document.body.appendChild(this.menuEl);
+		
+		const rect = this.menuEl.getBoundingClientRect();
+		this.menuEl.style.left = `${x}px`;
+		this.menuEl.style.top = `${y - rect.height - 10}px`;
+		
+		this.positionMenu(x, y);
+	}
 
-        return false;
-    }
+	private createMenuItem(entry: ContextMenuEntry): void {
+		const item = document.createElement('div');
+		item.classList.add('context-menu-item');
 
-    public attach(element: HTMLElement, domain: string): void {
-        element.addEventListener('contextmenu', (event: MouseEvent) => {
-            event.preventDefault();
-            event.stopPropagation();
+		if (entry.icon) {
+			const icon = document.createElement('img');
+			icon.src = entry.icon;
+			icon.classList.add('menu-icon');
+			item.appendChild(icon);
+		}
 
-            this.closeMenu();
-            this.renderMenu(event.clientX, event.clientY, domain);
-        });
-    }
+		const text = document.createElement('span');
+		text.textContent = entry.title;
+		item.appendChild(text);
 
-    public renderMenu(x: number, y: number, domain: string): void {
-        const entries = this.entries.filter((entry) => entry.domain === domain);
-        if (entries.length === 0) return;
+		if (entry.toggle !== undefined) {
+			const check = document.createElement('span');
+			check.classList.add('toggle-check');
+			check.textContent = entry.toggle ? '✓' : '';
+			item.appendChild(check);
+		}
 
-        this.menuEl = document.createElement('div');
-        this.menuEl.classList.add('context-menu'); 
-        this.menuEl.style.left = `${x}px`;
-        this.menuEl.style.top = `${y}px`;
+		item.addEventListener('click', (e) => {
+			e.stopPropagation();
+			entry.onClick?.();
+			this.closeMenu();
+		});
 
-        entries.forEach((entry) => {
-            const menuItem = document.createElement('div');
-            menuItem.classList.add('context-menu-item');
-            menuItem.textContent = entry.title;
+		this.menuEl?.appendChild(item);
+	}
 
-            menuItem.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const func = this.registry[entry.funcId];
+	private createFolderItem(folderName: string, entries: ContextMenuEntry[]): void {
+		const folderEl = document.createElement('div');
+		folderEl.classList.add('context-menu-folder');
+		
+		const text = document.createElement('span');
+		text.textContent = folderName;
+		folderEl.appendChild(text);
+		
+		const arrow = document.createElement('span');
+		arrow.classList.add('folder-arrow');
+		arrow.textContent = '>';
+		folderEl.appendChild(arrow);
 
-                if (func) {
-                    try {
-                        func(...(entry.funcArgs || []));
-                    } catch (err) {
-                        console.error(`Error executing "${entry.funcId}":`, err);
-                    }
-                } else {
-                    console.warn(`No function registered for ID "${entry.funcId}"`);
-                }
+		folderEl.addEventListener('mouseenter', (e) => {
+			this.showSubmenu(folderEl, entries);
+		});
 
-                this.closeMenu();
-            });
+		folderEl.addEventListener('mouseleave', (e) => {
+			setTimeout(() => {
+				if (!this.submenuEl?.matches(':hover') && !folderEl.matches(':hover')) {
+					this.hideSubmenu();
+				}
+			}, 100);
+		});
 
-            this.menuEl?.appendChild(menuItem);
-        });
+		this.menuEl?.appendChild(folderEl);
+	}
 
-        document.body.appendChild(this.menuEl);
-        const rect = this.menuEl.getBoundingClientRect();
+	private showSubmenu(folderEl: HTMLDivElement, entries: ContextMenuEntry[]): void {
+		this.hideSubmenu();
 
-        if (rect.right > window.innerWidth) this.menuEl.style.left = `${x - rect.width}px`;
-        if (rect.bottom > window.innerHeight) this.menuEl.style.top = `${y - rect.height}px`;
-    }
+		this.submenuEl = document.createElement('div');
+		this.submenuEl.classList.add('context-menu', 'context-submenu');
 
-    public closeMenu(): void {
-        if (this.menuEl) {
-            this.menuEl.remove();
-            this.menuEl = null;
-        }
-    }
+		entries.forEach(entry => {
+			const item = document.createElement('div');
+			item.classList.add('context-menu-item');
 
-    private saveEntries(): void {
-        const serializable = this.entries.map(({ id, domain, title, funcId, funcArgs }) => ({
-            id,
-            domain,
-            title,
-            funcId,
-            funcArgs,
-        }));
+			if (entry.icon) {
+				const icon = document.createElement('img');
+				icon.src = entry.icon;
+				icon.classList.add('menu-icon');
+				item.appendChild(icon);
+			}
 
-        try {
-            settings.set(ContextMenu.STORAGE_KEY, serializable);
-        } catch (err) {
-            console.error('Failed to save entries:', err);
-        }
-    }
+			const text = document.createElement('span');
+			text.textContent = entry.title;
+			item.appendChild(text);
 
-    private loadEntries(): void {
-        try {
-            const stored = settings.get(ContextMenu.STORAGE_KEY);
+			if (entry.toggle !== undefined) {
+				const check = document.createElement('span');
+				check.classList.add('toggle-check');
+				check.textContent = entry.toggle ? '✓' : '';
+				item.appendChild(check);
+			}
 
-            if (stored) {
-                this.entries = stored;
-                this.entries.forEach((entry) => {
-                    if (!entry.funcArgs) entry.funcArgs = [];
-                });
-            }
-        } catch (err) {
-            console.error('Failed to load entries:', err);
-            this.entries = [];
-        }
-    }
-    private handleClick = (event: MouseEvent): void => {
-        if (this.menuEl && !this.menuEl.contains(event.target as Node)) this.closeMenu();
-    };
+			item.addEventListener('click', (e) => {
+				e.stopPropagation();
+				entry.onClick?.();
+				this.closeMenu();
+			});
+
+			this.submenuEl?.appendChild(item);
+		});
+
+		const folderRect = folderEl.getBoundingClientRect();
+
+		this.submenuEl.style.left = `${folderRect.right + 5}px`;
+		this.submenuEl.style.top = `${folderRect.top}px`;
+		this.submenuEl.addEventListener('mouseenter', () => {});
+
+		this.submenuEl.addEventListener('mouseleave', () => {
+			setTimeout(() => {
+				if (!folderEl.matches(':hover')) {
+					this.hideSubmenu();
+				}
+			}, 100);
+		});
+
+		document.body.appendChild(this.submenuEl);
+
+		const submenuRect = this.submenuEl.getBoundingClientRect();
+
+		if (submenuRect.right > window.innerWidth) {
+			this.submenuEl.style.left = `${folderRect.left - submenuRect.width - 5}px`;
+		}
+		if (submenuRect.bottom > window.innerHeight) {
+			this.submenuEl.style.top = `${window.innerHeight - submenuRect.height - 10}px`;
+		}
+	}
+
+	private hideSubmenu(): void {
+		if (this.submenuEl) {
+			this.submenuEl.remove();
+			this.submenuEl = null;
+		}
+	}
+
+	private createSeparator(): void {
+		const sep = document.createElement('div');
+
+		sep.classList.add('context-menu-separator');
+		this.menuEl?.appendChild(sep);
+	}
+
+	private positionMenu(x: number, y: number): void {
+		if (!this.menuEl) return;
+		const rect = this.menuEl.getBoundingClientRect();
+
+		if (rect.right > window.innerWidth) {
+			this.menuEl.style.left = `${x - rect.width}px`;
+		}
+
+		if (rect.top < 0) {
+			this.menuEl.style.top = `${y + 10}px`;
+		}
+	}
+
+	public closeMenu(): void {
+		if (this.menuEl) {
+			this.menuEl.remove();
+			this.menuEl = null;
+		}
+
+		this.hideSubmenu();
+	}
+
+	private handleClick = (e: MouseEvent): void => {
+		if (this.menuEl && !this.menuEl.contains(e.target as Node) && 
+			(!this.submenuEl || !this.submenuEl.contains(e.target as Node))) {
+			this.closeMenu();
+		}
+	};
 }

@@ -1,46 +1,100 @@
 .context-menu {
-    position: fixed;
-    background-color: var(--mocha-surface0);
-    border: 1px solid var(--mocha-surface2);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    padding: 8px 0;
-    z-index: 10000;
-    min-width: 150px;
-    overflow: hidden;
-    animation: fadeIn 0.15s ease-out;
+	position: fixed;
+	background: rgba(30, 30, 46, 0.7);
+	backdrop-filter: blur(25px);
+	border: 1px solid rgba(137, 180, 250, 0.2);
+	border-radius: 12px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+	padding: 6px;
+	z-index: 10000;
+	min-width: 200px;
+	font-family: 'Segoe UI', system-ui, sans-serif;
+	font-size: 14px;
+	animation: contextMenuIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.context-submenu {
+	z-index: 10001;
+	animation: submenuIn 0.15s ease-out;
 }
 
 .context-menu-item {
-    padding: 8px 15px;
-    color: var(--mocha-text);
-    font-size: 0.9em;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-    white-space: nowrap;
+	display: flex;
+	align-items: center;
+	padding: 8px 12px;
+	color: rgba(205, 214, 244, 0.9);
+	cursor: pointer;
+	border-radius: 6px;
+	transition: all 0.15s ease;
+	position: relative;
+	gap: 12px;
 }
 
 .context-menu-item:hover {
-    background-color: var(--mocha-surface1);
+	background: rgba(137, 180, 250, 0.12);
+	color: var(--mocha-pink);
 }
 
-.context-menu-item.separator {
-    border-top: 1px solid var(--mocha-surface2);
-    margin: 5px 0;
-    padding: 0;
-    height: 1px;
-    background: none;
-    cursor: default;
+.menu-icon {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
+.toggle-check {
+	margin-left: auto;
+	color: var(--mocha-pink);
+	font-weight: bold;
+	min-width: 12px;
+}
 
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+.context-menu-folder {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 12px;
+	color: rgba(205, 214, 244, 0.9);
+	cursor: pointer;
+	border-radius: 6px;
+	transition: all 0.15s ease;
+	gap: 12px;
+}
+
+.context-menu-folder:hover {
+	background: rgba(137, 180, 250, 0.12);
+	color: var(--mocha-pink);
+}
+
+.folder-arrow {
+	font-size: 12px;
+	opacity: 0.7;
+	margin-left: auto;
+}
+
+.context-menu-separator {
+	height: 1px;
+	background: rgba(137, 180, 250, 0.15);
+	margin: 4px 8px;
+}
+
+@keyframes contextMenuIn {
+	from {
+		opacity: 0;
+		transform: scale(0.9) translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+}
+
+@keyframes submenuIn {
+	from {
+		opacity: 0;
+		transform: translateX(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
 }

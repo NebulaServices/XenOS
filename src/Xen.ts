@@ -58,7 +58,7 @@ export class Xen {
         this.version.build += `${(await (await fetch('/uuid')).text()).split('\n')[0]}`;
         this.version.pretty = `${this.version.prefix}-${this.version.codename} v${this.version.major}.${this.version.minor}.${this.version.patch} (${this.version.build})`;
     
-        this.ui.taskBar = new TaskBar(this.wm, this.ui.contextMenu);
+        this.ui.taskBar = new TaskBar();
         this.ui.taskBar.create();
 
         this.wm.onCreated = () => this.ui.taskBar.onWindowCreated();
