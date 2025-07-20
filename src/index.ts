@@ -2,7 +2,6 @@ import { Xen } from "./Xen";
 import { XenTransport } from "./apis/networking/Transport";
 import { oobe } from "./ui/oobe/autoUpdate";
 import { bootSplash } from "./ui/bootSplash";
-import { ContextMenuTest } from "./demo";
 
 async function setupDeps() {
     const idbKvPath = '/libs/idb-keyval/index.js';
@@ -102,7 +101,5 @@ window.addEventListener('load', async () => {
     }, 600);
 
     await window.xen.initSystem();
-
-    const contextMenuTest = new ContextMenuTest();
 });
 
