@@ -1,85 +1,162 @@
 .notification-container {
     position: fixed;
-    bottom: 1rem;
-    right: 1rem;
+    bottom: calc(48px + 20px);
+    right: 20px;
     z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: min(400px, calc(100vw - 40px));
+    max-height: calc(100vh - 48px - 40px);
 }
 
 .notification {
-    width: 300px;
-    background: var(--surface-secondary);
-    backdrop-filter: var(--blur-medium);
-    -webkit-backdrop-filter: var(--blur-medium);
-    border: 1px solid var(--border-primary);
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 8px;
-    transform: translateY(120%);
-    transition: transform 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: rgba(30, 30, 46, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(245, 194, 231, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    transform: translateX(120%) scale(0.9);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.5),
+        0 2px 8px rgba(0, 0, 0, 0.3);
+    min-width: 320px;
+    position: relative;
 }
 
 .notification.show {
-    transform: translateY(0);
+    transform: translateX(0) scale(1);
+    opacity: 1;
+}
+
+.notification.closing {
+    transform: translateX(120%) scale(0.9);
+    opacity: 0;
+}
+
+.notification-content {
+    padding: 16px;
 }
 
 .notification-header {
     display: flex;
-    align-items: center;
-    margin-bottom: 8px;
+    align-items: flex-start;
+    gap: 12px;
 }
 
 .notification-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.notification-text {
+    flex: 1;
+    min-width: 0;
 }
 
 .notification-title {
-    flex: 1;
-    color: var(--text-primary);
-    font-weight: 500;
+    color: #cdd6f4;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 4px;
+}
+
+.notification-description {
+    color: #a6adc8;
+    font-size: 13px;
+    line-height: 1.4;
+    word-wrap: break-word;
 }
 
 .notification-close {
     background: none;
     border: none;
-    color: var(--error-color);
-    font-size: 20px;
+    color: #f38ba8;
+    font-size: 18px;
     cursor: pointer;
-    padding: 0 4px;
-    transition: color 0.2s;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .notification-close:hover {
-    color: color-mix(in srgb, var(--error-color) 80%, white);
+    background: rgba(243, 139, 168, 0.15);
+    color: #f38ba8;
 }
 
-.notification-body {
-    color: var(--text-secondary);
-    font-size: 14px;
-    margin-bottom: 12px;
+.notification-image {
+    margin-top: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(88, 91, 112, 0.1);
+}
+
+.notification-image img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+    display: block;
 }
 
 .notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     height: 3px;
-    background: color-mix(in srgb, var(--primary-color) 20%, transparent);
-    border-radius: 1.5px;
-    overflow: hidden;
+    background: rgba(88, 91, 112, 0.3);
 }
 
 .progress-bar {
     height: 100%;
     width: 0%;
-    background: var(--primary-color);
+    background: linear-gradient(90deg, #f5c2e7, #cba6f7);
+    animation: none;
+}
+
+.progress-bar.animate {
     animation: progress linear forwards;
 }
 
 @keyframes progress {
-    from {
-        width: 0%;
+    from { width: 0%; }
+    to { width: 100%; }
+}
+
+/* Pause progress on hover */
+.notification:hover .progress-bar {
+    animation-play-state: paused;
+}
+
+/* Responsive adjustments */
+@media (max-height: 600px) {
+    .notification-container {
+        bottom: calc(40px + 10px);
+        max-height: calc(100vh - 40px - 20px);
     }
-    to {
-        width: 100%;
+}
+
+@media (max-width: 480px) {
+    .notification-container {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .notification {
+        min-width: unset;
     }
 }
