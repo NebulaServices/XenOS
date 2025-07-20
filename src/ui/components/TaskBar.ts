@@ -7,13 +7,29 @@ TODO:
 - Fix icon paths
 */
 import { Window } from '../windows/Window';
-import {
-    PinnedWindowEntry,
-    TaskBarDisplayMode,
-    TaskBarEntry,
-} from '../../types/UI';
-import { PackageManager } from '../../apis/process/Packages';
+import { PackageManager } from '../../apis/packages/PackageManager';
 import { AppLauncher } from './AppLauncher';
+
+interface PinnedWindowEntry {
+    id: string;
+    title: string;
+    icon?: string;
+    url: string;
+    order: number;
+}
+
+interface TaskBarEntry {
+    itemId: string;
+    instanceId: string | null;
+    appId: string;
+    title: string;
+    icon?: string;
+    url: string;
+    isOpen: boolean;
+    isPinned: boolean;
+}
+
+type TaskBarDisplayMode = 'iconOnly' | 'iconAndName';
 
 export class TaskBar {
     private static readonly SETTINGS_KEY = 'taskbar';

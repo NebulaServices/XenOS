@@ -1,4 +1,4 @@
-import { Xen } from "../Xen";
+import { Xen } from "./Xen";
 import { BareMuxConnection } from "@mercuryworkshop/bare-mux";
 import * as idbKv from 'idb-keyval';
 import * as Comlink from 'comlink';
@@ -23,9 +23,4 @@ declare global {
             mime?: any;
         }
     }
-}
-
-export interface Shared {
-    xen?: Xen;
-    mime?: any;
 }

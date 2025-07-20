@@ -1,6 +1,18 @@
-import { WindowOpts } from '../../types/UI';
 import { WindowManager } from './WindowManager';
 import { v4 as uuidv4 } from 'uuid';
+
+export interface WindowOpts {
+    title: string;
+    width?: string;
+    height?: string;
+    x?: number;
+    y?: number;
+    icon?: string;
+    url?: string;
+    content?: string;
+    resizable?: boolean;
+    display?: boolean;
+}
 
 export class Window {
     public readonly id: string;

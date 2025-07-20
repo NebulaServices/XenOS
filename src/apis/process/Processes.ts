@@ -1,5 +1,19 @@
 import { Xen } from "../../Xen";
-import { Process, ProcessShared, ProcessOpts } from "../../types/Process";
+
+interface ProcessShared {
+    xen?: Xen;
+}
+
+export interface Process {
+    pid: number;
+    process: Worker;
+}
+
+interface ProcessOpts {
+    async?: boolean;
+    type: 'direct' | 'url' | 'opfs';
+    content: string
+}
 
 export class Proccesses {
     private npid = 0;

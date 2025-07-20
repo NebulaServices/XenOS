@@ -1,4 +1,4 @@
-import { Manifest } from "../../types/Process";
+import { Manifest } from "./PackageManager";
 
 export class Runtime {
     public async exec(manifest: Manifest) {

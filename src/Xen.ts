@@ -5,7 +5,8 @@ import { WindowManager } from "./ui/windows/WindowManager";
 import { ContextMenu } from "./ui/components/ContextMenu";
 import { TaskBar } from "./ui/components/TaskBar";
 import { Proccesses } from "./apis/process/Processes";
-import { PackageManager } from "./apis/process/Packages";
+import { PackageManager } from "./apis/packages/PackageManager";
+import { RepoStore } from "./apis/packages/RepoStore";
 import { Notifications } from "./ui/components/Notifications";
 import { Wallpaper } from "./ui/Wallpaper";
 import { settings } from "./apis/settings";
@@ -19,6 +20,7 @@ export class Xen {
     public wm: WindowManager;
     public process: Proccesses;
     public packages: PackageManager;
+    public repos: RepoStore;
     public ui: {
         contextMenu: ContextMenu,
         taskBar: TaskBar
@@ -41,6 +43,7 @@ export class Xen {
         };
         this.packages = new PackageManager();
         this.process = new Proccesses();
+        this.repos = new RepoStore();
         this.initSystem = initScripts;
     }
 

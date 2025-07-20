@@ -1,6 +1,6 @@
 // TODO: Boot from OPFS (hell)
 /// <reference lib="webworker" />
-import { Shared } from "../types/other";
+import { Shared } from "../types";
 
 declare const Comlink: any;
 declare const workbox: any;

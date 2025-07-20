@@ -1,5 +1,4 @@
-import { WindowOpts } from '../../types/UI';
-import { Window } from './Window';
+import { Window, WindowOpts } from './Window';
 
 export class WindowManager {
     public windows: Window[] = [];

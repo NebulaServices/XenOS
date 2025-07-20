@@ -1,6 +1,4 @@
 # TODO
-## Apps
-- Appstore + Repos
 ## APIs
 - Users API
 - V86
