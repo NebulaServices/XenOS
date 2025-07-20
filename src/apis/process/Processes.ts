@@ -1,16 +1,22 @@
 import { Xen } from "../../Xen";
-import { Process, ProcessShared } from "../../types/Process";
+import { Process, ProcessShared, ProcessOpts } from "../../types/Process";
 
 export class Proccesses {
     private npid = 0;
     public processes: Process[] = [];
 
-    public spawn(code: string, isAsync = false) {
-        const prefix = isAsync ? "async" : "";
-        const comlinkUrl = new URL(
-            "/libs/comlink/umd/comlink.min.js",
-            window.location.origin,
-        ).href;
+     public async spawn(opts: ProcessOpts) {
+        const prefix = opts.async ? "async" : "";
+        const comlinkUrl = new URL("/libs/comlink/umd/comlink.min.js", window.location.origin).href;
+        let content: string | Promise<string>;
+
+        if (opts.type == 'direct') {
+            content = opts.content;
+        } else if (opts.type == 'url') {
+            content = (await fetch(window.xen.net.encodeUrl(opts.content))).text();
+        } else if (opts.type == 'opfs') {
+            content = (await window.xen.fs.read(opts.content, 'text') as string);
+        }
 
         const template = `
         importScripts('${comlinkUrl}');
@@ -24,17 +30,15 @@ export class Proccesses {
 
                 (
                     ${prefix}() => {
-                        ${code}
+                        ${content}
                     }
                 )();
             }
         });
         `;
-
         const blob = new Blob([template], { type: "application/javascript" });
         const urlObj = URL.createObjectURL(blob);
         const worker = new Worker(urlObj);
-
         const process: Process = {
             pid: this.npid,
             process: worker,
@@ -48,7 +52,6 @@ export class Proccesses {
             target: "comlink-init",
             value: port2,
         };
-
         const shared: ProcessShared = {
             xen: window.modules.Comlink.proxy(window.xen) as unknown as Xen,
         };

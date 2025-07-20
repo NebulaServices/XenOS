@@ -41,4 +41,5 @@ export interface WindowOpts {
     url?: string;
     content?: string;
     resizable?: boolean;
+    display?: boolean;
 }

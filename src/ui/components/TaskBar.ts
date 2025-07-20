@@ -102,20 +102,22 @@ export class TaskBar {
 
         this.wm.windows.forEach((win) => {
             current.set(win.id, win);
-            const isPinned = this.pinned.some((p) => p.id === win.props.url);
+            if (win.props.display) {
+                const isPinned = this.pinned.some((p) => p.id === win.props.url);
 
-            entries.push({
-                itemId: win.id,
-                instanceId: win.id,
-                appId: win.props.url,
-                title: win.props.title,
-                icon: win.props.icon,
-                url: win.props.url,
-                isOpen: true,
-                isPinned: isPinned,
-            });
+                entries.push({
+                    itemId: win.id,
+                    instanceId: win.id,
+                    appId: win.props.url,
+                    title: win.props.title,
+                    icon: win.props.icon,
+                    url: win.props.url,
+                    isOpen: true,
+                    isPinned: isPinned,
+                });
 
-            processed.add(win.props.url);
+                processed.add(win.props.url);
+            }
         });
 
         this.current = current;
@@ -246,7 +248,7 @@ export class TaskBar {
         const item = this.el.windowList.querySelector(
             `[data-id="${windowInstance.id}"]`,
         );
-        if (item) item.classList.add('is-focused');
+        if (item && windowInstance.props.display) item.classList.add('is-focused');
     };
 
     private registerContextMenus(): void {

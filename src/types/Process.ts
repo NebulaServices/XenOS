@@ -32,3 +32,9 @@ export interface Manifest {
         resizable?: boolean;
     };
 }
+
+export interface ProcessOpts {
+    async?: boolean;
+    type: 'direct' | 'url' | 'opfs';
+    content: string
+}

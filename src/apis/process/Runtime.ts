@@ -40,7 +40,11 @@ export class Runtime {
             code = res;
         }
 
-        window.xen.process.spawn(code, true);
+        await window.xen.process.spawn({
+            async: true,
+            type: 'direct',
+            content: code,
+        });
     }
 
     public async import(manifest: Manifest) {
