@@ -7,15 +7,16 @@
 
 .notification {
     width: 300px;
-    background: rgba(49, 50, 68, 0.5);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--mocha-surface1);
+    background: var(--surface-secondary);
+    backdrop-filter: var(--blur-medium);
+    -webkit-backdrop-filter: var(--blur-medium);
+    border: 1px solid var(--border-primary);
     border-radius: 8px;
     padding: 12px;
     margin-bottom: 8px;
     transform: translateY(120%);
     transition: transform 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .notification.show {
@@ -36,14 +37,14 @@
 
 .notification-title {
     flex: 1;
-    color: var(--mocha-text);
+    color: var(--text-primary);
     font-weight: 500;
 }
 
 .notification-close {
     background: none;
     border: none;
-    color: var(--mocha-red);
+    color: var(--error-color);
     font-size: 20px;
     cursor: pointer;
     padding: 0 4px;
@@ -51,18 +52,18 @@
 }
 
 .notification-close:hover {
-    color: var(--mocha-maroon);
+    color: color-mix(in srgb, var(--error-color) 80%, white);
 }
 
 .notification-body {
-    color: var(--mocha-subtext0);
+    color: var(--text-secondary);
     font-size: 14px;
     margin-bottom: 12px;
 }
 
 .notification-progress {
     height: 3px;
-    background: rgba(137, 180, 250, 0.2);
+    background: color-mix(in srgb, var(--primary-color) 20%, transparent);
     border-radius: 1.5px;
     overflow: hidden;
 }
@@ -70,7 +71,7 @@
 .progress-bar {
     height: 100%;
     width: 0%;
-    background: var(--mocha-blue);
+    background: var(--primary-color);
     animation: progress linear forwards;
 }
 
@@ -78,7 +79,6 @@
     from {
         width: 0%;
     }
-
     to {
         width: 100%;
     }

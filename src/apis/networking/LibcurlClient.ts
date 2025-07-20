@@ -141,12 +141,18 @@ export class LibcurlClient {
         return this.direct.libcurl.fetch(url, options);
     }
 
-    public encodeUrl(url: string): string {
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-            return url;
+    public encodeUrl(u: string): string {
+        let e: string;
+
+        if (u.startsWith(location.origin)) return u;
+
+        if (u.startsWith('http://') || u.startsWith('https://')) {
+            // @ts-ignore
+            e = __uv$config.prefix + __uv$config.encodeUrl(u);
         } else {
-            //@ts-ignore
-            return window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
+            e = u;
         }
+
+        return e;
     }
 }

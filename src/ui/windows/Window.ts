@@ -39,13 +39,12 @@ export class Window {
     ) {
         this.id = uuidv4();
         this.props.title = opts.title;
-        this.props.icon = this.encodeUrl(opts.icon);
+        this.props.icon = window.xen.net.encodeUrl(opts.icon);
         this.props.url = opts.url;
         this.props.width = opts.width || '600px';
         this.props.height = opts.height || '400px';
         this.props.x = opts.x || Math.random() * (window.innerWidth - 600 - 50);
-        this.props.y =
-            opts.y || Math.random() * (window.innerHeight - 400 - 50);
+        this.props.y = opts.y || Math.random() * (window.innerHeight - 400 - (window as any).xen.ui.taskBar.getHeight() - 50);
         this.props.resizable = opts.resizable ?? true;
         this.props.display = opts.display ?? true;
         this.og.width = this.props.width;
@@ -59,21 +58,6 @@ export class Window {
         this.setupButtons();
         this.focus();
         this.display = this.props.display;
-    }
-
-    private encodeUrl(u: string): string {
-        let e: string;
-
-        if (u.startsWith(location.origin)) return u;
-
-        if (u.startsWith('http://') || u.startsWith('https://')) {
-            // @ts-ignore
-            e = __uv$config.prefix + __uv$config.encodeUrl(u);
-        } else {
-            e = u;
-        }
-
-        return e;
     }
 
     private createWindowShell(): HTMLDivElement {
@@ -103,6 +87,7 @@ export class Window {
         if (this.props.resizable == true) {
             ['n', 's', 'e', 'w', 'nw', 'ne', 'sw', 'se'].forEach((d) => {
                 const r = document.createElement('div');
+
                 r.classList.add('wm-resizer', `wm-resizer-${d}`);
                 el.appendChild(r);
             });
@@ -119,17 +104,19 @@ export class Window {
             this.el.content.setAttribute('allowfullscreen', 'true');
 
             this.el.window.appendChild(this.el.content);
-            (this.el.content as HTMLIFrameElement).src = this.encodeUrl(this.props.url);
+            (this.el.content as HTMLIFrameElement).src = window.xen.net.encodeUrl(this.props.url);
 
             this.el.content.onload = () => {
                 Object.assign((this.el.content as HTMLIFrameElement).contentWindow, {
-                    xen: window.xen,
+                    xen: (window as any).xen,
                 });
             }
         } else if (this.props.content) {
             const d = document.createElement('div');
+
             d.classList.add('wm-content');
             d.innerHTML = this.props.content || '';
+
             this.el.content = d;
             this.el.window.appendChild(this.el.content);
         }
@@ -164,13 +151,16 @@ export class Window {
         document.addEventListener('mousemove', (e: MouseEvent) => {
             if (!isDragging) return;
 
-            // If fullscreened and dragged down more than 50px, unfullscreen
             if (this.isFullscreened && e.clientY - dragStartY > 50) {
                 this.fullscreen();
-                // Adjust offset for new window position
                 oX = this.el.window.offsetWidth / 2;
                 oY = 20;
+
                 return;
+            }
+
+            if (this.el.window.classList.contains('wm-clamped')) {
+                this.wm.unclampWindow(this);
             }
 
             if (!this.isFullscreened) {
@@ -203,6 +193,10 @@ export class Window {
                 if (this.isMinimized || this.isFullscreened || !this.props.display)
                     return;
 
+                if (this.el.window.classList.contains('wm-clamped')) {
+                    this.wm.unclampWindow(this);
+                }
+
                 isResizing = true;
                 sX = e.clientX;
                 sY = e.clientY;
@@ -210,8 +204,10 @@ export class Window {
                 sH = this.el.window.offsetHeight;
                 sL = this.el.window.offsetLeft;
                 sT = this.el.window.offsetTop;
+
                 e.preventDefault();
                 this.focus();
+
                 document.body.classList.add('no-select');
                 this.el.window.classList.add('resizing');
                 this.el.content.classList.add('wm-iframe-no-pointer');
@@ -222,9 +218,7 @@ export class Window {
 
                 const dX = e.clientX - sX;
                 const dY = e.clientY - sY;
-                const d = Array.from(r.classList).find((cls) =>
-                    cls.startsWith('wm-resizer-'),
-                )!;
+                const d = Array.from(r.classList).find((cls) => cls.startsWith('wm-resizer-'))!;
                 const minW = 200;
                 const minH = 100;
                 let nW = sW;
@@ -239,6 +233,8 @@ export class Window {
                         break;
                     case 'wm-resizer-s':
                         nH = Math.max(minH, sH + dY);
+                        const maxHeight = window.innerHeight - sT - (window as any).xen.ui.taskBar.getHeight();
+                        nH = Math.min(nH, maxHeight);
                         break;
                     case 'wm-resizer-e':
                         nW = Math.max(minW, sW + dX);
@@ -258,14 +254,20 @@ export class Window {
                         nY = sT + (sH - nH);
                         nW = Math.max(minW, sW + dX);
                         break;
+                    case 'wm-resizer-se':
+                        nH = Math.max(minH, sH + dY);
+                        nW = Math.max(minW, sW + dX);
+
+                        const maxHeightSE = window.innerHeight - sT - (window as any).xen.ui.taskBar.getHeight();
+                        nH = Math.min(nH, maxHeightSE);
+                        break;
                     case 'wm-resizer-sw':
                         nH = Math.max(minH, sH + dY);
                         nW = Math.max(minW, sW - dX);
                         nX = sL + (sW - nW);
-                        break;
-                    case 'wm-resizer-se':
-                        nH = Math.max(minH, sH + dY);
-                        nW = Math.max(minW, sW + dX);
+
+                        const maxHeightSW = window.innerHeight - sT - (window as any).xen.ui.taskBar.getHeight();
+                        nH = Math.min(nH, maxHeightSW);
                         break;
                 }
 
@@ -356,7 +358,7 @@ export class Window {
         this.el.window.style.left = `${this.props.x}px`;
     }
     set y(v: number) {
-        const mY = window.innerHeight - this.el.window.offsetHeight;
+        const mY = window.innerHeight - this.el.window.offsetHeight - (window as any).xen.ui.taskBar.getHeight();
         this.props.y = Math.min(Math.max(0, v), mY);
         this.el.window.style.top = `${this.props.y}px`;
     }
@@ -400,15 +402,17 @@ export class Window {
         }
     }
     set url(v: string) {
-        this.props.url = this.encodeUrl(v);
+        this.props.url = window.xen.net.encodeUrl(v);
+
         if (this.el.content instanceof HTMLIFrameElement) {
-            this.el.content.src = this.encodeUrl(v);
+            this.el.content.src = window.xen.net.encodeUrl(v);
         }
     }
     set display(v: boolean) {
         this.props.display = v;
         this.el.window.style.visibility = v ? 'visible' : 'hidden';
         this.el.window.style.pointerEvents = v ? 'auto' : 'none';
+
         if (!v) {
             this._setFocusState(false);
         } else {

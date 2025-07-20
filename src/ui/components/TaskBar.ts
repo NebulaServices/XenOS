@@ -523,7 +523,7 @@ export class TaskBar {
 
     private handleDragOver = (e: DragEvent): void => {
         e.preventDefault();
-    
+
         const now = Date.now();
         if (now - this.lastDragOverTime < this.dragOverThrottle) {
             return;
@@ -642,5 +642,10 @@ export class TaskBar {
             const updated = order.find(o => o.id === p.id);
             return updated || p;
         }).sort((a, b) => a.order - b.order);
+    }
+
+    public getHeight(): number {
+        const rect = this.el.taskbar.getBoundingClientRect();
+        return window.innerHeight - rect.top + 10;
     }
 }

@@ -74,9 +74,15 @@ window.addEventListener('load', async () => {
     const splash = bootSplash();
 
     await setupDeps();
-    await window.xen.boot();
+
     await initSw().then(() => {
         window.xen.ui.wallpaper.set();
+    });
+
+    await window.xen.boot();
+
+    window.addEventListener('resize', () => {
+        window.xen.wm.handleWindowResize();
     });
 
     const loadingBar = document.getElementById("loading-bar") as HTMLDivElement;
@@ -92,7 +98,7 @@ window.addEventListener('load', async () => {
         splash.addEventListener("transitionend", () => {
             splash.remove();
         });
-    }, 500);
+    }, 600);
 
     await window.xen.initSystem();
 });

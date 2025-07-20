@@ -1,9 +1,13 @@
 node_modules/
-build/
+
 dist/
 dist-sw/
 dist-transport/
+
+apps/
+build/
+
 pnpm-lock.yaml
 package-lock.json
-apps/
+
 .vscode/
