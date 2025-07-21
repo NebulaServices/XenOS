@@ -39,7 +39,7 @@
     --minimize-btn-hover-bg: #e1ca97;
     --fullscreen-btn-hover-bg: #94c88e;
     --close-btn-hover-bg: #dc7d91;
-    --focused-border-glow: #e0b4e7;
+    --focused-border-glow: rgba(211, 106, 204, 0.153);
 }
 
 body {

@@ -85,9 +85,8 @@
 
 .launcher-button {
     flex-shrink: 0;
-    padding: 0 8px;
+    padding: 0 2px;
     margin-right: 4px;
-    border-right: 1px solid var(--mocha-surface2);
 }
 
 .launcher-button:hover {
@@ -230,6 +229,7 @@
     line-height: 1.1;
     text-align: center;
     height: 100%;
+    padding-right: 2px;
 }
 
 .time-text {
