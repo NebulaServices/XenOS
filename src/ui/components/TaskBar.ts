@@ -1,10 +1,7 @@
 // This file is COMPLETELY AI generated
 /*
 TODO:
-- Fix spacing and alignment for app entries
-- Allow for toggling modules to the right (Time, date, battery)
-- Add inedcators for what apps are focused or minimized (A little broken rn)
-- Fix icon paths
+- Add indicators for what apps are focused or minimized (A little broken rn)
 */
 import { Window } from '../windows/Window';
 import { PackageManager } from '../../apis/packages/PackageManager';
@@ -35,18 +32,24 @@ export class TaskBar {
     private static readonly SETTINGS_KEY = 'taskbar';
     private static readonly PINNED_WINDOWS_KEY = 'pinned-windows';
     private static readonly DISPLAY_MODE_KEY = 'display-mode';
+    private static readonly DEBUG: boolean = false;
+    private static readonly DEBUG_BATTERY_LIFE: number = 55;
 
-    //@ts-ignore
     private el: {
         taskbar: HTMLDivElement;
         windowList: HTMLDivElement;
         launcherBtn: HTMLDivElement;
-    } = {};
+        rightModules: HTMLDivElement;
+        timeModule: HTMLDivElement;
+        batteryModule?: HTMLDivElement;
+    } = {} as any;
     private pinned: PinnedWindowEntry[] = [];
     private displayMode: TaskBarDisplayMode = 'iconOnly';
     private current: Map<string, Window> = new Map();
     private packageManager: PackageManager;
     private appLauncher: AppLauncher;
+    private batteryManager: any = null;
+    private timeInterval: number | null = null;
 
     constructor() {
         this.packageManager = new PackageManager();
@@ -54,6 +57,8 @@ export class TaskBar {
         this.el.taskbar = document.createElement('div');
         this.el.windowList = document.createElement('div');
         this.el.launcherBtn = document.createElement('div');
+        this.el.rightModules = document.createElement('div');
+        this.el.timeModule = document.createElement('div');
 
         this.appLauncher = new AppLauncher(
             this.packageManager,
@@ -65,6 +70,8 @@ export class TaskBar {
         this.loadState();
         this.attachListeners();
         this.registerContextMenus();
+        this.initBattery();
+        this.initTime();
     }
 
     public create(): void {
@@ -76,6 +83,7 @@ export class TaskBar {
     private setupEls(): void {
         this.el.taskbar.id = 'taskbar';
         this.el.taskbar.classList.add('taskbar');
+
         this.el.launcherBtn.id = 'launcher-button';
         this.el.launcherBtn.classList.add('taskbar-item', 'launcher-button');
         this.el.launcherBtn.draggable = false;
@@ -94,9 +102,109 @@ export class TaskBar {
             </svg>
         `;
         this.el.launcherBtn.addEventListener('click', () => this.appLauncher.toggle());
-        this.el.taskbar.appendChild(this.el.launcherBtn);
+
         this.el.windowList.classList.add('taskbar-windows');
+
+        this.el.rightModules.classList.add('taskbar-right-modules');
+        this.setupTimeModule();
+        this.setupBatteryModule();
+
+        this.el.taskbar.appendChild(this.el.launcherBtn);
         this.el.taskbar.appendChild(this.el.windowList);
+        this.el.taskbar.appendChild(this.el.rightModules);
+    }
+    private setupTimeModule(): void {
+        this.el.timeModule.classList.add('taskbar-module', 'time-module');
+        this.el.rightModules.appendChild(this.el.timeModule);
+    }
+
+    private setupBatteryModule(): void {
+        if (this.shouldShowBattery()) {
+            this.el.batteryModule = document.createElement('div');
+            this.el.batteryModule.classList.add('taskbar-module', 'battery-module');
+            this.el.rightModules.appendChild(this.el.batteryModule);
+        }
+    }
+
+    private shouldShowBattery(): boolean {
+        if (TaskBar.DEBUG) return true;
+        return 'getBattery' in navigator && /Mobi|Android/i.test(navigator.userAgent);
+    }
+
+    private async initBattery(): Promise<void> {
+        if (!this.shouldShowBattery() || !this.el.batteryModule) return;
+
+        try {
+            if (TaskBar.DEBUG) {
+                this.updateBatteryDisplay(TaskBar.DEBUG_BATTERY_LIFE / 100, false);
+                return;
+            }
+
+            this.batteryManager = await (navigator as any).getBattery();
+            this.updateBatteryDisplay(this.batteryManager.level, this.batteryManager.charging);
+
+            this.batteryManager.addEventListener('levelchange', () => {
+                this.updateBatteryDisplay(this.batteryManager.level, this.batteryManager.charging);
+            });
+
+            this.batteryManager.addEventListener('chargingchange', () => {
+                this.updateBatteryDisplay(this.batteryManager.level, this.batteryManager.charging);
+            });
+        } catch (err) {
+            if (this.el.batteryModule) {
+                this.el.batteryModule.style.display = 'none';
+            }
+        }
+    }
+
+    private updateBatteryDisplay(level: number, charging: boolean): void {
+        if (!this.el.batteryModule) return;
+
+        const percent = Math.round(level * 100);
+        let color = '#f38ba8';
+
+        if (percent > 70) color = '#a6e3a1';
+        else if (percent > 20) color = '#f9e2af';
+
+        const fillHeight = Math.max(1, (percent / 100) * 14);
+        const fillY = 4 + (14 - fillHeight);
+
+        this.el.batteryModule.innerHTML = `
+        <div class="battery-container">
+            <svg class="battery-icon" viewBox="0 0 24 24" fill="none">
+                <rect x="6" y="2" width="12" height="18" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <rect x="9" y="0" width="6" height="2" rx="1" fill="currentColor"/>
+                <rect x="8" y="${fillY}" width="8" height="${fillHeight}" rx="1" fill="${color}"/>
+                ${charging ? '<path d="M10 12l-2 4h4l-2-4z" fill="currentColor"/>' : ''}
+            </svg>
+        </div>
+    `;
+    }
+
+    private initTime(): void {
+        this.updateTime();
+        this.timeInterval = window.setInterval(() => this.updateTime(), 1000);
+    }
+
+    private updateTime(): void {
+        const now = new Date();
+        const time = now.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        const date = now.toLocaleDateString([], {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric'
+        });
+
+        this.el.timeModule.innerHTML = `
+        <div class="time-container">
+            <div class="time-text">${time}</div>
+            <div class="date-text">${date}</div>
+        </div>
+    `;
     }
 
     private attachListeners(): void {
@@ -320,16 +428,19 @@ export class TaskBar {
             window.xen.wm.create({ url: appId, title, icon });
         }
     }
+
     public onWindowCreated = (): void => {
         setTimeout(() => {
             this.render();
         }, 50);
     };
+
     public onWindowClosed = (): void => {
         setTimeout(() => {
             this.render();
         }, 100);
     };
+
     public onWindowFocused = (windowInstance: Window): void => {
         this.el.windowList
             .querySelectorAll('.taskbar-item')
@@ -339,17 +450,17 @@ export class TaskBar {
         if (item && windowInstance.props.display) item.classList.add('is-focused');
     };
 
-private registerContextMenus(): void {
-	window.xen.ui.contextMenu.attach(this.el.taskbar, {
-		root: [
-			{
-				title: 'Toggle Window Names',
-				toggle: this.displayMode === 'iconAndName',
-				onClick: () => this.toggleDM()
-			}
-		]
-	});
-}
+    private registerContextMenus(): void {
+        window.xen.ui.contextMenu.attach(this.el.taskbar, {
+            root: [
+                {
+                    title: 'Toggle Window Names',
+                    toggle: this.displayMode === 'iconAndName',
+                    onClick: () => this.toggleDM()
+                }
+            ]
+        });
+    }
 
     private createContextMenu(entry: {
         itemId: string;
@@ -460,8 +571,8 @@ private registerContextMenus(): void {
 
     private loadState(): void {
         try {
-            const taskbarSettings =window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
-            const storedPinned =taskbarSettings[TaskBar.PINNED_WINDOWS_KEY] || [];
+            const taskbarSettings = window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
+            const storedPinned = taskbarSettings[TaskBar.PINNED_WINDOWS_KEY] || [];
 
             if (storedPinned) {
                 this.pinned = storedPinned;
@@ -651,5 +762,12 @@ private registerContextMenus(): void {
     public getHeight(): number {
         const rect = this.el.taskbar.getBoundingClientRect();
         return window.innerHeight - rect.top + 10;
+    }
+
+    public destroy(): void {
+        if (this.timeInterval) {
+            clearInterval(this.timeInterval);
+            this.timeInterval = null;
+        }
     }
 }
