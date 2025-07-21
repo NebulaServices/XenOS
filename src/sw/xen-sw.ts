@@ -1,4 +1,3 @@
-// TODO: Boot from OPFS (hell)
 /// <reference lib="webworker" />
 import { Shared } from "../types";
 

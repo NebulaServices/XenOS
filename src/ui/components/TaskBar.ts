@@ -1,8 +1,3 @@
-// This file is COMPLETELY AI generated
-/*
-TODO:
-- Add indicators for what apps are focused or minimized (A little broken rn)
-*/
 import { Window } from '../windows/Window';
 import { PackageManager } from '../../apis/packages/PackageManager';
 import { AppLauncher } from './AppLauncher';

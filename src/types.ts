@@ -24,3 +24,8 @@ declare global {
         }
     }
 }
+
+export interface Shared {
+    xen?: Xen;
+    mime?: any;
+}

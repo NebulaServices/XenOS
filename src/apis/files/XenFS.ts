@@ -1,9 +1,3 @@
-/*
-    TODO:
-    - Array arguments
-    - Less-verbose paths
-*/
-
 export class XenFS {
     private cwd: string = "/";
     private root: FileSystemDirectoryHandle;
@@ -178,7 +172,6 @@ export class XenFS {
         await this.resolveHandle(path, true, true, "directory");
     }
 
-    // TODO: More simplified output
     async list(
         path: string,
         recursive: boolean = false,
