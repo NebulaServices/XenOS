@@ -2,7 +2,8 @@
 	"type": "module",
 	"scripts": {
 		"build": "bash ./scripts/build.sh",
-		"start": "node ./scripts/server.js"
+		"start": "node ./scripts/server.js",
+		"dev": "node ./scripts/dev.js"
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.3",
