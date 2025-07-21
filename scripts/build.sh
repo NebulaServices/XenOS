@@ -72,12 +72,7 @@ function copy_nm() {
 copy_nm "@titaniumnetwork-dev/ultraviolet/dist" "libs/uv"
 copy_nm "@mercuryworkshop/bare-mux/dist" "libs/bare-mux"
 copy_nm "libcurl.js" "libs/libcurl-js"
-copy_nm "idb-keyval/dist" "libs/idb-keyval"
 copy_nm "comlink/dist" "libs/comlink"
-copy_nm "mime/dist" "libs/mime"
-copy_nm "jszip/dist" "libs/jszip"
-
-rm -rf build/libs/idb-keyval/test build/libs/idb-keyval/src
 
 success "Copied node_modules dependencies"
 section "Copying included apps"

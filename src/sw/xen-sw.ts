@@ -1,5 +1,6 @@
 /// <reference lib="webworker" />
 import { Shared } from "../types";
+import * as mime from 'mime';
 
 declare const Comlink: any;
 declare const workbox: any;
@@ -35,11 +36,9 @@ addEventListener('message', async (ev) => {
     }
 });
 
-let port: MessagePort | null = null;
 
 async function serveFile(url: string): Promise<Response> {
     const fs = self.shared?.xen?.fs;
-    const mime = self.shared?.mime;
 
     if (!fs) {
         return new Response("Service not ready", { status: 503 });
@@ -58,7 +57,7 @@ async function serveFile(url: string): Promise<Response> {
         }
 
     const extension = path.split('.').pop()?.toLowerCase() ?? '';
-    let mimeType = await mime?.getType(extension) || 'application/octet-stream';
+    let mimeType = await mime.default.getType(extension) || 'application/octet-stream';
 
     return new Response(content, {
         headers: { 'Content-Type': mimeType },
@@ -80,8 +79,10 @@ const methods = ["GET", "POST", "HEAD", "PUT", "DELETE", "OPTIONS", "PATCH"];
 
 methods.forEach((method) => {
     workbox.routing.registerRoute(/\/proxy\//,
-        async (ev: FetchEvent) => { return await uv.fetch(ev) },
-        method);
+        async (ev: FetchEvent) => { 
+            return await uv.fetch(ev) 
+        },
+    method);
 });
 
 async function init() {

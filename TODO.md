@@ -2,7 +2,6 @@
 ## `v1.0.0`
 - OOBE 
 - Dialog API
-- Booting from OPFS
 - Core apps
     - Settings
     - Browser
@@ -11,9 +10,10 @@
     - Repo store
     - Explore
     - (basic) themes (wallpaper)
-    - Text editor
-- Make translucency consistant
-- Fix indicators on taskbar
+- Fix bug where pinned icons wont show icon at all after reload
+- Fix animations issue with taskbar entries
+    - It looks funny; should be replaced
+    - It should be more consistant
 
 ## `v1.0.1`
 - File picker
@@ -31,28 +31,17 @@
         - Vidoes
         - Photos
         - Music
+    - Text editor
+    - Policy editor
+    - Raw settings editor
 - Games Repo
     - ...
     - MC launcher
     - FNAF launcher
 
 ## `v1.0.3`
-- FS Methods
-    - `import`
-    - `export`
-    - `wipe`
-
-## `v1.0.4`
 - Notification store
 - Weather module
-
-## `v1.0.5`
-- Abstract classes
-    - `FileSystem`
-    - `NetworkingClient`
-- Resolvers
-    - FS
-    - Networking
 
 ## `v1.1.0`
 - V86
@@ -78,8 +67,6 @@
 - Hooks
     - Networking
     - FS
-
-# `v1.1.2`
 - WebDAV support
 
 ## Maybe

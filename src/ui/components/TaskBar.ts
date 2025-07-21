@@ -447,12 +447,14 @@ export class TaskBar {
     };
 
     public onWindowFocused = (windowInstance: Window): void => {
+        /*
         this.el.windowList
             .querySelectorAll('.taskbar-item')
             .forEach((item) => item.classList.remove('is-focused'));
 
         const item = this.el.windowList.querySelector(`[data-id="${windowInstance.id}"]`);
         if (item && windowInstance.props.display) item.classList.add('is-focused');
+        */
     };
 
     private registerContextMenus(): void {

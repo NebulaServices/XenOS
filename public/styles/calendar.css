@@ -1,12 +1,12 @@
 .calendar-popup {
     position: fixed;
     width: 300px;
-    background-color: rgba(30, 30, 46, 0.65);
+    background-color: rgba(49, 50, 68, 0.5);
     border-radius: 18px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(156, 156, 176, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--mocha-surface2);
     padding: 20px;
     z-index: 10000;
     opacity: 0;
@@ -36,7 +36,7 @@
     width: 36px;
     height: 36px;
     border: none;
-    background: rgba(69, 71, 90, 0.5);
+    background: transparent;
     color: var(--mocha-text);
     border-radius: 10px;
     cursor: pointer;
@@ -48,7 +48,7 @@
 }
 
 .calendar-nav-btn:hover {
-    background: rgba(69, 71, 90, 0.8);
+    background: var(--hover-bg);
     transform: scale(1.05);
 }
 
@@ -93,7 +93,7 @@
 }
 
 .calendar-day:hover {
-    background-color: rgba(69, 71, 90, 0.6);
+    background-color: var(--hover-bg);
     transform: scale(1.05);
 }
 
@@ -103,14 +103,14 @@
 }
 
 .calendar-day.today {
-    background-color: #f5c2e7;
-    color: #6c7086;
+    background-color: var(--mocha-pink);
+    color: var(--mocha-overlay0);
     font-weight: 700;
     box-shadow: 0 2px 8px rgba(245, 194, 231, 0.3);
 }
 
 .calendar-day.today:hover {
-    background-color: #f2b8e1;
+    background-color: var(--mocha-flamingo);
     transform: scale(1.1);
 }
 
@@ -119,5 +119,5 @@
 }
 
 .time-module:hover {
-    background-color: rgba(69, 71, 90, 0.4);
+    background-color: var(--hover-bg);
 }

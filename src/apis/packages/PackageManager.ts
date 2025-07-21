@@ -1,4 +1,5 @@
 import { Runtime } from './Runtime';
+import JSZip from 'jszip';
 
 export interface Manifest {
     id: string;
@@ -28,11 +29,11 @@ export class PackageManager {
     private appPath = '/apps';
     private libPath = '/libs';
     private runtime: Runtime;
-    private zip: any;
+    private zip: JSZip;
 
     constructor() {
         this.runtime = new Runtime();
-        this.zip = new window.JSZip();
+        this.zip = new JSZip();
     }
 
     private async getRegs(type: 'apps' | 'libs'): Promise<string[]> {

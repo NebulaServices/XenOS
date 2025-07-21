@@ -4,17 +4,11 @@ import { oobe } from "./ui/oobe/autoUpdate";
 import { bootSplash } from "./ui/bootSplash";
 
 async function setupDeps() {
-    const idbKvPath = '/libs/idb-keyval/index.js';
     const ComlinkPath = '/libs/comlink/esm/comlink.min.mjs';
-    const mimePath = '/libs/mime/src/index.js'
-    const jszPath = '/libs/jszip/jszip.js';
 
     //@ts-ignore
     window.modules = {}
-    window.modules.idbKv = await import(idbKvPath);
     window.modules.Comlink = await import(ComlinkPath);
-    window.modules.mime = await import(mimePath);
-    window.modules.jszip = await import(jszPath);
 
     const xen = new Xen();
     window.xen = xen;
@@ -27,7 +21,6 @@ async function setupDeps() {
 
     window.shared = {};
     window.shared.xen = window.xen;
-    window.shared.mime = window.modules.mime.default;
 }
 
 async function initComlink() {

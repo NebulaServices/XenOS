@@ -1,11 +1,13 @@
+import JSZip from "jszip";
+
 export class XenFS {
     private cwd: string = "/";
     private root: FileSystemDirectoryHandle;
     public mounts: Map<string, FileSystemDirectoryHandle> = new Map();
-    private zip: any;
+    private zip: JSZip;
 
     constructor() {
-        this.zip = new window.JSZip();
+        this.zip = new JSZip();
     }
     async init(): Promise<void> {
         this.root = await navigator.storage.getDirectory();
@@ -528,7 +530,7 @@ export class XenFS {
 
     async unlink(path: string): Promise<void> {
         const nmPath = this.normalizePath(path);
-        const symlinks =window.xen.settings.get("symlinks") || {};
+        const symlinks = window.xen.settings.get("symlinks") || {};
 
         delete symlinks[nmPath];
         window.xen.settings.set("symlinks", symlinks);
@@ -541,5 +543,56 @@ export class XenFS {
 
         if (!target) throw new Error(`${path} is not a symbolic link`);
         return target;
+    }
+
+    async wipe(): Promise<void> {
+        for await (const entry of this.root.values()) {
+            await this.root.removeEntry(entry.name, { recursive: true });
+        }
+
+        this.cwd = "/";
+    }
+
+    async export(): Promise<void> {
+        await this.dirToZip(this.root, "");
+
+        const content = await this.zip.generateAsync({ type: "blob" });
+        const a = document.createElement("a");
+
+        a.href = URL.createObjectURL(content);
+        a.download = "filesystem.zip";
+
+        document.body.appendChild(a);
+        a.click();
+
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+    }
+
+    async import(): Promise<void> {
+        const [handle] = await window.showOpenFilePicker({
+            types: [{
+                description: "ZIP files",
+                accept: { "application/zip": [".zip"] }
+            }]
+        });
+
+        const file = await handle.getFile();
+        const zip = new JSZip();
+        const loaded = await zip.loadAsync(file);
+
+        await this.wipe();
+
+        for (const relPath in loaded.files) {
+            const entry = loaded.files[relPath];
+            const fullPath = this.normalizePath(`/${relPath}`);
+
+            if (!entry.dir) {
+                const content = await entry.async("blob");
+                await this.write(fullPath, content);
+            } else {
+                await this.mkdir(fullPath);
+            }
+        }
     }
 }

@@ -116,7 +116,7 @@
 }
 
 .app-entry:hover {
-    background-color: var(--mocha-surface0);
+    background-color: var(--hover-bg);
 }
 
 .app-entry img {
