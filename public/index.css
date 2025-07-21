@@ -2,5 +2,6 @@
 @import url('./styles/wm.css');
 @import url('./styles/context-menu.css');
 @import url(./styles/app-launcher.css);
+@import url('./styles//calendar.css');
 @import url('./styles/taskbar.css');
 @import url('./styles/notifications.css');

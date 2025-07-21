@@ -6,6 +6,7 @@ TODO:
 import { Window } from '../windows/Window';
 import { PackageManager } from '../../apis/packages/PackageManager';
 import { AppLauncher } from './AppLauncher';
+import { Calendar } from './Calendar';
 
 interface PinnedWindowEntry {
     id: string;
@@ -50,6 +51,7 @@ export class TaskBar {
     private appLauncher: AppLauncher;
     private batteryManager: any = null;
     private timeInterval: number | null = null;
+    private calendar: Calendar;
 
     constructor() {
         this.packageManager = new PackageManager();
@@ -72,11 +74,14 @@ export class TaskBar {
         this.registerContextMenus();
         this.initBattery();
         this.initTime();
+
+        this.calendar = new Calendar();
     }
 
     public create(): void {
         document.body.appendChild(this.el.taskbar);
         this.appLauncher.create();
+        this.calendar.create();
         this.render();
     }
 
@@ -115,7 +120,12 @@ export class TaskBar {
     }
     private setupTimeModule(): void {
         this.el.timeModule.classList.add('taskbar-module', 'time-module');
+        this.el.timeModule.addEventListener('click', () => this.toggleCalendar());
         this.el.rightModules.appendChild(this.el.timeModule);
+    }
+
+    private toggleCalendar(): void {
+        this.calendar.toggle(this.el.timeModule);
     }
 
     private setupBatteryModule(): void {

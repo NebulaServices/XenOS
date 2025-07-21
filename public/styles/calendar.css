@@ -1,0 +1,123 @@
+.calendar-popup {
+    position: fixed;
+    width: 300px;
+    background-color: rgba(30, 30, 46, 0.65);
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(156, 156, 176, 0.1);
+    padding: 20px;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calendar-popup.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.calendar-month-year {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--mocha-text);
+}
+
+.calendar-nav-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(69, 71, 90, 0.5);
+    color: var(--mocha-text);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.calendar-nav-btn:hover {
+    background: rgba(69, 71, 90, 0.8);
+    transform: scale(1.05);
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.calendar-weekday {
+    width: 32px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mocha-subtext1);
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.calendar-day {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--mocha-text);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    font-weight: 500;
+}
+
+.calendar-day:hover {
+    background-color: rgba(69, 71, 90, 0.6);
+    transform: scale(1.05);
+}
+
+.calendar-day.other-month {
+    color: var(--mocha-subtext0);
+    opacity: 0.4;
+}
+
+.calendar-day.today {
+    background-color: #f5c2e7;
+    color: #6c7086;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(245, 194, 231, 0.3);
+}
+
+.calendar-day.today:hover {
+    background-color: #f2b8e1;
+    transform: scale(1.1);
+}
+
+.time-module {
+    cursor: pointer;
+}
+
+.time-module:hover {
+    background-color: rgba(69, 71, 90, 0.4);
+}

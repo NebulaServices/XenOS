@@ -1,7 +1,6 @@
 /* TODO:
 - App folders
 - Make apps draggable
-- Make launcher resizable
 */
 
 import { PackageManager } from '../../apis/packages/PackageManager';
