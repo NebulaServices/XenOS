@@ -134,3 +134,30 @@
     text-overflow: ellipsis;
     width: 100%;
 }
+
+.app-entry.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg) scale(0.95);
+    z-index: 1000;
+}
+
+.app-entry.drop-target {
+    background-color: rgba(203, 166, 247, 0.2);
+    border: 2px dashed var(--mocha-mauve);
+}
+
+.app-entry.drop-target.drop-before {
+    border-top: 3px solid var(--mocha-mauve);
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 0;
+}
+
+.app-entry.drop-target.drop-after {
+    border-bottom: 3px solid var(--mocha-mauve);
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-radius: 0;
+}
