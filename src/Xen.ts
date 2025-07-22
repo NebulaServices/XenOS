@@ -10,7 +10,7 @@ import { RepoStore } from "./apis/packages/RepoStore";
 import { Notifications } from "./ui/components/Notifications";
 import { Wallpaper } from "./ui/Wallpaper";
 import { settings } from "./apis/settings";
-import { initScripts } from "./apis/process/InitSystem";
+import { init } from "./apis/process/init";
 
 export class Xen {
     public settings: typeof settings;
@@ -27,7 +27,7 @@ export class Xen {
         notifications: Notifications,
         wallpaper: Wallpaper
     }
-    public initSystem: typeof initScripts;
+    public initSystem: typeof init;
 
     constructor() {
         this.settings = settings;
@@ -44,7 +44,7 @@ export class Xen {
         this.packages = new PackageManager();
         this.process = new Proccesses();
         this.repos = new RepoStore();
-        this.initSystem = initScripts;
+        this.initSystem = init;
     }
 
     public version = {
