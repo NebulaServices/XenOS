@@ -7,7 +7,7 @@ export function bootSplash() {
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: var(--mocha-crust);
+        background-color: var(--mocha-mantle);
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -19,7 +19,7 @@ export function bootSplash() {
     `;
 
     const logo = document.createElement("img");
-    logo.src = "/logo.png";
+    logo.src = "/assets/logo.svg";
     logo.alt = "XenOS Logo";
     logo.style.cssText = `
         width: 150px;

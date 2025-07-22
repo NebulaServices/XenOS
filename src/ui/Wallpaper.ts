@@ -1,5 +1,5 @@
 export class Wallpaper {
-    public set(url?: string, type: 'url' | 'opfs' = 'url') {
+    public async set(url?: string, type: 'url' | 'opfs' = 'url') {
         let final: string | null = null;
 
         if (url) {
@@ -11,30 +11,30 @@ export class Wallpaper {
         }
 
         if (!final) {
-            final = this.get();
+            final = await this.get();
 
             if (!final) {
-                final = '/wallpaper.webp';
-                window.xen.settings.set('wallpaper', final);
+                final = '/assets/wallpaper.webp';
+                await window.xen.settings.set('wallpaper', final);
             }
         } else {
-            window.xen.settings.set('wallpaper', final);
+            await window.xen.settings.set('wallpaper', final);
         }
 
         this.update();
     }
 
-    public get(): string | null {
-        return window.xen.settings.get('wallpaper');
+    public async get(): Promise<string | null> {
+        return await window.xen.settings.get('wallpaper');
     }
 
-    public remove() {
-        window.xen.settings.remove('wallpaper');
+    public async remove() {
+        await window.xen.settings.remove('wallpaper');
         this.set();
     }
 
-    private update() {
-        const url = this.get();
+    private async update() {
+        const url = await this.get();
         document.body.style.backgroundPosition = 'center';
         document.body.style.backgroundRepeat = 'no-repeat';
         document.body.style.backgroundSize = 'cover';

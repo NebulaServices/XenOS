@@ -1,5 +1,6 @@
-import { Xen } from "../../Xen";
+// import { Xen } from "../../Xen";
 
+/*
 interface ProcessShared {
     xen?: Xen;
 }
@@ -8,6 +9,7 @@ export interface Process {
     pid: number;
     process: Worker;
 }
+*/
 
 interface ProcessOpts {
     async?: boolean;
@@ -16,6 +18,21 @@ interface ProcessOpts {
 }
 
 export class Proccesses {
+    public async spawn(opts: ProcessOpts) {
+        const prefix = opts.async ? "async" : "";
+        let content: string;
+
+        if (opts.type == 'direct') {
+            content = opts.content;
+        } else if (opts.type == 'url') {
+            content = await (await fetch(window.xen.net.encodeUrl(opts.content))).text();
+        } else if (opts.type == 'opfs') {
+            content = (await window.xen.fs.read(opts.content, 'text') as string);
+        }
+
+        eval(`(${prefix}()=>{${content}})()`);
+    }
+    /*
     private npid = 0;
     public processes: Process[] = [];
 
@@ -75,4 +92,5 @@ export class Proccesses {
     }
 
     public kill(pid: number) { this.processes[pid].process.terminate(); }
+    */
 }

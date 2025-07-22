@@ -23,9 +23,11 @@ export async function init() {
         });
     }
 
-    if (window.xen.settings.get('start-up')) {
-        window.xen.settings.get('start-up').forEach(async (id: string) => {
+    const startUp = (await window.xen.settings.get('start-up')) as string[] | undefined;
+
+    if (startUp) {
+        for (const id of startUp) {
             await window.xen.packages.open(id);
-        });
+        }
     }
 }

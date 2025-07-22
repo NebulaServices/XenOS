@@ -13,8 +13,8 @@ interface NetworkPolicy {
     }
 
     domains: {
-        allowed: string[] | "*";
-        denied: string[] | "*";
+        allowed: (string | RegExp)[] | "*";
+        denied: (string | RegExp)[] | "*";
     }
 
     denyHTTP: boolean
@@ -105,11 +105,11 @@ export class LibcurlClient {
     constructor() { }
 
     public async init() {
-        this.networkPolicy = window.xen.settings.get("network-policy") || defaultPolicy;
-        window.xen.settings.set("network-policy", this.networkPolicy);
+        this.networkPolicy = await window.xen.settings.get("network-policy") || defaultPolicy;
+        await window.xen.settings.set("network-policy", this.networkPolicy);
 
-        this.networkSettings = window.xen.settings.get("network-settings") || defaultSettings;
-        window.xen.settings.set("network-settings", this.networkSettings);
+        this.networkSettings = await window.xen.settings.get("network-settings") || defaultSettings;
+        await window.xen.settings.set("network-settings", this.networkSettings);
 
         const lcModule = await import(this.paths.lcJs);
         this.direct.libcurl = lcModule.libcurl;
@@ -144,30 +144,89 @@ export class LibcurlClient {
         });
     }
 
-    private policyHandler(url: URL): boolean {
-        const settings: NetworkPolicy = window.xen.settings.get("network-policy");
+    private parsePolicy<T extends (string | number | RegExp)[] | "*" >(
+        rules: T,
+        type: 'domain' | 'ip' | 'port'
+    ): T {
+        if (rules === "*") return "*" as T;
 
-        if (settings.domains.denied instanceof Array) {
-            settings.domains.denied = settings.domains.denied.map((domain: string) => {
-                const hostname = new URL(domain).hostname;
-                return hostname;
-            });
+        return rules.map(rule => {
+            if (typeof rule === 'string') {
+                if (rule.startsWith('/') && rule.endsWith('/')) {
+                    try {
+                        return new RegExp(rule.slice(1, -1));
+                    } catch (e) {
+                        console.error(`Invalid regex in network policy for ${type}:`, rule, e);
+                        if (type === 'domain') {
+                            try {
+                                return new URL(rule).hostname;
+                            } catch (e) {
+                                return rule;
+                            }
+                        }
 
-            this.networkPolicy = settings;
+                        return rule;
+                    }
+                } else if (type === 'domain') {
+                    try {
+                        return new URL(rule).hostname;
+                    } catch (e) {
+                        return rule;
+                    }
+                }
+            }
+
+            return rule;
+        }) as T;
+    }
+
+
+    private matchPolicy(
+        value: string | number,
+        policy: (string | number | RegExp)[] | "*"
+    ): boolean {
+        if (policy === "*") return true;
+
+        for (const rule of policy) {
+            if (typeof rule === "string" && rule === value) return true;
+            if (typeof rule === "number" && rule === value) return true;
+            if (rule instanceof RegExp && typeof value === "string" && rule.test(value)) return true;
+            if (rule instanceof RegExp && typeof value === "number" && rule.test(String(value))) return true;
         }
+
+        return false;
+    }
+
+    private async policyHandler(url: URL): Promise<boolean> {
+        const settings: NetworkPolicy = await window.xen.settings.get("network-policy");
+
+        this.networkPolicy = {
+            ports: {
+                allowed: this.parsePolicy(settings.ports.allowed, 'port'),
+                denied: this.parsePolicy(settings.ports.denied, 'port')
+            },
+            ips: {
+                allowed: this.parsePolicy(settings.ips.allowed, 'ip'),
+                denied: this.parsePolicy(settings.ips.denied, 'ip')
+            },
+            domains: {
+                allowed: this.parsePolicy(settings.domains.allowed, 'domain'),
+                denied: this.parsePolicy(settings.domains.denied, 'domain')
+            },
+            denyHTTP: settings.denyHTTP
+        };
 
         const { ports, ips, domains, denyHTTP } = this.networkPolicy;
         const port = Number(url.port) || (url.protocol === "https:" ? 443 : 80);
 
         if (denyHTTP && url.protocol === "http:") return false;
-        if (ports.allowed !== "*" && !ports.allowed.includes(port)) return false;
-        if (ports.denied !== "*" && ports.denied.includes(port)) return false;
-        if (ips.allowed !== "*" && !ips.allowed.includes(url.hostname)) return false;
-        if (ips.denied !== "*" && ips.denied.includes(url.hostname)) return false;
-        if (domains.allowed !== "*" && !domains.allowed.includes(url.hostname))
-            return false;
-        if (domains.denied !== "*" && domains.denied.includes(url.hostname))
-            return false;
+
+        if (!this.matchPolicy(port, ports.allowed)) return false;
+        if (this.matchPolicy(port, ports.denied)) return false;
+        if (!this.matchPolicy(url.hostname, ips.allowed)) return false;
+        if (this.matchPolicy(url.hostname, ips.denied)) return false;
+        if (!this.matchPolicy(url.hostname, domains.allowed)) return false;
+        if (this.matchPolicy(url.hostname, domains.denied)) return false;
 
         return true;
     }
@@ -196,7 +255,7 @@ export class LibcurlClient {
 
         urlObject = new URL(requestObject.url);
 
-        if (!this.policyHandler(urlObject)) {
+        if (!(await this.policyHandler(urlObject))) {
             return new Response("Forbidden: Network policy denies access", {
                 status: 403,
                 statusText: "Forbidden",

@@ -19,7 +19,7 @@ export class Runtime {
         if (manifest.icon) {
             icon = new URL(manifest.icon, `${location.origin}/fs/apps/${manifest.id}/`).href;
         } else {
-            icon = '/logo.png';
+            icon = '/assets/logo.svg';
         }
 
         if (manifest.type == 'webview' || manifest.type == 'app') {

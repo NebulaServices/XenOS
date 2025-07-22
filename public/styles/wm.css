@@ -133,11 +133,17 @@
     gap: 4px;
 }
 
+.wm-title-right button img {
+    filter: brightness(0) invert(1);
+    width: 10px;
+    height: 10px;
+}
+
 .wm-title-right button {
     border: none;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -175,7 +181,7 @@
 .wm-title-right button:active {
     transform: scale(0.9);
 }
-
+/*
 .wm-fullscreen-btn .inner-square {
     width: 9px;
     height: 9px;
@@ -183,6 +189,7 @@
     border-radius: 1px;
     box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.2);
 }
+*/
 
 .wm-content-frame {
     flex-grow: 1;

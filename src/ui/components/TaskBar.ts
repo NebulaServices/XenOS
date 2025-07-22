@@ -64,13 +64,16 @@ export class TaskBar {
         );
 
         this.setupEls();
-        this.loadState();
-        this.attachListeners();
-        this.registerContextMenus();
         this.initBattery();
         this.initTime();
 
         this.calendar = new Calendar();
+    }
+
+    public async init() {
+        await this.registerContextMenus();
+        await this.attachListeners();
+        await this.loadState();
     }
 
     public create(): void {
@@ -212,10 +215,10 @@ export class TaskBar {
     `;
     }
 
-    private attachListeners(): void {
+    private async attachListeners() {
         this.el.windowList.addEventListener('dragstart', this.handleDragStart);
         this.el.windowList.addEventListener('dragover', this.handleDragOver);
-        this.el.windowList.addEventListener('drop', this.handleDrop);
+        await this.el.windowList.addEventListener('drop', this.handleDrop);
         this.el.windowList.addEventListener('dragend', this.handleDragEnd);
         this.el.windowList.addEventListener('dragenter', this.handleDragEnter);
         this.el.windowList.addEventListener('dragleave', this.handleDragLeave);
@@ -457,13 +460,13 @@ export class TaskBar {
         */
     };
 
-    private registerContextMenus(): void {
+    private async registerContextMenus() {
         window.xen.ui.contextMenu.attach(this.el.taskbar, {
             root: [
                 {
                     title: 'Toggle Window Names',
                     toggle: this.displayMode === 'iconAndName',
-                    onClick: () => this.toggleDM()
+                    onClick: async () => this.toggleDM()
                 }
             ]
         });
@@ -484,7 +487,7 @@ export class TaskBar {
                 {
                     title: entry.isPinned ? 'Unpin from Dock' : 'Pin to Dock',
                     toggle: entry.isPinned,
-                    onClick: () => this.togglePin(entry.appId, entry.title, entry.icon, entry.url)
+                    onClick: async () => this.togglePin(entry.appId, entry.title, entry.icon, entry.url)
                 }
             ]
         };
@@ -499,10 +502,10 @@ export class TaskBar {
         window.xen.ui.contextMenu.attach(item, menuOptions);
     }
 
-    private toggleDM(): void {
+    private async toggleDM(): Promise<void> {
         this.displayMode = this.displayMode === 'iconOnly' ? 'iconAndName' : 'iconOnly';
 
-        window.xen.settings.set(TaskBar.SETTINGS_KEY, {
+        await window.xen.settings.set(TaskBar.SETTINGS_KEY, {
             [TaskBar.DISPLAY_MODE_KEY]: this.displayMode,
         });
 
@@ -511,7 +514,7 @@ export class TaskBar {
                 {
                     title: 'Toggle Window Names',
                     toggle: this.displayMode === 'iconAndName',
-                    onClick: () => this.toggleDM()
+                    onClick: async () => await this.toggleDM()
                 }
             ]
         });
@@ -519,12 +522,12 @@ export class TaskBar {
         this.render();
     }
 
-    public togglePin(
+    public async togglePin(
         id: string,
         title: string,
         icon?: string,
         url?: string,
-    ): void {
+    ) {
         const index = this.pinned.findIndex((p) => p.id === id);
 
         if (index !== -1) {
@@ -541,7 +544,7 @@ export class TaskBar {
             });
         }
 
-        this.savePinned();
+        await this.savePinned();
         this.render();
     }
 
@@ -565,20 +568,19 @@ export class TaskBar {
         }
     }
 
-    private savePinned(): void {
+    private async savePinned() {
         try {
-            const taskbarSettings =
-                window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
+            const taskbarSettings = await window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
             taskbarSettings[TaskBar.PINNED_WINDOWS_KEY] = this.pinned;
-            window.xen.settings.set(TaskBar.SETTINGS_KEY, taskbarSettings);
+            await window.xen.settings.set(TaskBar.SETTINGS_KEY, taskbarSettings);
         } catch (err) {
             console.error('Failed to save pinned windows:', err);
         }
     }
 
-    private loadState(): void {
+    private async loadState() {
         try {
-            const taskbarSettings = window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
+            const taskbarSettings = await window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
             const storedPinned = taskbarSettings[TaskBar.PINNED_WINDOWS_KEY] || [];
 
             if (storedPinned) {
@@ -689,13 +691,13 @@ export class TaskBar {
         }
     };
 
-    private handleDrop = (e: DragEvent): void => {
+    private handleDrop = async (e: DragEvent) => {
         e.preventDefault();
 
         if (this.draggedItem && this.dragPlaceholder) {
             this.el.windowList.insertBefore(this.draggedItem, this.dragPlaceholder);
             this.reorder();
-            this.savePinned();
+            await this.savePinned();
         }
 
         this.clearDragEffects();

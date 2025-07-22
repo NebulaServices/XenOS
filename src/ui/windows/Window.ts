@@ -87,14 +87,14 @@ export class Window {
             <div class="wm-title-left">
                 ${this.props.icon
                 ? `<img src="${this.props.icon}" class="wm-icon" alt="Window Icon" />`
-                : ''
+                : ""
             }
                 <span class="wm-title">${this.props.title}</span>
             </div>
             <div class="wm-title-right">
-                <button class="wm-fullscreen-btn" title="Fullscreen"><div class="inner-square"></div></button>
-                <button class="wm-minimize-btn" title="Minimize">&#x2212;</button>
-                <button class="wm-close-btn" title="Close">&#x2715;</button>
+                <button class="wm-fullscreen-btn" title="Fullscreen"><img src="/assets/wm-fullscreen.png" alt="Fullscreen" style="width: 16px; height: 16px;"/></button>
+                <button class="wm-minimize-btn" title="Minimize"><img src="/assets/wm-minimize.png" alt="Minimize" style="width: 16px; height: 16px;"/></button>
+                <button class="wm-close-btn" title="Close"><img src="/assets/wm-close.png" alt="Close" style="width: 16px; height: 16px;"/></button>
             </div>
         `;
 

@@ -4,7 +4,7 @@
     "type": "app",
     "source": "index.html",
     "title": "About XenOS",
-    "icon": "logo.png",
+    "icon": "logo.svg",
     "maintainer": {
         "name": "Nebula Services",
         "email": "contact@nebulaservices.org",
