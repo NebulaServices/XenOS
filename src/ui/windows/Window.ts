@@ -43,6 +43,10 @@ export class Window {
         height: string;
         x: number;
         y: number;
+        clampWidth?: string;
+        clampHeight?: string;
+        clampX?: number;
+        clampY?: number;
     } = {} as any;
 
     constructor(
