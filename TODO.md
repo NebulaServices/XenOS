@@ -66,7 +66,6 @@
 - Dev repo
     - EpoxyClient
 - Hooks
-    - Networking
     - FS
 - WebDAV support
 

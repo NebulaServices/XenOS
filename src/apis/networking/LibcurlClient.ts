@@ -1,3 +1,6 @@
+type RequestInterceptor = (request: Request) => Promise<Request | Response> | Request | Response;
+type ResponseInterceptor = (response: Response) => Promise<Response> | Response;
+
 interface NetworkPolicy {
     ports: {
         allowed: number[] | "*";
@@ -93,7 +96,11 @@ export class LibcurlClient {
 
     private networkPolicy: NetworkPolicy;
     private networkSettings: NetworkSettings;
+
     private session: any;
+
+    private requestInterceptors: RequestInterceptor[] = [];
+    private responseInterceptors: ResponseInterceptor[] = [];
 
     constructor() { }
 
@@ -165,6 +172,14 @@ export class LibcurlClient {
         return true;
     }
 
+    public onRequest(interceptor: RequestInterceptor): void {
+        this.requestInterceptors.push(interceptor);
+    }
+
+    public onResponse(interceptor: ResponseInterceptor): void {
+        this.responseInterceptors.push(interceptor);
+    }
+
     async fetch(url: string | Request, options?: RequestInit): Promise<Response> {
         let requestObject: Request;
         let urlObject: URL;
@@ -188,6 +203,16 @@ export class LibcurlClient {
             });
         }
 
+        for (const interceptor of this.requestInterceptors) {
+            const result = await Promise.resolve(interceptor(requestObject));
+
+            if (result instanceof Response) {
+                return result;
+            }
+
+            requestObject = result;
+        }
+
         if (urlObject.hostname === "localhost") {
             let port: number = Number(urlObject.port);
 
@@ -204,7 +229,13 @@ export class LibcurlClient {
             }
         }
 
-        return this.session.fetch(url, options);
+        let response = await this.session.fetch(requestObject, options);
+
+        for (const interceptor of this.responseInterceptors) {
+            response = await Promise.resolve(interceptor(response));
+        }
+
+        return response;
     }
 
     public encodeUrl(u: string): string {
