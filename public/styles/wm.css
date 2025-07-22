@@ -134,14 +134,15 @@
 }
 
 .wm-title-right button img {
-    filter: brightness(0) invert(1);
-    width: 10px;
-    height: 10px;
+    padding: 10px;
+    max-width: 12px;
+    max-height: 12px;
+    filter: invert(85%) sepia(11%) saturate(635%) hue-rotate(193deg) brightness(90%) contrast(92%);
 }
 
 .wm-title-right button {
-    border: none;
     border-radius: 50%;
+    border:none;
     width: 22px;
     height: 22px;
     display: flex;
@@ -154,30 +155,52 @@
     transition:
         background-color 0.2s ease,
         transform 0.1s ease-out;
-    flex-shrink: 0;
+    
     text-decoration: none;
     line-height: 1;
+    background-color: var(--window-title-bar-bg);
+    outline-color: var(--focused-border-glow);
+    outline-width: 1px;
+    outline-style: solid;
+}
+/* 
+.wm-title-right .wm-minimize-btn {
+    background-color: var(--window-title-bar-bg);
+    outline-color: var(--focused-border-glow);
+    outline-width: 1px;
+    outline-style: solid;
+}
+    */
+
+.wm-title-right button img:hover {
+    filter: invert(1);
 }
 
-.wm-title-right .wm-minimize-btn {
-    background-color: var(--mocha-yellow);
-}
+
 .wm-title-right .wm-minimize-btn:hover {
     background-color: var(--minimize-btn-hover-bg);
+    outline-color: var(--minimize-btn-hover-bg);
 }
+/*
 .wm-title-right .wm-fullscreen-btn {
     background-color: var(--mocha-green);
+    
 }
+*/
 .wm-title-right .wm-fullscreen-btn:hover {
     background-color: var(--fullscreen-btn-hover-bg);
+    outline-color: var(--fullscreen-btn-hover-bg);
 }
+/*
 .wm-title-right .wm-close-btn {
     background-color: var(--mocha-red);
 }
+    */
 .wm-title-right .wm-close-btn:hover {
     background-color: var(--close-btn-hover-bg);
+    outline-color: var(--close-btn-hover-bg);
 }
-
+/*
 .wm-title-right button:active {
     transform: scale(0.9);
 }
