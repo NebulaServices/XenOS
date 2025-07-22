@@ -58,7 +58,7 @@ export class WindowManager {
         document.addEventListener('mouseup', (e) => {
             if (this.activeClampZone && this.isDraggingWindow()) {
                 const draggedWindow = this.getDraggedWindow();
-    
+
                 if (draggedWindow) {
                     this.clampWindow(draggedWindow, this.activeClampZone);
                 }
@@ -82,7 +82,7 @@ export class WindowManager {
         const w = window.innerWidth;
         const h = window.innerHeight - (window as any).xen.ui.taskBar.getHeight();
         const cornerThreshold = 100;
-        
+
         if (x < cornerThreshold && y < cornerThreshold) return 'top-left';
         if (x > w - cornerThreshold && y < cornerThreshold) return 'top-right';
         if (x < cornerThreshold && y > h - cornerThreshold) return 'bottom-left';
@@ -98,7 +98,7 @@ export class WindowManager {
 
     private showClampZone(zone: string | null): void {
         this.hideAllClampZones();
-        
+
         if (!zone) return;
 
         this.activeClampZone = zone;
@@ -121,7 +121,7 @@ export class WindowManager {
     private getClampBounds(zone: string): { x: number, y: number, width: number, height: number } {
         const w = window.innerWidth;
         const h = window.innerHeight - (window as any).xen.ui.taskBar.getHeight();
-        
+
         switch (zone) {
             case 'top':
                 return { x: 0, y: 0, width: w, height: h / 2 };
@@ -147,6 +147,11 @@ export class WindowManager {
     public clampWindow(win: Window, zone: string): void {
         this.unclampWindow(win);
 
+        win.og.clampWidth = win.props.width;
+        win.og.clampHeight = win.props.height;
+        win.og.clampX = win.props.x;
+        win.og.clampY = win.props.y;
+
         const clampedInZone = this.clampedWindows.get(zone) || [];
         clampedInZone.push(win);
         this.clampedWindows.set(zone, clampedInZone);
@@ -167,6 +172,23 @@ export class WindowManager {
 
         win.el.window.classList.remove('wm-clamped');
         delete win.el.window.dataset.clampZone;
+
+        if (win.og.clampWidth !== undefined) {
+            win.props.width = win.og.clampWidth;
+            win.props.height = win.og.clampHeight!;
+            win.props.x = win.og.clampX!;
+            win.props.y = win.og.clampY!;
+
+            win.el.window.style.width = win.og.clampWidth;
+            win.el.window.style.height = win.og.clampHeight!;
+            win.el.window.style.left = `${win.og.clampX}px`;
+            win.el.window.style.top = `${win.og.clampY}px`;
+
+            delete win.og.clampWidth;
+            delete win.og.clampHeight;
+            delete win.og.clampX;
+            delete win.og.clampY;
+        }
 
         this.arrangeClampedWindows(currentZone);
     }
@@ -196,7 +218,7 @@ export class WindowManager {
                 const rows = Math.ceil(windows.length / cols);
                 const col = i % cols;
                 const row = Math.floor(i / cols);
-                
+
                 width = bounds.width / cols;
                 height = bounds.height / rows;
                 x = bounds.x + (col * width);
@@ -207,7 +229,7 @@ export class WindowManager {
             win.props.y = y;
             win.props.width = `${width}px`;
             win.props.height = `${height}px`;
-            
+
             win.el.window.style.left = `${x}px`;
             win.el.window.style.top = `${y}px`;
             win.el.window.style.width = `${width}px`;

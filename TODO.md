@@ -14,6 +14,7 @@
 - Fix animations issue with taskbar entries
     - It looks funny; should be replaced
     - It should be more consistant
+- Make the WM clamp UI look better
 
 ## `v1.0.1`
 - File picker
@@ -65,7 +66,6 @@
 - Dev repo
     - EpoxyClient
 - Hooks
-    - Networking
     - FS
 - WebDAV support
 
