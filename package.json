@@ -19,8 +19,6 @@
 		"@mercuryworkshop/bare-mux": "^2.1.7",
 		"@titaniumnetwork-dev/ultraviolet": "^3.2.10",
 		"comlink": "^4.4.2",
-		"idb": "^8.0.3",
-		"idb-keyval": "^6.2.2",
 		"jszip": "^3.10.1",
 		"libcurl.js": "^0.7.1",
 		"mime": "^4.0.7",

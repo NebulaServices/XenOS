@@ -34,15 +34,15 @@ async function update() {
 }
 
 export async function oobe() {
-    if (!await window.xen.settings.get('oobe')) {
+    if (!window.xen.settings.get('oobe')) {
         await update();
 
-        await window.xen.settings.set('oobe', true);
-        await window.xen.settings.set('build-cache', window.xen.version.build);
+        window.xen.settings.set('oobe', true);
+        window.xen.settings.set('build-cache', window.xen.version.build);
     }
 
-    if (window.xen.version.build != await window.xen.settings.get('build-cache')) {
+    if (window.xen.version.build != window.xen.settings.get('build-cache')) {
         await update();
-        await window.xen.settings.set('build-cache', window.xen.version.build);
+        window.xen.settings.set('build-cache', window.xen.version.build);
     }
 }

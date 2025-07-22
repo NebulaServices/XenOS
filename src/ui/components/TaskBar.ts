@@ -505,7 +505,7 @@ export class TaskBar {
     private async toggleDM(): Promise<void> {
         this.displayMode = this.displayMode === 'iconOnly' ? 'iconAndName' : 'iconOnly';
 
-        await window.xen.settings.set(TaskBar.SETTINGS_KEY, {
+        window.xen.settings.set(TaskBar.SETTINGS_KEY, {
             [TaskBar.DISPLAY_MODE_KEY]: this.displayMode,
         });
 
@@ -570,9 +570,9 @@ export class TaskBar {
 
     private async savePinned() {
         try {
-            const taskbarSettings = await window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
+            const taskbarSettings = window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
             taskbarSettings[TaskBar.PINNED_WINDOWS_KEY] = this.pinned;
-            await window.xen.settings.set(TaskBar.SETTINGS_KEY, taskbarSettings);
+            window.xen.settings.set(TaskBar.SETTINGS_KEY, taskbarSettings);
         } catch (err) {
             console.error('Failed to save pinned windows:', err);
         }
@@ -580,7 +580,7 @@ export class TaskBar {
 
     private async loadState() {
         try {
-            const taskbarSettings = await window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
+            const taskbarSettings = window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
             const storedPinned = taskbarSettings[TaskBar.PINNED_WINDOWS_KEY] || [];
 
             if (storedPinned) {

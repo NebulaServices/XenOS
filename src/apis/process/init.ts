@@ -23,7 +23,7 @@ export async function init() {
         });
     }
 
-    const startUp = (await window.xen.settings.get('start-up')) as string[] | undefined;
+    const startUp = (window.xen.settings.get('start-up')) as string[] | undefined;
 
     if (startUp) {
         for (const id of startUp) {

@@ -15,21 +15,21 @@ export class Wallpaper {
 
             if (!final) {
                 final = '/assets/wallpaper.webp';
-                await window.xen.settings.set('wallpaper', final);
+                window.xen.settings.set('wallpaper', final);
             }
         } else {
-            await window.xen.settings.set('wallpaper', final);
+            window.xen.settings.set('wallpaper', final);
         }
 
         this.update();
     }
 
     public async get(): Promise<string | null> {
-        return await window.xen.settings.get('wallpaper');
+        return window.xen.settings.get('wallpaper');
     }
 
     public async remove() {
-        await window.xen.settings.remove('wallpaper');
+        window.xen.settings.remove('wallpaper');
         this.set();
     }
 

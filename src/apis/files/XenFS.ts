@@ -50,7 +50,7 @@ export class XenFS {
         let currentPath = this.normalizePath(path);
 
         if (resolveLink) {
-            const symlinks = await window.xen.settings.get("symlinks") || {};
+            const symlinks = window.xen.settings.get("symlinks") || {};
 
             if (symlinks[currentPath]) {
                 currentPath = symlinks[currentPath];
@@ -258,7 +258,7 @@ export class XenFS {
     }
 
     async rm(path: string): Promise<void> {
-        const symlinks = await window.xen.settings.get("symlinks") || {};
+        const symlinks = window.xen.settings.get("symlinks") || {};
     
         if (symlinks[this.normalizePath(path)]) {
             this.unlink(path);
@@ -522,23 +522,23 @@ export class XenFS {
     async link(src: string, dest: string): Promise<void> {
         const nmSrc = this.normalizePath(src);
         const nmDest = this.normalizePath(dest);
-        const symlinks = await window.xen.settings.get("symlinks") || {};
+        const symlinks = window.xen.settings.get("symlinks") || {};
 
         symlinks[nmDest] = nmSrc;
-        await window.xen.settings.set("symlinks", symlinks);
+        window.xen.settings.set("symlinks", symlinks);
     }
 
     async unlink(path: string): Promise<void> {
         const nmPath = this.normalizePath(path);
-        const symlinks = await window.xen.settings.get("symlinks") || {};
+        const symlinks = window.xen.settings.get("symlinks") || {};
 
         delete symlinks[nmPath];
-        await window.xen.settings.set("symlinks", symlinks);
+        window.xen.settings.set("symlinks", symlinks);
     }
 
     async readlink(path: string): Promise<string> {
         const nmPath = this.normalizePath(path);
-        const symlinks = await window.xen.settings.get("symlinks") || {};
+        const symlinks = window.xen.settings.get("symlinks") || {};
         const target = symlinks[nmPath];
 
         if (!target) throw new Error(`${path} is not a symbolic link`);
