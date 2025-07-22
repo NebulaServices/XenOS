@@ -48,7 +48,7 @@
 }
 
 .launcher-search-input:focus {
-    border-color: var(--mocha-mauve);
+    border-color: rgb(186, 194, 222,0.5);
 }
 
 .launcher-search-input::placeholder {

@@ -97,7 +97,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
+    padding: 6px 12px;
     background-color: var(--window-title-bar-bg);
     border-bottom: 1px solid var(--mocha-surface2);
     cursor: grab;
@@ -136,8 +136,8 @@
 .wm-title-right button {
     border: none;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
