@@ -2,6 +2,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "bash ./scripts/build.sh",
+		"build:windows": "pwsh -File ./scripts/build.ps1",
 		"start": "node ./scripts/server.js",
 		"dev": "node ./scripts/dev.js"
 	},
