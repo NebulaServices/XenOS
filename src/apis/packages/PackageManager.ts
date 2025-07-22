@@ -37,7 +37,7 @@ export class PackageManager {
     }
 
     private async getRegs(type: 'apps' | 'libs'): Promise<string[]> {
-        const regs = await window.xen.settings.get(type);
+        const regs = window.xen.settings.get(type);
         return regs || [];
     }
 
@@ -45,7 +45,7 @@ export class PackageManager {
         type: 'apps' | 'libs',
         packageIds: string[],
     ): Promise<void> {
-        await window.xen.settings.set(type, packageIds);
+        window.xen.settings.set(type, packageIds);
     }
 
     public async install(

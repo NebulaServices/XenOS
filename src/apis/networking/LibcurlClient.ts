@@ -1,52 +1,5 @@
-type RequestInterceptor = (request: Request) => Promise<Request | Response> | Request | Response;
-type ResponseInterceptor = (response: Response) => Promise<Response> | Response;
-
-interface NetworkPolicy {
-    ports: {
-        allowed: number[] | "*";
-        denied: number[] | "*";
-    }
-
-    ips: {
-        allowed: string[] | "*";
-        denied: string[] | "*";
-    }
-
-    domains: {
-        allowed: string[] | "*";
-        denied: string[] | "*";
-    }
-
-    denyHTTP: boolean
-}
-
-const defaultPolicy: NetworkPolicy = {
-    ports: {
-        allowed: "*",
-        denied: []
-    },
-    ips: {
-        allowed: "*",
-        denied: []
-    },
-    domains: {
-        allowed: "*",
-        denied: []
-    },
-    denyHTTP: false
-};
-
-interface NetworkSettings {
-    url: string;
-    transport: 'wisp' | 'wsproxy';
-    connections?: number[];
-    proxy?: string;
-}
-
-const defaultSettings: NetworkSettings = {
-    url: (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/",
-    transport: 'wisp'
-}
+import { RequestInterceptor, ResponseInterceptor, NetworkSettings, defaultSettings } from "./types";
+import { networkHandler } from "../policy/handler";
 
 export class LibcurlClient {
     public loopback = {
@@ -94,7 +47,6 @@ export class LibcurlClient {
         libcurl: null as any,
     };
 
-    private networkPolicy: NetworkPolicy;
     private networkSettings: NetworkSettings;
 
     private session: any;
@@ -105,9 +57,6 @@ export class LibcurlClient {
     constructor() { }
 
     public async init() {
-        this.networkPolicy = window.xen.settings.get("network-policy") || defaultPolicy;
-        window.xen.settings.set("network-policy", this.networkPolicy);
-
         this.networkSettings = window.xen.settings.get("network-settings") || defaultSettings;
         window.xen.settings.set("network-settings", this.networkSettings);
 
@@ -144,34 +93,6 @@ export class LibcurlClient {
         });
     }
 
-    private policyHandler(url: URL): boolean {
-        const settings: NetworkPolicy = window.xen.settings.get("network-policy");
-
-        if (settings.domains.denied instanceof Array) {
-            settings.domains.denied = settings.domains.denied.map((domain: string) => {
-                const hostname = new URL(domain).hostname;
-                return hostname;
-            });
-
-            this.networkPolicy = settings;
-        }
-
-        const { ports, ips, domains, denyHTTP } = this.networkPolicy;
-        const port = Number(url.port) || (url.protocol === "https:" ? 443 : 80);
-
-        if (denyHTTP && url.protocol === "http:") return false;
-        if (ports.allowed !== "*" && !ports.allowed.includes(port)) return false;
-        if (ports.denied !== "*" && ports.denied.includes(port)) return false;
-        if (ips.allowed !== "*" && !ips.allowed.includes(url.hostname)) return false;
-        if (ips.denied !== "*" && ips.denied.includes(url.hostname)) return false;
-        if (domains.allowed !== "*" && !domains.allowed.includes(url.hostname))
-            return false;
-        if (domains.denied !== "*" && domains.denied.includes(url.hostname))
-            return false;
-
-        return true;
-    }
-
     public onRequest(interceptor: RequestInterceptor): void {
         this.requestInterceptors.push(interceptor);
     }
@@ -196,7 +117,7 @@ export class LibcurlClient {
 
         urlObject = new URL(requestObject.url);
 
-        if (!this.policyHandler(urlObject)) {
+        if (!await networkHandler(urlObject)) {
             return new Response("Forbidden: Network policy denies access", {
                 status: 403,
                 statusText: "Forbidden",

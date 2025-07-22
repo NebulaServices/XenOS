@@ -11,11 +11,12 @@ import { Notifications } from "./ui/components/Notifications";
 import { Wallpaper } from "./ui/Wallpaper";
 import { settings } from "./apis/settings";
 import { init } from "./apis/process/init";
+import { getPolicy, setPolicy } from "./apis/policy/policy";
 
 export class Xen {
     public settings: typeof settings;
-    public net: LibcurlClient;
     public fs: XenFS;
+    public net: LibcurlClient;
     public boot: typeof oobe;
     public wm: WindowManager;
     public process: Proccesses;
@@ -28,11 +29,15 @@ export class Xen {
         wallpaper: Wallpaper
     }
     public initSystem: typeof init;
+    public policy: {
+        get: typeof getPolicy,
+        set: typeof setPolicy
+    }
 
     constructor() {
         this.settings = settings;
-        this.net = new LibcurlClient();
         this.fs = new XenFS();
+        this.net = new LibcurlClient();
         this.boot = oobe;
         this.wm = new WindowManager();
         this.ui = {
@@ -45,6 +50,10 @@ export class Xen {
         this.process = new Proccesses();
         this.repos = new RepoStore();
         this.initSystem = init;
+        this.policy = {
+            get: getPolicy,
+            set: setPolicy
+        }
     }
 
     public version = {

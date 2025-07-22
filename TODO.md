@@ -15,6 +15,10 @@
     - It looks funny; should be replaced
     - It should be more consistant
 - Make the WM clamp UI look better
+- Policies
+    - Policy groups
+    - Regex support
+    - Policies for: `RepoStore`, `PackageManager`
 
 ## `v1.0.1`
 - File picker
