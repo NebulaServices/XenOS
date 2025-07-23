@@ -13,6 +13,7 @@ import { settings } from "./apis/settings";
 import { init } from "./apis/process/init";
 import { getPolicy, setPolicy } from "./apis/policy/policy";
 import { Dialog } from "./ui/Dialog";
+import { Systray } from "./ui/Systray";
 
 export class Xen {
     public settings: typeof settings;
@@ -33,6 +34,7 @@ export class Xen {
         set: typeof setPolicy
     }
     public dialog: Dialog;
+    public systray: Systray;
 
     constructor() {
         this.settings = settings;
@@ -53,6 +55,7 @@ export class Xen {
             set: setPolicy
         };
         this.dialog = new Dialog();
+        this.systray = new Systray();
     }
 
     public version = {

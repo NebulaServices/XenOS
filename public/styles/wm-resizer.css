@@ -1,0 +1,88 @@
+.wm-resizer {
+    position: absolute;
+    z-index: 10;
+}
+
+.wm-resizer-n,
+.wm-resizer-s {
+    left: 10px;
+    right: 10px;
+    height: 10px;
+    cursor: ns-resize;
+}
+
+.wm-resizer-n {
+    top: 0;
+    transform: translateY(-50%);
+}
+
+.wm-resizer-s {
+    bottom: 0;
+    transform: translateY(50%);
+}
+
+.wm-resizer-e,
+.wm-resizer-w {
+    top: 10px;
+    bottom: 10px;
+    width: 10px;
+    cursor: ew-resize;
+}
+
+.wm-resizer-e {
+    right: 0;
+    transform: translateX(50%);
+}
+
+.wm-resizer-w {
+    left: 0;
+    transform: translateX(-50%);
+}
+
+.wm-resizer-nw,
+.wm-resizer-ne,
+.wm-resizer-sw,
+.wm-resizer-se {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.wm-resizer-nw {
+    top: 0;
+    left: 0;
+    cursor: nwse-resize;
+    transform: translate(-50%, -50%);
+}
+
+.wm-resizer-ne {
+    top: 0;
+    right: 0;
+    cursor: nesw-resize;
+    transform: translate(50%, -50%);
+}
+
+.wm-resizer-sw {
+    bottom: 0;
+    left: 0;
+    cursor: nesw-resize;
+    transform: translate(-50%, 50%);
+}
+
+.wm-resizer-se {
+    bottom: 0;
+    right: 0;
+    cursor: nwse-resize;
+    transform: translate(50%, 50%);
+}
+
+.wm-clamp-zone {
+    box-sizing: border-box;
+    background: rgba(245, 194, 231, 0.5);
+    border: 2px solid var(--mocha-pink);
+    border-radius: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 9999;
+}

@@ -4,6 +4,7 @@ import { Window } from '../windows/Window';
 import { PackageManager } from '../../apis/packages/PackageManager';
 import { AppLauncher } from './AppLauncher';
 import { Calendar } from './Calendar';
+import { Systray } from '../Systray';
 
 interface TaskBarEntry {
     itemId: string;
@@ -14,8 +15,6 @@ interface TaskBarEntry {
     url: string;
     isOpen: boolean;
 }
-
-type TaskBarDisplayMode = 'iconOnly' | 'iconAndName';
 
 export class TaskBar {
     private static readonly DEBUG: boolean = false;
@@ -29,13 +28,13 @@ export class TaskBar {
         timeModule: HTMLDivElement;
         batteryModule?: HTMLDivElement;
     } = {} as any;
-    private displayMode: TaskBarDisplayMode = 'iconOnly';
     private current: Map<string, Window> = new Map();
     private packageManager: PackageManager;
     private appLauncher: AppLauncher;
     private batteryManager: any = null;
     private timeInterval: number | null = null;
     private calendar: Calendar;
+    private systray: Systray;
 
     constructor() {
         this.packageManager = new PackageManager();
@@ -53,6 +52,7 @@ export class TaskBar {
         );
 
         this.calendar = new Calendar();
+        this.systray = window.xen.systray;
     }
 
     public init() {
@@ -90,11 +90,16 @@ export class TaskBar {
                 <path d="M20 20V16H16V20H20Z" fill="currentColor"></path>
             </svg>
         `;
+
         this.el.launcherBtn.addEventListener('click', () => this.appLauncher.toggle());
-
         this.el.windowList.classList.add('taskbar-windows');
-
         this.el.rightModules.classList.add('taskbar-right-modules');
+
+        const systrayContainer = this.systray.getContainer();
+        if (systrayContainer) {
+            this.el.rightModules.appendChild(systrayContainer);
+        }
+
         this.setupTimeModule();
         this.setupBatteryModule();
 
@@ -102,6 +107,7 @@ export class TaskBar {
         this.el.taskbar.appendChild(this.el.windowList);
         this.el.taskbar.appendChild(this.el.rightModules);
     }
+
     private setupTimeModule(): void {
         this.el.timeModule.classList.add('taskbar-module', 'time-module');
         this.el.timeModule.addEventListener('click', () => this.toggleCalendar());
@@ -307,14 +313,6 @@ export class TaskBar {
         icon.draggable = false;
 
         item.appendChild(icon);
-
-        if (this.displayMode === 'iconAndName') {
-            const name = document.createElement('span');
-
-            name.classList.add('taskbar-item-name');
-            name.textContent = entry.title;
-            item.appendChild(name);
-        }
 
         if (entry.isOpen) {
             item.classList.add('is-open');
@@ -577,5 +575,7 @@ export class TaskBar {
             clearInterval(this.timeInterval);
             this.timeInterval = null;
         }
+    
+        this.systray.destroy();
     }
 }
