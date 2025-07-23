@@ -2,6 +2,7 @@
 ## `v1.0.0`
 - OOBE 
 - Dialog API
+
 - Core apps
     - Settings
     - Browser
@@ -10,14 +11,28 @@
     - Repo store
     - Explore
     - (basic) themes (wallpaper)
-- Fix bug where pinned icons wont show icon at all after reload
-- Fix animations issue with taskbar entries
-    - It looks funny; should be replaced
-    - It should be more consistant
-- Policies
+
+- Policies (not a priority)
     - Policy groups
     - Regex support
     - Notifications (?)
+
+- Context menu
+    - Prevent right click on elements that dont have a context menu
+    - Taskbar
+        - Entries
+            - Close
+            - Open
+            - Pin
+        - Show name
+    - App launcher entries
+        - Open
+        - Uninstall
+        - Pin
+
+- Taskbar
+    - Pinned entries
+    - Optional show name of entries
 
 ## `v1.0.1`
 - File picker

@@ -1,6 +1,6 @@
 .notification-container {
     position: fixed;
-    bottom: calc(48px + 20px);
+    bottom: calc(48px + 48px);
     right: 20px;
     z-index: 9999;
     display: flex;
@@ -132,10 +132,6 @@
 @keyframes progress {
     from { width: 0%; }
     to { width: 100%; }
-}
-
-.notification:hover .progress-bar {
-    animation-play-state: paused;
 }
 
 @media (max-height: 600px) {
