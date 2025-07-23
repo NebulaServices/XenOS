@@ -104,7 +104,7 @@
 
 .calendar-day.today {
     background-color: var(--mocha-pink);
-    color: var(--mocha-overlay0);
+    color: var(--mocha-crust);
     font-weight: 700;
     box-shadow: 0 2px 8px rgba(245, 194, 231, 0.3);
 }

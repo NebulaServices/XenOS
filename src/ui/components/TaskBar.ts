@@ -1,15 +1,9 @@
+// Please please PLEASE do NOT read this file
+
 import { Window } from '../windows/Window';
 import { PackageManager } from '../../apis/packages/PackageManager';
 import { AppLauncher } from './AppLauncher';
 import { Calendar } from './Calendar';
-
-interface PinnedWindowEntry {
-    id: string;
-    title: string;
-    icon?: string;
-    url: string;
-    order: number;
-}
 
 interface TaskBarEntry {
     itemId: string;
@@ -19,15 +13,11 @@ interface TaskBarEntry {
     icon?: string;
     url: string;
     isOpen: boolean;
-    isPinned: boolean;
 }
 
 type TaskBarDisplayMode = 'iconOnly' | 'iconAndName';
 
 export class TaskBar {
-    private static readonly SETTINGS_KEY = 'taskbar';
-    private static readonly PINNED_WINDOWS_KEY = 'pinned-windows';
-    private static readonly DISPLAY_MODE_KEY = 'display-mode';
     private static readonly DEBUG: boolean = false;
     private static readonly DEBUG_BATTERY_LIFE: number = 55;
 
@@ -39,7 +29,6 @@ export class TaskBar {
         timeModule: HTMLDivElement;
         batteryModule?: HTMLDivElement;
     } = {} as any;
-    private pinned: PinnedWindowEntry[] = [];
     private displayMode: TaskBarDisplayMode = 'iconOnly';
     private current: Map<string, Window> = new Map();
     private packageManager: PackageManager;
@@ -63,17 +52,14 @@ export class TaskBar {
             this.el.taskbar,
         );
 
-        this.setupEls();
-        this.initBattery();
-        this.initTime();
-
         this.calendar = new Calendar();
     }
 
-    public async init() {
-        await this.registerContextMenus();
-        await this.attachListeners();
-        await this.loadState();
+    public init() {
+        this.setupEls();
+        this.initBattery();
+        this.initTime();
+        this.attachListeners();
     }
 
     public create(): void {
@@ -242,8 +228,6 @@ export class TaskBar {
             current.set(win.id, win);
 
             if (win.props.display) {
-                const isPinned = this.pinned.some((p) => p.id === win.props.url);
-
                 entries.push({
                     itemId: win.id,
                     instanceId: win.id,
@@ -251,8 +235,7 @@ export class TaskBar {
                     title: win.props.title,
                     icon: win.props.icon,
                     url: win.props.url,
-                    isOpen: true,
-                    isPinned: isPinned,
+                    isOpen: true
                 });
 
                 processed.add(win.props.url);
@@ -261,30 +244,7 @@ export class TaskBar {
 
         this.current = current;
 
-        this.pinned.forEach((pinnedEntry) => {
-            if (!processed.has(pinnedEntry.id)) {
-                entries.push({
-                    itemId: pinnedEntry.id,
-                    instanceId: null,
-                    appId: pinnedEntry.id,
-                    title: pinnedEntry.title,
-                    icon: pinnedEntry.icon,
-                    url: pinnedEntry.url,
-                    isOpen: false,
-                    isPinned: true,
-                });
-
-                processed.add(pinnedEntry.id);
-            }
-        });
-
         const sorted = entries.sort((a, b) => {
-            const aPinned = this.pinned.find((p) => p.id === a.appId);
-            const bPinned = this.pinned.find((p) => p.id === b.appId);
-
-            if (aPinned && bPinned) return aPinned.order - bPinned.order;
-            if (aPinned) return -1;
-            if (bPinned) return 1;
             if (a.isOpen && !b.isOpen) return -1;
             if (!a.isOpen && b.isOpen) return 1;
 
@@ -312,7 +272,6 @@ export class TaskBar {
             const item = this.createItem(entry, !existing);
 
             this.el.windowList.appendChild(item);
-            this.createContextMenu(entry, item);
 
             if (!existing) {
                 this.animateItemIn(item);
@@ -328,7 +287,6 @@ export class TaskBar {
         icon?: string;
         url: string;
         isOpen: boolean;
-        isPinned: boolean;
     }, isNew: boolean = false): HTMLDivElement {
         const item = document.createElement('div');
         item.classList.add('taskbar-item');
@@ -365,8 +323,6 @@ export class TaskBar {
             indicator.classList.add('taskbar-item-indicator');
             item.appendChild(indicator);
         }
-
-        if (entry.isPinned) item.classList.add('is-pinned');
 
         item.addEventListener('click', (e) => {
             if (!item.classList.contains('dragging')) {
@@ -449,110 +405,12 @@ export class TaskBar {
         }, 100);
     };
 
-    public onWindowFocused = (windowInstance: Window): void => {
-        /*
-        this.el.windowList
-            .querySelectorAll('.taskbar-item')
-            .forEach((item) => item.classList.remove('is-focused'));
-
-        const item = this.el.windowList.querySelector(`[data-id="${windowInstance.id}"]`);
-        if (item && windowInstance.props.display) item.classList.add('is-focused');
-        */
-    };
-
-    private async registerContextMenus() {
-        window.xen.ui.contextMenu.attach(this.el.taskbar, {
-            root: [
-                {
-                    title: 'Toggle Window Names',
-                    toggle: this.displayMode === 'iconAndName',
-                    onClick: async () => this.toggleDM()
-                }
-            ]
-        });
-    }
-
-    private createContextMenu(entry: {
-        itemId: string;
-        instanceId: string | null;
-        appId: string;
-        title: string;
-        icon?: string;
-        url: string;
-        isOpen: boolean;
-        isPinned: boolean;
-    }, item: HTMLDivElement): void {
-        const menuOptions: any = {
-            root: [
-                {
-                    title: entry.isPinned ? 'Unpin from Dock' : 'Pin to Dock',
-                    toggle: entry.isPinned,
-                    onClick: async () => this.togglePin(entry.appId, entry.title, entry.icon, entry.url)
-                }
-            ]
-        };
-
-        if (entry.isOpen && entry.instanceId) {
-            menuOptions.root.push({
-                title: 'Close Window',
-                onClick: () => this.closeWindow(entry.instanceId!)
-            });
-        }
-
-        window.xen.ui.contextMenu.attach(item, menuOptions);
-    }
-
-    private async toggleDM(): Promise<void> {
-        this.displayMode = this.displayMode === 'iconOnly' ? 'iconAndName' : 'iconOnly';
-
-        window.xen.settings.set(TaskBar.SETTINGS_KEY, {
-            [TaskBar.DISPLAY_MODE_KEY]: this.displayMode,
-        });
-
-        window.xen.ui.contextMenu.attach(this.el.taskbar, {
-            root: [
-                {
-                    title: 'Toggle Window Names',
-                    toggle: this.displayMode === 'iconAndName',
-                    onClick: async () => await this.toggleDM()
-                }
-            ]
-        });
-
-        this.render();
-    }
-
-    public async togglePin(
-        id: string,
-        title: string,
-        icon?: string,
-        url?: string,
-    ) {
-        const index = this.pinned.findIndex((p) => p.id === id);
-
-        if (index !== -1) {
-            this.pinned.splice(index, 1);
-        } else {
-            if (url === undefined || title === undefined) return;
-
-            this.pinned.push({
-                id: id,
-                title: title,
-                icon: icon,
-                url: url,
-                order: this.pinned.length,
-            });
-        }
-
-        await this.savePinned();
-        this.render();
-    }
-
     public closeWindow(id: string): void {
         const win = window.xen.wm.windows.find((win) => win.id === id);
 
         if (win) {
             const item = this.el.windowList.querySelector(`[data-id="${id}"]`) as HTMLDivElement;
+
             if (item) {
                 this.animateItemOut(item);
 
@@ -565,39 +423,6 @@ export class TaskBar {
         } else {
             this.current.delete(id);
             this.render();
-        }
-    }
-
-    private async savePinned() {
-        try {
-            const taskbarSettings = window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
-            taskbarSettings[TaskBar.PINNED_WINDOWS_KEY] = this.pinned;
-            window.xen.settings.set(TaskBar.SETTINGS_KEY, taskbarSettings);
-        } catch (err) {
-            console.error('Failed to save pinned windows:', err);
-        }
-    }
-
-    private async loadState() {
-        try {
-            const taskbarSettings = window.xen.settings.get(TaskBar.SETTINGS_KEY) || {};
-            const storedPinned = taskbarSettings[TaskBar.PINNED_WINDOWS_KEY] || [];
-
-            if (storedPinned) {
-                this.pinned = storedPinned;
-                this.pinned.forEach(
-                    (p, i) => (p.order = p.order === undefined ? i : p.order),
-                );
-                this.pinned.sort((a, b) => a.order - b.order);
-            }
-
-            const storedDM = taskbarSettings[TaskBar.DISPLAY_MODE_KEY];
-            if (storedDM) this.displayMode = storedDM as TaskBarDisplayMode;
-        } catch (err) {
-            console.error('Failed to load taskbar:', err);
-
-            this.pinned = [];
-            this.displayMode = 'iconOnly';
         }
     }
 
@@ -697,7 +522,6 @@ export class TaskBar {
         if (this.draggedItem && this.dragPlaceholder) {
             this.el.windowList.insertBefore(this.draggedItem, this.dragPlaceholder);
             this.reorder();
-            await this.savePinned();
         }
 
         this.clearDragEffects();
@@ -733,7 +557,6 @@ export class TaskBar {
     }
 
     private reorder(): void {
-        const order: PinnedWindowEntry[] = [];
         const items = Array.from(this.el.windowList.children) as HTMLDivElement[];
 
         items.forEach((itemEl, index) => {
@@ -741,31 +564,7 @@ export class TaskBar {
 
             const itemId = itemEl.dataset.id;
             if (!itemId) return;
-
-            const instance = window.xen.wm.windows.find((win) => win.id === itemId);
-
-            if (instance) {
-                const appId = instance.props.url;
-                const entry = this.pinned.find((p) => p.id === appId);
-
-                if (entry) {
-                    entry.order = index;
-                    order.push(entry);
-                }
-            } else {
-                const entry = this.pinned.find((p) => p.id === itemId);
-
-                if (entry) {
-                    entry.order = index;
-                    order.push(entry);
-                }
-            }
         });
-
-        this.pinned = this.pinned.map(p => {
-            const updated = order.find(o => o.id === p.id);
-            return updated || p;
-        }).sort((a, b) => a.order - b.order);
     }
 
     public getHeight(): number {

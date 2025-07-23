@@ -294,44 +294,64 @@
     transform: translate(50%, 50%);
 }
 
+/*
 .wm-clamp-zone::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60px;
-    height: 60px;
-    background: rgba(245, 194, 231, 0.5);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    font-weight: 900;
-    color: var(--mocha-text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    text-align: center;
-    line-height: 1;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); 
+  width: 60px;
+  height: 60px;
+  background: rgba(245, 194, 231, 1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--mocha-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-align: center;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
+*/
 
 .wm-clamp-zone {
-    box-sizing: border-box;
-    background: rgba(245, 194, 231, 0.3);
-    border: 2px solid var(--mocha-pink);
-    border-radius: 8px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-    z-index: 9999;
+  box-sizing: border-box;
+  background: rgba(245, 194, 231, 0.5);
+  border: 2px solid var(--mocha-pink);
+  border-radius: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 9999;
 }
 
-.wm-clamp-top::before { content: '↑'; }
-.wm-clamp-bottom::before { content: '↓'; }
-.wm-clamp-left::before { content: '←'; }
-.wm-clamp-right::before { content: '→'; }
-.wm-clamp-top-left::before { content: '↖'; }
-.wm-clamp-top-right::before { content: '↗'; }
-.wm-clamp-bottom-left::before { content: '↙'; }
-.wm-clamp-bottom-right::before { content: '↘'; }
+/*
+.wm-clamp-top::before {
+  content: "↑";
+}
+.wm-clamp-bottom::before {
+  content: "↓";
+}
+.wm-clamp-left::before {
+  content: "←";
+}
+.wm-clamp-right::before {
+  content: "→";
+}
+.wm-clamp-top-left::before {
+  content: "↖";
+}
+.wm-clamp-top-right::before {
+  content: "↗";
+}
+.wm-clamp-bottom-left::before {
+  content: "↙";
+}
+.wm-clamp-bottom-right::before {
+  content: "↘";
+}
+*/

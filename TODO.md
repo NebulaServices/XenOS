@@ -14,7 +14,6 @@
 - Fix animations issue with taskbar entries
     - It looks funny; should be replaced
     - It should be more consistant
-- Make the WM clamp UI look better
 - Policies
     - Policy groups
     - Regex support
