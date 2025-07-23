@@ -36,7 +36,7 @@ export class Window {
     public el: {
         window: HTMLDivElement;
         bar: HTMLDivElement;
-        content: HTMLIFrameElement | HTMLDivElement | undefined; // Can be undefined
+        content: HTMLIFrameElement | HTMLDivElement | undefined;
     } = {} as any;
     public og: {
         width: string;
@@ -131,10 +131,12 @@ export class Window {
 
         } else if (this.props.content) {
             const d = document.createElement('div');
+
             d.classList.add('wm-content-frame');
-            d.innerHTML = this.props.content || ''; // This line puts your HTML into the div
+            d.innerHTML = this.props.content || '';
+
             this.el.content = d;
-            this.el.window.appendChild(this.el.content); // This line appends the div to the window
+            this.el.window.appendChild(this.el.content);
         }
     }
 
@@ -450,9 +452,11 @@ export class Window {
 
     close(): void {
         this.el.window.classList.add('closing');
-        if (this.el.content) { // Add null check
+
+        if (this.el.content) {
             this.el.content.classList.add('wm-iframe-no-pointer');
         }
+
         const d = 200;
 
         setTimeout(() => {
@@ -474,7 +478,8 @@ export class Window {
     fullscreen(): void {
         this.is.fullscreened = !this.is.fullscreened;
         this.el.window.classList.toggle('wm-fullscreen', this.is.fullscreened);
-        if (this.el.content) { // Add null check
+
+        if (this.el.content) {
             this.el.content.classList.add('wm-iframe-no-pointer');
         }
 
@@ -506,9 +511,10 @@ export class Window {
         }
 
         setTimeout(() => {
-            if (this.el.content) { // Add null check
+            if (this.el.content) {
                 this.el.content.classList.remove('wm-iframe-no-pointer');
             }
+
             this.focus();
         }, 300);
     }

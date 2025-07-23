@@ -3,6 +3,9 @@ import { getPolicy } from "./policy";
 import { getDefault } from "./default";
 
 function matchesPattern(patterns: (string | RegExp)[] | "*", value: string): boolean {
+    console.log(patterns);
+    console.log(value);
+
     if (patterns === "*") {
         return true;
     }
@@ -57,6 +60,8 @@ export async function repoHandler(url: URL): Promise<boolean> {
 
     if (allowed !== "*" && !allowed.includes(url.hostname)) return false;
     if (denied !== "*" && denied.includes(url.hostname)) return false;
+
+    return true;
 }
 
 export async function packageHandler(id: string, type: 'install' | 'uninstall'): Promise<boolean> {

@@ -2,7 +2,7 @@ import { getDefault } from "./default";
 
 async function readPolicies(folder: string): Promise<any[]> {
     const files = await window.xen.fs.list(folder);
-    const policies = [];
+    const policies: any[] = [];
 
     for (const file of files) {
         if (file.isFile && file.name.endsWith(".json")) {
@@ -22,44 +22,53 @@ async function readPolicies(folder: string): Promise<any[]> {
 
 function mergePolicies(policies: any[]): any {
     return policies.reduce((merged, policy) => {
-        for (const key in policy) {
-            if (Array.isArray(policy[key])) {
-                merged[key] = [...(merged[key] || []), ...policy[key]];
-            } else if (typeof policy[key] === "object") {
-                merged[key] = mergePolicies([merged[key] || {}, policy[key]]);
-            } else {
-                merged[key] = policy[key];
+        for (const k in policy) {
+            if (Object.prototype.hasOwnProperty.call(policy, k)) {
+                if (Array.isArray(policy[k])) {
+                    merged[k] = [...(merged[k] || []), ...policy[k]];
+                } else if (
+                    typeof policy[k] === "object" &&
+                    policy[k] !== null &&
+                    !Array.isArray(policy[k])
+                ) {
+                    merged[k] = mergePolicies([merged[k] || {}, policy[k]]);
+                } else {
+                    merged[k] = policy[k];
+                }
             }
         }
-
         return merged;
     }, {});
 }
 
 export async function getPolicy(policy: string): Promise<any> {
-    const folderPath = `/system/policies/${policy}`;
-    const exists = await window.xen.fs.exists(folderPath);
+    const folder = `/system/policies/${policy}`;
+    const exists = await window.xen.fs.exists(folder);
 
     if (!exists) {
-        await window.xen.fs.mkdir(folderPath);
+        await window.xen.fs.mkdir(folder);
         const defaultPolicy = getDefault(policy);
         await setPolicy(policy, "default.json", defaultPolicy);
     }
 
-    const policies = await readPolicies(folderPath);
-    const mergedPolicy = mergePolicies(policies);
+    const policies = await readPolicies(folder);
+    const merged = mergePolicies(policies);
 
     const defaultPolicy = getDefault(policy);
-    return { ...defaultPolicy, ...mergedPolicy };
+    return mergePolicies([defaultPolicy, merged]);
 }
 
-export async function setPolicy(policy: string, fileName: string, content: any): Promise<void> {
-    const folderPath = `/system/policies/${policy}`;
-    const filePath = `${folderPath}/${fileName}`;
+export async function setPolicy(
+    policy: string,
+    file: string,
+    content: any,
+): Promise<void> {
+    const folder = `/system/policies/${policy}`;
+    const path = `${folder}/${file}`;
 
-    if (!(await window.xen.fs.exists(folderPath))) {
-        await window.xen.fs.mkdir(folderPath);
+    if (!(await window.xen.fs.exists(folder))) {
+        await window.xen.fs.mkdir(folder);
     }
 
-    await window.xen.fs.write(filePath, JSON.stringify(content, null, 2));
+    await window.xen.fs.write(path, JSON.stringify(content, null, 2));
 }
