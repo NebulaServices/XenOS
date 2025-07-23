@@ -105,6 +105,13 @@ export class PackageManager {
             if (!manifest) throw new Error('manifest.json not found');
 
             if (!await packageHandler(manifest.id, 'install')) {
+                window.xen.ui.notifications.spawn({
+                    title: "XenOS",
+                    description: "This package has been blocked by your policy and cannot be installed",
+                    icon: "/assets/logo.svg",
+                    timeout: 2500
+                });
+    
                 throw new Error('Package blocked by policy');
             }
 
@@ -221,6 +228,13 @@ export class PackageManager {
         const fs = window.xen.fs;
 
         if (!await packageHandler(packageId, 'uninstall')) {
+            window.xen.ui.notifications.spawn({
+                title: "XenOS",
+                description: "This package is force install by your policy and cannot be uninstalled",
+                icon: "/assets/logo.svg",
+                timeout: 2500
+            });
+
             throw new Error('Package is force installed by policy');
         }
 

@@ -10,9 +10,9 @@ export interface NetworkPolicy {
     }
 
     domains: {
-        allowed: string[] | "*";
-        denied: string[] | "*";
-    }
+        allowed: (string | RegExp)[] | "*";
+        denied: (string | RegExp)[] | "*";
+    };
 
     denyHTTP: boolean
 }
