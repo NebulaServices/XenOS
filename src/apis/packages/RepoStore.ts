@@ -53,7 +53,7 @@ export class RepoStore {
 		const obj = new URL(base);
 
 		if (!await repoHandler(obj)) {
-			window.xen.ui.notifications.spawn({
+			window.xen.notifications.spawn({
 				title: "XenOS",
 				description: "This repository has been blocked by your policy and cannot be used",
 				icon: "/assets/logo.svg",

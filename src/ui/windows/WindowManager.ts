@@ -80,7 +80,7 @@ export class WindowManager {
     private getClampZone(x: number, y: number): string | null {
         const threshold = 50;
         const w = window.innerWidth;
-        const h = window.innerHeight - (window as any).xen.ui.taskBar.getHeight();
+        const h = window.innerHeight - (window as any).xen.taskBar.getHeight();
         const cornerThreshold = 100;
 
         if (x < cornerThreshold && y < cornerThreshold) return 'top-left';
@@ -120,7 +120,7 @@ export class WindowManager {
 
     private getClampBounds(zone: string): { x: number, y: number, width: number, height: number } {
         const w = window.innerWidth;
-        const h = window.innerHeight - (window as any).xen.ui.taskBar.getHeight();
+        const h = window.innerHeight - (window as any).xen.taskBar.getHeight();
 
         switch (zone) {
             case 'top':
@@ -270,7 +270,7 @@ export class WindowManager {
     }
 
     public update(): void {
-        (window as any).xen.ui.taskBar.render();
+        (window as any).xen.taskBar.render();
     }
 
     public handleWindowResize(): void {

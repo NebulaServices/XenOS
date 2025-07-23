@@ -69,7 +69,7 @@ window.addEventListener('load', async () => {
     await setupDeps();
 
     await initSw().then(() => {
-        window.xen.ui.wallpaper.set();
+        window.xen.wallpaper.set();
     });
 
     await window.xen.boot();

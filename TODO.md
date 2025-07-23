@@ -1,7 +1,6 @@
 # TODO
 ## `v1.0.0`
 - OOBE 
-- Dialog API
 
 - Core apps
     - Settings

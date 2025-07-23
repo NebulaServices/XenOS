@@ -12,6 +12,7 @@ import { Wallpaper } from "./ui/Wallpaper";
 import { settings } from "./apis/settings";
 import { init } from "./apis/process/init";
 import { getPolicy, setPolicy } from "./apis/policy/policy";
+import { Dialog } from "./ui/Dialog";
 
 export class Xen {
     public settings: typeof settings;
@@ -22,17 +23,16 @@ export class Xen {
     public process: Proccesses;
     public packages: PackageManager;
     public repos: RepoStore;
-    public ui: {
-        contextMenu: ContextMenu,
-        taskBar: TaskBar
-        notifications: Notifications,
-        wallpaper: Wallpaper
-    }
+    public contextMenu: ContextMenu;
+    public taskBar: TaskBar;
+    public notifications: Notifications;
+    public wallpaper: Wallpaper;
     public initSystem: typeof init;
     public policy: {
         get: typeof getPolicy,
         set: typeof setPolicy
     }
+    public dialog: Dialog;
 
     constructor() {
         this.settings = settings;
@@ -40,12 +40,10 @@ export class Xen {
         this.net = new LibcurlClient();
         this.boot = oobe;
         this.wm = new WindowManager();
-        this.ui = {
-            contextMenu: new ContextMenu(),
-            taskBar: null as TaskBar,
-            notifications: new Notifications(),
-            wallpaper: new Wallpaper()
-        };
+        this.contextMenu = new ContextMenu();
+        this.taskBar = null as TaskBar;
+        this.notifications = new Notifications();
+        this.wallpaper = new Wallpaper();
         this.packages = new PackageManager();
         this.process = new Proccesses();
         this.repos = new RepoStore();
@@ -53,7 +51,8 @@ export class Xen {
         this.policy = {
             get: getPolicy,
             set: setPolicy
-        }
+        };
+        this.dialog = new Dialog();
     }
 
     public version = {
@@ -69,12 +68,12 @@ export class Xen {
     async init() {
         this.version.build += `${(await (await fetch('/uuid')).text()).split('\n')[0]}`;
         this.version.pretty = `${this.version.prefix}-${this.version.codename} v${this.version.major}.${this.version.minor}.${this.version.patch} (${this.version.build})`;
-    
-        this.ui.taskBar = new TaskBar();
-        this.ui.taskBar.init();
-        this.ui.taskBar.create();
 
-        this.wm.onCreated = () => this.ui.taskBar.onWindowCreated();
-        this.wm.onClosed = () => this.ui.taskBar.onWindowClosed();
+        this.taskBar = new TaskBar();
+        this.taskBar.init();
+        this.taskBar.create();
+
+        this.wm.onCreated = () => this.taskBar.onWindowCreated();
+        this.wm.onClosed = () => this.taskBar.onWindowClosed();
     }
 }
