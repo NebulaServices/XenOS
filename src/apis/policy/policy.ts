@@ -2,7 +2,7 @@ import { getDefault } from "./default";
 
 export async function getPolicy(policy: string) {
     if (!await window.xen.fs.exists(`/system/policies/${policy}.json`)) {
-        await setPolicy('network', getDefault('network'));
+        await setPolicy(policy, getDefault(policy));
     }
 
     const file = await window.xen.fs.read(`/system/policies/${policy}.json`, 'text') as string;

@@ -1,6 +1,6 @@
-import { NetworkPolicy } from "./types";
+import { NetworkPolicy, RepoPolicy, PackagePolicy } from "./types";
 
-const defaultNetworkPolicy: NetworkPolicy = {
+const networkP: NetworkPolicy = {
     ports: {
         allowed: "*",
         denied: []
@@ -16,10 +16,25 @@ const defaultNetworkPolicy: NetworkPolicy = {
     denyHTTP: false
 };
 
+const repoP: RepoPolicy = {
+    allowed: "*",
+    denied: []
+};
+
+const packageP: PackagePolicy = {
+    allowed: "*",
+    denied: [],
+    forceInstalled: ['']
+}
+
 export function getDefault(policy: string) {
     switch (policy) {
         case "network":
-            return defaultNetworkPolicy
+            return networkP;
+        case "repo":
+            return repoP;
+        case "package":
+            return packageP;
         default:
             return;
     }

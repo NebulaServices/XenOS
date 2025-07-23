@@ -1,4 +1,5 @@
 import { Runtime } from './Runtime';
+import { packageHandler } from '../policy/handler';
 import JSZip from 'jszip';
 
 export interface Manifest {
@@ -102,6 +103,10 @@ export class PackageManager {
             }
 
             if (!manifest) throw new Error('manifest.json not found');
+
+            if (!await packageHandler(manifest.id, 'install')) {
+                throw new Error('Package blocked by policy');
+            }
 
             const registryType = manifest.type === 'library' ? 'libs' : 'apps';
             const currentPath = registryType === 'apps' ? this.appPath : this.libPath;
@@ -214,6 +219,10 @@ export class PackageManager {
 
     public async remove(packageId: string): Promise<void> {
         const fs = window.xen.fs;
+
+        if (!await packageHandler(packageId, 'uninstall')) {
+            throw new Error('Package is force installed by policy');
+        }
 
         try {
             let regs = await this.getRegs('apps');

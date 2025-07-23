@@ -18,7 +18,7 @@
 - Policies
     - Policy groups
     - Regex support
-    - Policies for: `RepoStore`, `PackageManager`
+    - Notifications (?)
 
 ## `v1.0.1`
 - File picker

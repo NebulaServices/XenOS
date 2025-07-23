@@ -1,3 +1,5 @@
+import { repoHandler } from "../policy/handler";
+
 interface Maintainer {
 	name: string;
 	email: string;
@@ -47,7 +49,13 @@ export class RepoStore {
 		}
 	}
 
-	updateServer(base: string): void {
+	async updateServer(base: string) {
+		const obj = new URL(base);
+
+		if (!await repoHandler(obj)) {
+			throw new Error('Repository URL blocked by policy');
+		}
+
 		this.base = new URL(base).origin;
 	}
 

@@ -16,3 +16,14 @@ export interface NetworkPolicy {
 
     denyHTTP: boolean
 }
+
+export interface PackagePolicy {
+    allowed: string[] | "*";
+    denied: string[] | "*";
+    forceInstalled: string[];
+}
+
+export interface RepoPolicy {
+    allowed: string[] | "*";
+    denied: string[] | "*";
+}
