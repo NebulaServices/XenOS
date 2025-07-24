@@ -47,8 +47,26 @@
 
             <div id="ui-section" class="section">
                 <h2>UI</h2>
-                <div class="setting-item">
-                    <p class="wip-message">Work in Progress</p>
+                <div class="ui-settings">
+                    <div class="current-wallpaper-preview">
+                        <h3>Current Wallpaper</h3>
+                        <div class="wallpaper-display">
+                            <img id="current-wallpaper-img" src="" alt="Current Wallpaper" />
+                        </div>
+                    </div>
+
+                    <div class="wallpaper-gallery-section">
+                        <h3>Your Wallpapers</h3>
+                        <div id="wallpaper-gallery" class="wallpaper-gallery">
+                            <p class="wip-message" id="gallery-empty-message">No wallpapers</p>
+                        </div>
+                    </div>
+
+                    <div class="setting-item button-group">
+                        <button id="upload-wallpaper-file">Upload from Device</button>
+                        <button id="upload-wallpaper-url">Upload from URL</button>
+                        <button id="remove-wallpaper" class="danger">Remove Current</button>
+                    </div>
                 </div>
             </div>
 
@@ -65,15 +83,12 @@
                         </button>
                     </div>
                     <div id="policy-list" class="policy-list">
-                        <!-- Policy files/folders will be dynamically loaded here -->
                     </div>
                     <div class="policy-editor-actions">
                         <textarea id="policy-content" class="policy-editor"
                             placeholder="Select a file to view/edit policy content..."></textarea>
                         <button id="save-policy-btn">Save Policy</button>
-                        <button id="delete-policy-btn" class="danger">
-                            Delete File/Folder
-                        </button>
+                        <button id="delete-policy-btn" class="danger">Delete File/Folder</button>
                     </div>
                 </div>
             </div>
@@ -82,9 +97,7 @@
                 <h2>Other</h2>
                 <div class="setting-item button-group">
                     <button id="check-updates">Check for updates</button>
-                    <button id="reset-instance" class="danger">
-                        Reset instance
-                    </button>
+                    <button id="reset-instance" class="danger">Reset instance</button>
                 </div>
             </div>
         </main>

@@ -21,6 +21,13 @@ document.addEventListener("DOMContentLoaded", () => {
         let selectedPath = null;
         let isPolicyFile = false;
 
+        const currentWpImg = document.getElementById("current-wallpaper-img");
+        const wpGallery = document.getElementById("wallpaper-gallery");
+        const galleryEmptyMsg = document.getElementById("gallery-empty-message");
+        const uploadWpFileBtn = document.getElementById("upload-wallpaper-file");
+        const uploadWpUrlBtn = document.getElementById("upload-wallpaper-url");
+        const rmWpBtn = document.getElementById("remove-wallpaper");
+
         function resetPolicyEditor() {
             selectedPath = null;
             isPolicyFile = false;
@@ -129,10 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             savePolicyBtn.disabled = false;
 
                             try {
-                                const content = await window.xen.fs.read(
-                                    selectedPath,
-                                    "text",
-                                );
+                                const content = await window.xen.fs.read(selectedPath, "text");
                                 try {
                                     policyContent.value = JSON.stringify(
                                         JSON.parse(content),
@@ -244,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then(async (res) => {
                     if (res === true) {
                         try {
-                            await window.xen.fs.rm(selectedPolicyPath);
+                            await window.xen.fs.rm(selectedPath);
                             window.xen.notifications.spawn({
                                 title: "XenOS Policy",
                                 description: `${isDir ? "Folder" : "File"} deleted: ${name}`,
@@ -271,12 +275,11 @@ document.addEventListener("DOMContentLoaded", () => {
             let canCreateFile = false;
 
             if (currentPolicy === POLICY_ROOT) {
-                promptBody = 'Enter a policy type (view documentation for more info)';
+                promptBody = "Enter a policy type (view documentation for more info)";
                 placeholder = "";
                 canCreateFile = false;
             } else {
-                promptBody =
-                    'Enter a name for the policy (Ex. custom.json)';
+                promptBody = "Enter a name for the policy (Ex. custom.json)";
                 placeholder = "custom.json";
                 canCreateFile = true;
             }
@@ -487,6 +490,140 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
         });
 
+        async function loadWallpapers() {
+            try {
+                const currentWallpaper = await window.xen.wallpaper.get();
+                currentWpImg.src = currentWallpaper || "";
+                currentWpImg.style.display = currentWallpaper ? "block" : "none";
+
+                const wallpapers = await window.xen.wallpaper.list();
+                wpGallery.innerHTML = "";
+                if (galleryEmptyMsg) galleryEmptyMsg.style.display = "none";
+
+                if (wallpapers.length === 0) {
+                    if (galleryEmptyMsg) galleryEmptyMsg.style.display = "block";
+                } else {
+                    wallpapers.forEach((wp) => {
+                        if (wp.isFile && wp.name.match(/\.(png|jpe?g|webp)$/i)) {
+                            const item = document.createElement("div");
+                            item.classList.add("wallpaper-gallery-item");
+                            item.style.backgroundImage = `url('/fs/usr/wallpapers/${wp.name}')`;
+                            item.dataset.filename = wp.name;
+
+                            item.addEventListener("click", async () => {
+                                await window.xen.wallpaper.set(wp.name);
+                                loadWallpapers();
+                                window.xen.notifications.spawn({
+                                    title: "XenOS UI",
+                                    description: `Wallpaper set to ${wp.name}`,
+                                    icon: `/assets/logo.svg`,
+                                    timeout: 2000,
+                                });
+                            });
+
+                            wpGallery.appendChild(item);
+                        }
+                    });
+                }
+            } catch (e) {
+                window.xen.notifications.spawn({
+                    title: "XenOS UI",
+                    description: `Failed to load wallpapers: ${e.message}`,
+                    icon: `/assets/logo.svg`,
+                    timeout: 3000,
+                });
+            }
+        }
+
+        uploadWpFileBtn.addEventListener("click", async () => {
+            try {
+                await window.xen.wallpaper.upload("prompt");
+                loadWallpapers();
+                window.xen.notifications.spawn({
+                    title: "XenOS UI",
+                    description: "Wallpaper uploaded successfully!",
+                    icon: `/assets/logo.svg`,
+                    timeout: 2500,
+                });
+            } catch (e) {
+                window.xen.notifications.spawn({
+                    title: "XenOS UI",
+                    description: `Failed to upload wallpaper: ${e.message}`,
+                    icon: `/assets/logo.svg`,
+                    timeout: 3000,
+                });
+            }
+        });
+
+        uploadWpUrlBtn.addEventListener("click", async () => {
+            const url = await window.xen.dialog.prompt({
+                title: "Upload Wallpaper",
+                body: "Enter the URL of the image:",
+                placeholder: `${location.origin}/assets/wallpaper.webp`,
+            });
+
+            if (url) {
+                try {
+                    await window.xen.wallpaper.upload("url", url);
+                    loadWallpapers();
+                    window.xen.notifications.spawn({
+                        title: "XenOS UI",
+                        description: "Wallpaper uploaded from URL",
+                        icon: `/assets/logo.svg`,
+                        timeout: 2500,
+                    });
+                } catch (e) {
+                    window.xen.notifications.spawn({
+                        title: "XenOS UI",
+                        description: `Failed to upload wallpaper from URL: ${e.message}`,
+                        icon: `/assets/logo.svg`,
+                        timeout: 3000,
+                    });
+                }
+            }
+        });
+
+        rmWpBtn.addEventListener("click", async () => {
+            const currentWallpaper = await window.xen.wallpaper.get();
+            if (!currentWallpaper || currentWallpaper.startsWith("/assets/wallpaper.webp")) {
+                window.xen.notifications.spawn({
+                    title: "XenOS UI",
+                    description: "No custom wallpaper set to remove",
+                    icon: `/assets/logo.svg`,
+                    timeout: 2500,
+                });
+                return;
+            }
+
+            const confirmRemove = await window.xen.dialog.confirm({
+                title: "Confirm Removal",
+                body: "Are you sure you want to remove your wallpaper? This cannot be undone",
+            });
+
+            if (confirmRemove) {
+                try {
+                    const filenameMatch = currentWallpaper.match(/\/fs\/usr\/wallpapers\/(.+)$/);
+                    const filename = filenameMatch ? filenameMatch[1] : undefined;
+
+                    await window.xen.wallpaper.remove(filename);
+                    loadWallpapers();
+                    window.xen.notifications.spawn({
+                        title: "XenOS UI",
+                        description: "Wallpaper removed!",
+                        icon: `/assets/logo.svg`,
+                        timeout: 2500,
+                    });
+                } catch (e) {
+                    window.xen.notifications.spawn({
+                        title: "XenOS UI",
+                        description: `Failed to remove wallpaper: ${e.message}`,
+                        icon: `/assets/logo.svg`,
+                        timeout: 3000,
+                    });
+                }
+            }
+        });
+
         navItems.forEach((item) => {
             item.addEventListener("click", () => {
                 const id = item.dataset.section + "-section";
@@ -499,6 +636,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         section.classList.add("active");
                         if (item.dataset.section === "policy") {
                             loadPolicies(currentPolicy);
+                        } else if (item.dataset.section === "ui") {
+                            loadWallpapers();
                         } else {
                             resetPolicyEditor();
                         }
