@@ -148,7 +148,6 @@ export class Window {
                             }
                         });
                     `);
-
                 }
             };
         } else if (this.props.content) {

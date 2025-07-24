@@ -38,7 +38,6 @@ body {
 .app-container {
     display: flex;
     width: 100%;
-    max-width: 1200px;
     height: 100vh;
     background-color: var(--ctp-base);
     border-radius: 12px;
@@ -204,6 +203,113 @@ button.danger:hover {
     padding: 20px 0;
 }
 
+.policy-browser {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.policy-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#current-policy-path {
+    flex-grow: 1;
+    background-color: var(--ctp-surface1);
+    border: 1px solid var(--ctp-mantle);
+    color: var(--ctp-subtext1);
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+.icon-button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+}
+
+.policy-list {
+    background-color: var(--ctp-surface0);
+    border-radius: 8px;
+    padding: 10px;
+    min-height: 150px;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--ctp-surface1);
+}
+
+.policy-list-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.15s ease;
+    gap: 10px;
+}
+
+.policy-list-item:hover {
+    background-color: var(--ctp-mantle);
+}
+
+.policy-list-item.selected {
+    background-color: var(--ctp-surface1);
+    color: var(--ctp-text);
+}
+
+.policy-list-item i {
+    font-size: 1em;
+    color: var(--ctp-subtext1);
+}
+
+.policy-list-item span {
+    flex-grow: 1;
+}
+
+.policy-list-item.folder i {
+    color: var(--ctp-yellow);
+}
+
+.policy-editor {
+    width: 100%;
+    height: 250px;
+    background-color: var(--ctp-surface0);
+    border: 1px solid var(--ctp-surface1);
+    border-radius: 8px;
+    padding: 15px;
+    color: var(--ctp-text);
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 0.95em;
+    resize: vertical;
+    outline: none;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.policy-editor:focus {
+    border-color: var(--ctp-pink);
+    box-shadow: 0 0 0 3px rgba(245, 189, 230, 0.3);
+}
+
+.policy-editor-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.policy-editor-actions button {
+    width: 100%;
+}
+
 @media (max-width: 768px) {
     .app-container {
         flex-direction: column;
@@ -277,6 +383,19 @@ button.danger:hover {
         flex-direction: column;
         gap: 10px;
         width: 100%;
+    }
+
+    .policy-controls {
+        flex-wrap: wrap;
+    }
+
+    #current-policy-path {
+        flex-basis: 100%;
+        margin-bottom: 10px;
+    }
+
+    .icon-button {
+        flex-grow: 1;
     }
 }
 

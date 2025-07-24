@@ -1,62 +1,416 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     function main() {
-        const wispUrl = document.getElementById('wisp-url');
-        const saveWispBtn = document.getElementById('save-wisp-url');
-        const updateBtn = document.getElementById('check-updates');
-        const resetBtn = document.getElementById('reset-instance');
+        const wispIn = document.getElementById("wisp-url");
+        const saveWispBtn = document.getElementById("save-wisp-url");
+        const updateBtn = document.getElementById("check-updates");
+        const resetBtn = document.getElementById("reset-instance");
 
-        const navItems = document.querySelectorAll('.nav-item');
-        const sections = document.querySelectorAll('.section');
+        const navItems = document.querySelectorAll(".nav-item");
+        const sections = document.querySelectorAll(".section");
 
-        try {
-            const settings = window.xen.settings.get('network-settings');
+        const policyPath = document.getElementById("current-policy-path");
+        const navBack = document.getElementById("nav-back");
+        const createPolicyBtn = document.getElementById("create-policy-btn");
+        const policyList = document.getElementById("policy-list");
+        const policyContent = document.getElementById("policy-content");
+        const savePolicyBtn = document.getElementById("save-policy-btn");
+        const rmPolicy = document.getElementById("delete-policy-btn");
 
-            if (settings && settings.url) {
-                wispUrl.value = settings.url;
-            }
-        } catch (e) {
-            console.error('Failed to load Wisp URL:', e);
+        const POLICY_ROOT = "/usr/policies/";
+        let currentPolicy = POLICY_ROOT;
+        let selectedPath = null;
+        let isPolicyFile = false;
+
+        function resetPolicyEditor() {
+            selectedPath = null;
+            isPolicyFile = false;
+            policyContent.value = "";
+            policyContent.disabled = true;
+            savePolicyBtn.disabled = true;
+            rmPolicy.disabled = true;
         }
 
-        navItems.forEach((item) => {
-            item.addEventListener('click', () => {
-                const id = item.dataset.section + '-section';
+        async function loadPolicies(path) {
+            policyList.innerHTML = '<p class="wip-message">Loading policies...</p>';
+            policyPath.value = path;
+            resetPolicyEditor();
 
-                navItems.forEach((nav) => nav.classList.remove('active'));
-                item.classList.add('active');
+            navBack.disabled = path === POLICY_ROOT;
 
-                sections.forEach((section) => {
-                    if (section.id === id) {
-                        section.classList.add('active');
-                    } else {
-                        section.classList.remove('active');
+            try {
+                const exists = await window.xen.fs.exists(path);
+                if (!exists) {
+                    await window.xen.fs.mkdir(path);
+                }
+
+                let entries = await window.xen.fs.list(path);
+                policyList.innerHTML = "";
+
+                if (entries.length === 0 && path === POLICY_ROOT) {
+                    try {
+                        await window.xen.policy.getPolicy("global");
+                        await window.xen.policy.getPolicy("network");
+                        entries = await window.xen.fs.list(path);
+                    } catch (e) {
+                        window.xen.notifications.spawn({
+                            title: "XenOS Policy",
+                            description: `Failed to create default policies: ${e.message}`,
+                            icon: `/assets/logo.svg`,
+                            timeout: 5000,
+                        });
+                    }
+                }
+
+                if (entries.length === 0) {
+                    policyList.innerHTML = '<p class="wip-message">This folder is empty</p>';
+                    return;
+                }
+
+                const filteredEntries = entries.filter((e) => {
+                    if (path === POLICY_ROOT) {
+                        return e.isDirectory;
+                    }
+                    return e.isDirectory || (e.isFile && e.name.endsWith(".json"));
+                });
+
+                if (filteredEntries.length === 0) {
+                    policyList.innerHTML =
+                        '<p class="wip-message">No policies found in this folder</p>';
+                    return;
+                }
+
+                filteredEntries.sort((a, b) => {
+                    if (a.isDirectory && !b.isDirectory) return -1;
+                    if (!a.isDirectory && b.isDirectory) return 1;
+                    return a.name.localeCompare(b.name);
+                });
+
+                filteredEntries.forEach((entry) => {
+                    const isDir = entry.isDirectory;
+                    const isFile = entry.isFile;
+                    const entryPath = `${path}${entry.name}`;
+
+                    const itemDiv = document.createElement("div");
+                    itemDiv.classList.add("policy-list-item");
+                    itemDiv.dataset.path = entryPath;
+                    itemDiv.dataset.isDirectory = isDir.toString();
+                    itemDiv.dataset.isFile = isFile.toString();
+
+                    const icon = document.createElement("i");
+                    icon.classList.add("fas", isDir ? "fa-folder" : "fa-file-alt");
+
+                    if (isDir) {
+                        itemDiv.classList.add("folder");
+                    }
+
+                    const span = document.createElement("span");
+                    span.textContent = entry.name;
+
+                    itemDiv.append(icon, span);
+                    policyList.appendChild(itemDiv);
+
+                    itemDiv.addEventListener("click", async () => {
+                        document
+                            .querySelectorAll(".policy-list-item")
+                            .forEach((el) => el.classList.remove("selected"));
+                        itemDiv.classList.add("selected");
+
+                        resetPolicyEditor();
+
+                        selectedPath = entryPath;
+                        rmPolicy.disabled = false;
+
+                        if (isDir) {
+                            currentPolicy = `${entryPath}/`;
+                            await loadPolicies(currentPolicy);
+                        } else {
+                            isPolicyFile = true;
+                            policyContent.disabled = false;
+                            savePolicyBtn.disabled = false;
+
+                            try {
+                                const content = await window.xen.fs.read(
+                                    selectedPath,
+                                    "text",
+                                );
+                                try {
+                                    policyContent.value = JSON.stringify(
+                                        JSON.parse(content),
+                                        null,
+                                        4,
+                                    );
+                                } catch (e) {
+                                    policyContent.value = content;
+                                    window.xen.notifications.spawn({
+                                        title: "XenOS Policy",
+                                        description: `Warning: ${entry.name} is not valid JSON`,
+                                        icon: `/assets/logo.svg`,
+                                        timeout: 3000,
+                                    });
+                                }
+                            } catch (e) {
+                                policyContent.value = `Error reading file: ${e.message}`;
+                                window.xen.notifications.spawn({
+                                    title: "XenOS Policy",
+                                    description: `Failed to read ${entry.name}: ${e.message}`,
+                                    icon: `/assets/logo.svg`,
+                                    timeout: 3000,
+                                });
+                            }
+                        }
+                    });
+                });
+            } catch (e) {
+                policyList.innerHTML = `<p class="wip-message">Failed to load policies: ${e.message}</p>`;
+                window.xen.notifications.spawn({
+                    title: "XenOS Policy",
+                    description: `Failed to directory: ${e.message}`,
+                    icon: `/assets/logo.svg`,
+                    timeout: 3000,
+                });
+            }
+        }
+
+        async function savePolicy() {
+            if (!selectedPath || !isPolicyFile) {
+                window.xen.notifications.spawn({
+                    title: "XenOS Policy",
+                    description: "No policy file selected",
+                    icon: `/assets/logo.svg`,
+                    timeout: 2500,
+                });
+                return;
+            }
+
+            try {
+                const content = JSON.stringify(
+                    JSON.parse(policyContent.value),
+                    null,
+                    2,
+                );
+                await window.xen.fs.write(selectedPath, content);
+                window.xen.notifications.spawn({
+                    title: "XenOS Policy",
+                    description: "Policy saved successfully!",
+                    icon: `/assets/logo.svg`,
+                    timeout: 2500,
+                });
+            } catch (e) {
+                window.xen.notifications.spawn({
+                    title: "XenOS Policy",
+                    description: `Failed to save policy: ${e.message}`,
+                    icon: `/assets/logo.svg`,
+                    timeout: 4000,
+                });
+            }
+        }
+
+        async function deletePolicy() {
+            if (!selectedPath) {
+                window.xen.notifications.spawn({
+                    title: "XenOS Policy",
+                    description: "No file/folder selected",
+                    icon: `/assets/logo.svg`,
+                    timeout: 2500,
+                });
+                return;
+            }
+
+            const selectedEl = policyList.querySelector(
+                `.policy-list-item[data-path="${selectedPath}"]`,
+            );
+            if (!selectedEl) {
+                window.xen.notifications.spawn({
+                    title: "XenOS Policy",
+                    description: "Error: Selected item not found in list",
+                    icon: `/assets/logo.svg`,
+                    timeout: 2500,
+                });
+                return;
+            }
+
+            const isDir = selectedEl.dataset.isDirectory === "true";
+            const name = selectedEl.textContent.trim();
+
+            const confirmMsg = isDir
+                ? `Are you sure you want to delete the folder "${name}"? This cannot be undone`
+                : `Are you sure you want to delete the file "${name}"? This cannot be undone`;
+
+            await window.xen.dialog
+                .confirm({
+                    title: "Confirm Deletion",
+                    body: confirmMsg,
+                })
+                .then(async (res) => {
+                    if (res === true) {
+                        try {
+                            await window.xen.fs.rm(selectedPolicyPath);
+                            window.xen.notifications.spawn({
+                                title: "XenOS Policy",
+                                description: `${isDir ? "Folder" : "File"} deleted: ${name}`,
+                                icon: `/assets/logo.svg`,
+                                timeout: 2500,
+                            });
+                            loadPolicies(currentPolicy);
+                        } catch (e) {
+                            window.xen.notifications.spawn({
+                                title: "XenOS Policy",
+                                description: `Failed to delete ${name}: ${e.message}`,
+                                icon: `/assets/logo.svg`,
+                                timeout: 3000,
+                            });
+                        }
                     }
                 });
+        }
+
+        async function createPolicy() {
+            let promptBody = "";
+            let placeholder = "";
+            let canCreateFolder = true;
+            let canCreateFile = false;
+
+            if (currentPolicy === POLICY_ROOT) {
+                promptBody = 'Enter a policy type (view documentation for more info)';
+                placeholder = "";
+                canCreateFile = false;
+            } else {
+                promptBody =
+                    'Enter a name for the policy (Ex. custom.json)';
+                placeholder = "custom.json";
+                canCreateFile = true;
+            }
+
+            const name = await window.xen.dialog.prompt({
+                title: "Create New Policy Entry",
+                body: promptBody,
+                placeholder: placeholder,
             });
+
+            if (!name) return;
+
+            const safeName = name.trim().replace(/[^a-zA-Z0-9-._/]/g, "");
+            if (!safeName) {
+                window.xen.notifications.spawn({
+                    title: "XenOS Policy",
+                    description: "Invalid name provided",
+                    icon: `/assets/logo.svg`,
+                    timeout: 2500,
+                });
+                return;
+            }
+
+            const newPath = `${currentPolicy}${safeName}`;
+            const isFolderAttempt = safeName.endsWith("/");
+            const isFileAttempt = !isFolderAttempt;
+
+            if (isFolderAttempt && !canCreateFolder) {
+                window.xen.notifications.spawn({
+                    title: "XenOS Policy",
+                    description: "Cannot create folders here",
+                    icon: `/assets/logo.svg`,
+                    timeout: 4000,
+                });
+                return;
+            }
+            if (isFileAttempt && !canCreateFile) {
+                window.xen.notifications.spawn({
+                    title: "XenOS Policy",
+                    description: "Only folders can be created in /usr/policies/",
+                    icon: `/assets/logo.svg`,
+                    timeout: 4000,
+                });
+                return;
+            }
+            if (isFileAttempt && !safeName.endsWith(".json")) {
+                window.xen.notifications.spawn({
+                    title: "XenOS Policy",
+                    description: "Only JSON files can be created",
+                    icon: `/assets/logo.svg`,
+                    timeout: 4000,
+                });
+                return;
+            }
+
+            try {
+                if (isFolderAttempt) {
+                    await window.xen.fs.mkdir(newPath);
+                    window.xen.notifications.spawn({
+                        title: "XenOS Policy",
+                        description: `Folder created: ${safeName}`,
+                        icon: `/assets/logo.svg`,
+                        timeout: 2500,
+                    });
+                } else {
+                    const initialContent = JSON.stringify({}, null, 2);
+                    await window.xen.fs.write(newPath, initialContent);
+                    window.xen.notifications.spawn({
+                        title: "XenOS Policy",
+                        description: `File created: ${safeName}`,
+                        icon: `/assets/logo.svg`,
+                        timeout: 2500,
+                    });
+                }
+                loadPolicies(currentPolicy);
+            } catch (e) {
+                window.xen.notifications.spawn({
+                    title: "XenOS Policy",
+                    description: `Failed to create ${safeName}: ${e.message}`,
+                    icon: `/assets/logo.svg`,
+                    timeout: 3000,
+                });
+            }
+        }
+
+        navBack.addEventListener("click", () => {
+            if (currentPolicy === POLICY_ROOT) {
+                return;
+            }
+
+            const parts = currentPolicy.split("/").filter(Boolean);
+            parts.pop();
+
+            currentPolicy = "/" + parts.join("/") + (parts.length > 0 ? "/" : "");
+
+            if (
+                !currentPolicy.startsWith(POLICY_ROOT) ||
+                currentPolicy.split("/").filter(Boolean).length <
+                POLICY_ROOT.split("/").filter(Boolean).length
+            ) {
+                currentPolicy = POLICY_ROOT;
+            }
+
+            loadPolicies(currentPolicy);
         });
 
-        saveWispBtn.addEventListener('click', async () => {
-            const url = wispUrl.value.trim();
+        savePolicyBtn.addEventListener("click", savePolicy);
+        rmPolicy.addEventListener("click", deletePolicy);
+        createPolicyBtn.addEventListener("click", createPolicy);
 
+        try {
+            const settings = window.xen.settings.get("network-settings");
+            if (settings && settings.url) {
+                wispIn.value = settings.url;
+            }
+        } catch (e) { }
+
+        saveWispBtn.addEventListener("click", async () => {
+            const url = wispIn.value.trim();
             if (url) {
                 try {
-                    const s = window.xen.settings.get('network-settings');
+                    const s = window.xen.settings.get("network-settings");
                     s.url = url;
-
-                    window.xen.settings.set('network-settings', s);
+                    window.xen.settings.set("network-settings", s);
                     window.xen.net.setUrl(url);
-
                     window.xen.notifications.spawn({
-                        title: 'XenOS',
+                        title: "XenOS",
                         description: `Wisp URL set to: ${url}`,
                         icon: `/assets/logo.svg`,
                         timeout: 2500,
                     });
                 } catch (e) {
-                    console.error('Error setting Wisp URL:', e);
-
                     window.xen.notifications.spawn({
-                        title: 'XenOS',
+                        title: "XenOS",
                         description: `Failed to set Wisp URL: ${e.message}`,
                         icon: `/assets/logo.svg`,
                         timeout: 3000,
@@ -64,30 +418,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else {
                 const defaultUrl =
-                    (location.protocol === 'https:' ? 'wss' : 'ws') +
-                    '://' +
+                    (location.protocol === "https:" ? "wss" : "ws") +
+                    "://" +
                     location.host +
-                    '/wisp/';
+                    "/wisp/";
                 try {
-                    const s = window.xen.settings.get('network-settings');
+                    const s = window.xen.settings.get("network-settings");
                     s.url = defaultUrl;
-
-                    window.xen.settings.set('network-settings', s);
+                    window.xen.settings.set("network-settings", s);
                     window.xen.net.setUrl(defaultUrl);
-
-                    wispUrl.value = defaultUrl;
-
+                    wispIn.value = defaultUrl;
                     window.xen.notifications.spawn({
-                        title: 'XenOS',
+                        title: "XenOS",
                         description: `Wisp URL reset to default: ${defaultUrl}`,
                         icon: `/assets/logo.svg`,
                         timeout: 2500,
                     });
                 } catch (e) {
-                    console.error('Error resetting Wisp URL to default:', e);
-
                     window.xen.notifications.spawn({
-                        title: 'XenOS',
+                        title: "XenOS",
                         description: `Failed to reset Wisp URL to default: ${e.message}`,
                         icon: `/assets/logo.svg`,
                         timeout: 3000,
@@ -96,14 +445,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        updateBtn.addEventListener('click', async () => {
+        updateBtn.addEventListener("click", async () => {
             try {
-                window.xen.settings.remove('build-cache');
-                window.parent.postMessage({ type: 'reload-site' }, '*');
+                window.xen.settings.remove("build-cache");
+                window.parent.postMessage({ type: "reload-site" }, "*");
             } catch (e) {
-                console.error('Error checking for updates:', e);
                 window.xen.notifications.spawn({
-                    title: 'XenOS',
+                    title: "XenOS",
                     description: `Failed to check for updates: ${e.message}`,
                     icon: `/assets/logo.svg`,
                     timeout: 3000,
@@ -111,30 +459,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        resetBtn.addEventListener('click', async () => {
+        resetBtn.addEventListener("click", async () => {
             await window.xen.dialog
                 .confirm({
-                    title: 'XenOS',
-                    body: 'Are you sure you would like to reset your instance? This will delete ALL of your files and settings.',
+                    title: "XenOS",
+                    body: "Are you sure you would like to reset your instance? This will delete ALL of your files and settings",
                 })
                 .then(async (res) => {
                     if (res === true) {
                         try {
-                            localStorage.removeItem('xen-settings');
+                            localStorage.removeItem("xen-settings");
                             await window.xen.fs.wipe();
-                            const registration =
-                                await navigator.serviceWorker.getRegistration();
-                            if (registration) {
-                                await registration.unregister();
+                            const reg = await navigator.serviceWorker.getRegistration();
+                            if (reg) {
+                                await reg.unregister();
                             }
-                            window.parent.postMessage(
-                                { type: 'reload-site' },
-                                '*',
-                            );
+                            window.parent.postMessage({ type: "reload-site" }, "*");
                         } catch (e) {
-                            console.error('Error resetting instance:', e);
                             window.xen.notifications.spawn({
-                                title: 'XenOS',
+                                title: "XenOS",
                                 description: `Failed to reset instance: ${e.message}`,
                                 icon: `/assets/logo.svg`,
                                 timeout: 3000,
@@ -144,7 +487,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         });
 
-        document.querySelector('.nav-item.active').click();
+        navItems.forEach((item) => {
+            item.addEventListener("click", () => {
+                const id = item.dataset.section + "-section";
+
+                navItems.forEach((nav) => nav.classList.remove("active"));
+                item.classList.add("active");
+
+                sections.forEach((section) => {
+                    if (section.id === id) {
+                        section.classList.add("active");
+                        if (item.dataset.section === "policy") {
+                            loadPolicies(currentPolicy);
+                        } else {
+                            resetPolicyEditor();
+                        }
+                    } else {
+                        section.classList.remove("active");
+                    }
+                });
+            });
+        });
+
+        document.querySelector(".nav-item.active").click();
     }
 
     setTimeout(() => {

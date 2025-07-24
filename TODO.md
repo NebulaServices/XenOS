@@ -19,5 +19,5 @@
 
 - Taskbar
     - Pinned entries
-
+    
 - App Launcher dragging is buggy

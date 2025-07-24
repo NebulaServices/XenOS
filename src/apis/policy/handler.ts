@@ -8,7 +8,7 @@ function matchesPattern(patterns: (string | RegExp)[] | "*", value: string): boo
     }
 
     if (!Array.isArray(patterns)) {
-        return false; 
+        return false;
     }
 
     return patterns.some((pattern) =>
@@ -20,9 +20,24 @@ export async function networkHandler(url: URL): Promise<boolean> {
     const defaultPolicy: NetworkPolicy = getDefault('network') as NetworkPolicy;
 
     const policy = { ...defaultPolicy, ...(await getPolicy("network")) };
+    let rewrittenPolicy: NetworkPolicy = policy;
+
+    if (policy.domains.denied instanceof Array) {
+        rewrittenPolicy.domains.denied = policy.domains.denied.map((domain: string) => {
+            const hostname = new URL(domain).hostname;
+            return hostname;
+        });
+    }
+
+    if (policy.domains.allowed instanceof Array) {
+        rewrittenPolicy.domains.allowed = policy.domains.allowed.map((domain: string) => {
+            const hostname = new URL(domain).hostname;
+            return hostname;
+        });
+    }
+
     const { ports, ips, domains, denyHTTP } = policy;
     const port = Number(url.port) || (url.protocol === "https:" ? 443 : 80);
-
 
     if (denyHTTP && url.protocol === "http:") return false;
     if (ports.allowed !== "*" && !ports.allowed.includes(port)) return false;
@@ -36,7 +51,9 @@ export async function networkHandler(url: URL): Promise<boolean> {
 }
 
 export async function repoHandler(url: URL): Promise<boolean> {
-    const policy = await getPolicy('repo');
+    const defaultPolicy: RepoPolicy = getDefault('repo') as RepoPolicy;
+    const policy = { ...defaultPolicy, ...(await getPolicy("repo")) };
+
     let rewrittenPolicy: RepoPolicy = policy;
 
     if (policy.denied instanceof Array) {
@@ -62,7 +79,8 @@ export async function repoHandler(url: URL): Promise<boolean> {
 }
 
 export async function packageHandler(id: string, type: 'install' | 'uninstall'): Promise<boolean> {
-    const policy: PackagePolicy = await getPolicy('package');
+    const defaultPolicy: PackagePolicy = getDefault('package') as PackagePolicy;
+    const policy = { ...defaultPolicy, ...(await getPolicy("package")) };
 
     if (type == 'install') {
         if (policy.allowed !== "*" && !policy.allowed.includes(id)) return false;
