@@ -26,7 +26,7 @@ function build() {
 
     console.log('Building...');
 
-    const proc = spawn('bash', ['./scripts/build/build.sh'], {
+    const proc = spawn('bash', ['./scripts/build.sh'], {
         stdio: 'pipe',
         cwd: process.cwd()
     });

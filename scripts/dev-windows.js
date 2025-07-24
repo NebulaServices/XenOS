@@ -26,7 +26,7 @@ function build() {
 
     console.log('Building...');
 
-    const proc = spawn('pwsh', ['-File', './scripts/build/build.ps1'], {
+    const proc = spawn('pwsh', ['-File', './scripts/build.ps1'], {
         stdio: 'pipe',
         cwd: process.cwd()
     });
