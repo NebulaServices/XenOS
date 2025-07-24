@@ -1,7 +1,7 @@
 export interface SystrayOpts {
 	id: string;
 	icon: string;
-	tooltip: string;
+	tooltip?: string;
 	onLeftClick?: (ev: MouseEvent) => void;
 	onRightClick?: (ev: MouseEvent) => void;
 }

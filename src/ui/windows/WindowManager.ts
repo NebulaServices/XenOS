@@ -1,4 +1,4 @@
-import { Window, WindowOpts } from './Window';
+import { Window, WindowOpts } from "./Window";
 
 export class WindowManager {
     public windows: Window[] = [];
@@ -12,8 +12,8 @@ export class WindowManager {
     private activeClampZone: string | null = null;
 
     constructor() {
-        this.container = document.createElement('div');
-        this.container.id = 'wm-desktop';
+        this.container = document.createElement("div");
+        this.container.id = "wm-desktop";
 
         document.body.appendChild(this.container);
         this.setupClampZones();
@@ -22,12 +22,18 @@ export class WindowManager {
 
     private setupClampZones(): void {
         const zones = [
-            'top', 'bottom', 'left', 'right',
-            'top-left', 'top-right', 'bottom-left', 'bottom-right'
+            "top",
+            "bottom",
+            "left",
+            "right",
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
         ];
 
-        zones.forEach(zone => {
-            const el = document.createElement('div');
+        zones.forEach((zone) => {
+            const el = document.createElement("div");
 
             el.className = `wm-clamp-zone wm-clamp-${zone}`;
             el.style.cssText = `
@@ -48,18 +54,24 @@ export class WindowManager {
     }
 
     private setupClampListeners(): void {
-        document.addEventListener('mousemove', (e) => {
+        document.addEventListener("mousemove", (e) => {
             if (!this.isDraggingWindow()) return;
+
+            const draggedWindow = this.getDraggedWindow();
+
+            if (draggedWindow && !draggedWindow.props.resizable) {
+                return;
+            }
 
             const zone = this.getClampZone(e.clientX, e.clientY);
             this.showClampZone(zone);
         });
 
-        document.addEventListener('mouseup', (e) => {
+        document.addEventListener("mouseup", (e) => {
             if (this.activeClampZone && this.isDraggingWindow()) {
                 const draggedWindow = this.getDraggedWindow();
 
-                if (draggedWindow) {
+                if (draggedWindow && draggedWindow.props.resizable) {
                     this.clampWindow(draggedWindow, this.activeClampZone);
                 }
             }
@@ -69,12 +81,14 @@ export class WindowManager {
     }
 
     private isDraggingWindow(): boolean {
-        return document.querySelector('.wm-window.dragging') !== null;
+        return document.querySelector(".wm-window.dragging") !== null;
     }
 
     private getDraggedWindow(): Window | null {
-        const draggedEl = document.querySelector('.wm-window.dragging') as HTMLDivElement;
-        return this.windows.find(w => w.el.window === draggedEl) || null;
+        const draggedEl = document.querySelector(
+            ".wm-window.dragging",
+        ) as HTMLDivElement;
+        return this.windows.find((w) => w.el.window === draggedEl) || null;
     }
 
     private getClampZone(x: number, y: number): string | null {
@@ -83,15 +97,16 @@ export class WindowManager {
         const h = window.innerHeight - (window as any).xen.taskBar.getHeight();
         const cornerThreshold = 100;
 
-        if (x < cornerThreshold && y < cornerThreshold) return 'top-left';
-        if (x > w - cornerThreshold && y < cornerThreshold) return 'top-right';
-        if (x < cornerThreshold && y > h - cornerThreshold) return 'bottom-left';
-        if (x > w - cornerThreshold && y > h - cornerThreshold) return 'bottom-right';
+        if (x < cornerThreshold && y < cornerThreshold) return "top-left";
+        if (x > w - cornerThreshold && y < cornerThreshold) return "top-right";
+        if (x < cornerThreshold && y > h - cornerThreshold) return "bottom-left";
+        if (x > w - cornerThreshold && y > h - cornerThreshold)
+            return "bottom-right";
 
-        if (y < threshold) return 'top';
-        if (y > h - threshold) return 'bottom';
-        if (x < threshold) return 'left';
-        if (x > w - threshold) return 'right';
+        if (y < threshold) return "top";
+        if (y > h - threshold) return "bottom";
+        if (x < threshold) return "left";
+        if (x > w - threshold) return "right";
 
         return null;
     }
@@ -110,34 +125,36 @@ export class WindowManager {
         zoneEl.style.top = `${bounds.y}px`;
         zoneEl.style.width = `${bounds.width}px`;
         zoneEl.style.height = `${bounds.height}px`;
-        zoneEl.style.opacity = '1';
+        zoneEl.style.opacity = "1";
     }
 
     private hideAllClampZones(): void {
-        this.clampZones.forEach(el => el.style.opacity = '0');
+        this.clampZones.forEach((el) => (el.style.opacity = "0"));
         this.activeClampZone = null;
     }
 
-    private getClampBounds(zone: string): { x: number, y: number, width: number, height: number } {
+    private getClampBounds(
+        zone: string,
+    ): { x: number; y: number; width: number; height: number } {
         const w = window.innerWidth;
         const h = window.innerHeight - (window as any).xen.taskBar.getHeight();
 
         switch (zone) {
-            case 'top':
+            case "top":
                 return { x: 0, y: 0, width: w, height: h / 2 };
-            case 'bottom':
+            case "bottom":
                 return { x: 0, y: h / 2, width: w, height: h / 2 };
-            case 'left':
+            case "left":
                 return { x: 0, y: 0, width: w / 2, height: h };
-            case 'right':
+            case "right":
                 return { x: w / 2, y: 0, width: w / 2, height: h };
-            case 'top-left':
+            case "top-left":
                 return { x: 0, y: 0, width: w / 2, height: h / 2 };
-            case 'top-right':
+            case "top-right":
                 return { x: w / 2, y: 0, width: w / 2, height: h / 2 };
-            case 'bottom-left':
+            case "bottom-left":
                 return { x: 0, y: h / 2, width: w / 2, height: h / 2 };
-            case 'bottom-right':
+            case "bottom-right":
                 return { x: w / 2, y: h / 2, width: w / 2, height: h / 2 };
             default:
                 return { x: 0, y: 0, width: 0, height: 0 };
@@ -145,6 +162,8 @@ export class WindowManager {
     }
 
     public clampWindow(win: Window, zone: string): void {
+        if (!win.props.resizable) return; // Only clamp resizable windows
+
         this.unclampWindow(win);
 
         win.og.clampWidth = win.props.width;
@@ -156,7 +175,7 @@ export class WindowManager {
         clampedInZone.push(win);
         this.clampedWindows.set(zone, clampedInZone);
 
-        win.el.window.classList.add('wm-clamped');
+        win.el.window.classList.add("wm-clamped");
         win.el.window.dataset.clampZone = zone;
 
         this.arrangeClampedWindows(zone);
@@ -167,10 +186,10 @@ export class WindowManager {
         if (!currentZone) return;
 
         const clampedInZone = this.clampedWindows.get(currentZone) || [];
-        const filtered = clampedInZone.filter(w => w !== win);
+        const filtered = clampedInZone.filter((w) => w !== win);
         this.clampedWindows.set(currentZone, filtered);
 
-        win.el.window.classList.remove('wm-clamped');
+        win.el.window.classList.remove("wm-clamped");
         delete win.el.window.dataset.clampZone;
 
         if (win.og.clampWidth !== undefined) {
@@ -198,8 +217,8 @@ export class WindowManager {
         if (windows.length === 0) return;
 
         const bounds = this.getClampBounds(zone);
-        const isVerticalSplit = ['left', 'right'].includes(zone);
-        const isHorizontalSplit = ['top', 'bottom'].includes(zone);
+        const isVerticalSplit = ["left", "right"].includes(zone);
+        const isHorizontalSplit = ["top", "bottom"].includes(zone);
 
         windows.forEach((win, i) => {
             let x = bounds.x;
@@ -209,10 +228,10 @@ export class WindowManager {
 
             if (isVerticalSplit && windows.length > 1) {
                 height = bounds.height / windows.length;
-                y = bounds.y + (i * height);
+                y = bounds.y + i * height;
             } else if (isHorizontalSplit && windows.length > 1) {
                 width = bounds.width / windows.length;
-                x = bounds.x + (i * width);
+                x = bounds.x + i * width;
             } else if (windows.length > 1) {
                 const cols = Math.ceil(Math.sqrt(windows.length));
                 const rows = Math.ceil(windows.length / cols);
@@ -221,8 +240,8 @@ export class WindowManager {
 
                 width = bounds.width / cols;
                 height = bounds.height / rows;
-                x = bounds.x + (col * width);
-                y = bounds.y + (row * height);
+                x = bounds.x + col * width;
+                y = bounds.y + row * height;
             }
 
             win.props.x = x;
@@ -255,14 +274,16 @@ export class WindowManager {
     }
 
     focus(win: Window): void {
-        this.windows.forEach((w) => { if (w !== win && w.isFocused) w._setFocusState(false); });
+        this.windows.forEach((w) => {
+            if (w !== win && w.isFocused) w._setFocusState(false);
+        });
 
         win.el.window.style.zIndex = String(this.nzi++);
         win._setFocusState(true);
 
         this.windows.sort((a, b) => {
-            const zA = parseInt(a.el.window.style.zIndex || '0');
-            const zB = parseInt(b.el.window.style.zIndex || '0');
+            const zA = parseInt(a.el.window.style.zIndex || "0");
+            const zB = parseInt(b.el.window.style.zIndex || "0");
             return zA - zB;
         });
 
