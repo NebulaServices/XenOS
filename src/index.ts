@@ -93,6 +93,14 @@ window.addEventListener('load', async () => {
         });
     }, 600);
 
-    await window.xen.initSystem();
+    await window.xen.initSystem();    
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'reload-site') {
+            window.location.reload();
+        }
+    });
 });
 

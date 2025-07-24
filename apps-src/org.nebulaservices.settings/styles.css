@@ -4,6 +4,7 @@
     --ctp-red: #f38ba8;
     --ctp-text: #cdd6f4;
     --ctp-subtext1: #bac2de;
+    --ctp-subtext0: #a6adc8;
     --ctp-surface1: #45475a;
     --ctp-base: #1e1e2e;
     --ctp-mantle: #181825;
@@ -25,41 +26,99 @@ body {
     margin: 0;
     display: flex;
     justify-content: center;
+    align-items: flex-start;
     min-height: 100vh;
     background-color: var(--ctp-base);
     color: var(--ctp-text);
-    padding: 10px;
+    padding: 0;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
-.container {
+.app-container {
+    display: flex;
     width: 100%;
+    max-width: 1200px;
+    height: 100vh;
     background-color: var(--ctp-base);
     border-radius: 12px;
-    padding: 15px;
-    /*box-shadow:
-        0 8px 16px rgba(0, 0, 0, 0.2),
-        0 4px 8px rgba(0, 0, 0, 0.15);*/
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background-color: var(--ctp-crust);
+    padding: 20px 0;
+    border-right: 1px solid var(--ctp-mantle);
+    overflow-y: auto;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    color: var(--ctp-subtext1);
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.nav-item:hover {
+    background-color: var(--ctp-mantle);
+    color: var(--ctp-text);
+}
+
+.nav-item.active {
+    background-color: var(--ctp-mantle);
+    color: var(--ctp-text);
+    border-left: 3px solid var(--ctp-pink);
+    padding-left: 17px;
+}
+
+.nav-item i {
+    margin-right: 12px;
+    font-size: 1.1em;
+}
+
+.content-area {
+    flex-grow: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background-color: var(--ctp-base);
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
 }
 
 h2 {
     color: var(--ctp-rosewater);
-    font-size: 1.5em;
+    font-size: 1.8em;
     font-weight: 600;
-    margin-top: 30px;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--ctp-surface1);
-}
-
-h2:first-of-type {
     margin-top: 0;
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--ctp-surface1);
 }
 
 .setting-item {
     display: flex;
     align-items: center;
-    padding: 5px 0;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--ctp-mantle);
 }
 
 .setting-item:last-of-type {
@@ -135,4 +194,98 @@ button.danger {
 
 button.danger:hover {
     background-color: #ed7a9b;
+}
+
+.wip-message {
+    font-style: italic;
+    color: var(--ctp-subtext0);
+    flex-grow: 1;
+    text-align: center;
+    padding: 20px 0;
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+        height: auto;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--ctp-mantle);
+        padding: 10px 0;
+    }
+
+    .sidebar ul {
+        display: flex;
+        overflow-x: auto;
+        padding: 0 10px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-item {
+        flex-direction: column;
+        text-align: center;
+        padding: 8px 10px;
+        min-width: 80px;
+        font-size: 0.9em;
+    }
+
+    .nav-item i {
+        margin-right: 0;
+        margin-bottom: 5px;
+        font-size: 1.2em;
+    }
+
+    .nav-item.active {
+        border-left: none;
+        border-bottom: 3px solid var(--ctp-pink);
+        padding-left: 10px;
+        padding-bottom: 5px;
+    }
+
+    .content-area {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+
+    .setting-item {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px 0;
+    }
+
+    label {
+        align-self: flex-start;
+        margin-bottom: 8px;
+    }
+
+    input[type='text'],
+    button {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-item {
+        min-width: 60px;
+    }
+
+    .content-area {
+        padding: 15px;
+    }
 }

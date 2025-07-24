@@ -129,7 +129,9 @@ export class Window {
             );
 
             this.el.content.onload = () => {
-                Object.assign((this.el.content as HTMLIFrameElement).contentWindow, {
+                const iframe = (this.el.content as HTMLIFrameElement);
+
+                Object.assign(iframe.contentWindow, {
                     xen: (window as any).xen,
                 });
             };

@@ -5,11 +5,8 @@
 - Core apps
     - Browser
     - File manager
-    - Task manager
     - Repo store
     - Explore
-    - Policy editor
-    - (basic) themes (wallpaper)
     - Text editor
 
 - Context menu
@@ -24,5 +21,3 @@
     - Pinned entries
 
 - App Launcher dragging is buggy
-
-- Need postMessage communication for `location.reload()` and settings app needs an icon
