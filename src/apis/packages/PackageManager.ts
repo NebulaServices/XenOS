@@ -111,7 +111,7 @@ export class PackageManager {
                     icon: "/assets/logo.svg",
                     timeout: 2500
                 });
-    
+
                 throw new Error('Package blocked by policy');
             }
 
@@ -121,7 +121,7 @@ export class PackageManager {
             const regs = await this.getRegs(registryType);
 
             if (regs.includes(manifest.id)) {
-                await this.remove(manifest.id);
+                await this.remove(manifest.id, 'update');
             }
 
             const pkgPath = `${currentPath}/${manifest.id}`;
@@ -224,18 +224,21 @@ export class PackageManager {
         }
     }
 
-    public async remove(packageId: string): Promise<void> {
+    public async remove(packageId: string, type?: string): Promise<void> {
+        console.log(type);
         const fs = window.xen.fs;
 
-        if (!await packageHandler(packageId, 'uninstall')) {
-            window.xen.notifications.spawn({
-                title: "XenOS",
-                description: "This package is force install by your policy and cannot be uninstalled",
-                icon: "/assets/logo.svg",
-                timeout: 2500
-            });
+        if (!type) {
+            if (!await packageHandler(packageId, 'uninstall')) {
+                window.xen.notifications.spawn({
+                    title: "XenOS",
+                    description: "This package is force install by your policy and cannot be uninstalled",
+                    icon: "/assets/logo.svg",
+                    timeout: 2500
+                });
 
-            throw new Error('Package is force installed by policy');
+                throw new Error('Package is force installed by policy');
+            }
         }
 
         try {

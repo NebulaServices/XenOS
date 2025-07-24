@@ -1,5 +1,3 @@
-// Please please PLEASE do NOT read this file
-
 import { Window } from '../windows/Window';
 import { PackageManager } from '../../apis/packages/PackageManager';
 import { AppLauncher } from './AppLauncher';
@@ -141,14 +139,23 @@ export class TaskBar {
             }
 
             this.batteryManager = await (navigator as any).getBattery();
-            this.updateBatteryDisplay(this.batteryManager.level, this.batteryManager.charging);
+            this.updateBatteryDisplay(
+                this.batteryManager.level,
+                this.batteryManager.charging,
+            );
 
             this.batteryManager.addEventListener('levelchange', () => {
-                this.updateBatteryDisplay(this.batteryManager.level, this.batteryManager.charging);
+                this.updateBatteryDisplay(
+                    this.batteryManager.level,
+                    this.batteryManager.charging,
+                );
             });
 
             this.batteryManager.addEventListener('chargingchange', () => {
-                this.updateBatteryDisplay(this.batteryManager.level, this.batteryManager.charging);
+                this.updateBatteryDisplay(
+                    this.batteryManager.level,
+                    this.batteryManager.charging,
+                );
             });
         } catch (err) {
             if (this.el.batteryModule) {
@@ -191,12 +198,12 @@ export class TaskBar {
         const time = now.toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
-            hour12: true
+            hour12: true,
         });
         const date = now.toLocaleDateString([], {
             month: '2-digit',
             day: '2-digit',
-            year: 'numeric'
+            year: 'numeric',
         });
 
         this.el.timeModule.innerHTML = `
@@ -222,7 +229,7 @@ export class TaskBar {
         const current = new Map<string, Window>();
         const items = new Map<string, HTMLDivElement>();
 
-        this.el.windowList.querySelectorAll('.taskbar-item').forEach(item => {
+        this.el.windowList.querySelectorAll('.taskbar-item').forEach((item) => {
             const id = (item as HTMLDivElement).dataset.id;
 
             if (id) {
@@ -241,7 +248,7 @@ export class TaskBar {
                     title: win.props.title,
                     icon: win.props.icon,
                     url: win.props.url,
-                    isOpen: true
+                    isOpen: true,
                 });
 
                 processed.add(win.props.url);
@@ -257,7 +264,7 @@ export class TaskBar {
             return a.title.localeCompare(b.title);
         });
 
-        const newItems = new Set(sorted.map(entry => entry.itemId));
+        const newItems = new Set(sorted.map((entry) => entry.itemId));
 
         items.forEach((item, id) => {
             if (!newItems.has(id)) {
@@ -265,11 +272,13 @@ export class TaskBar {
             }
         });
 
-        const animOut = this.el.windowList.querySelectorAll('.taskbar-item.animate-out');
+        const animOut = this.el.windowList.querySelectorAll(
+            '.taskbar-item.animate-out',
+        );
 
         this.el.windowList.innerHTML = '';
 
-        animOut.forEach(item => {
+        animOut.forEach((item) => {
             this.el.windowList.appendChild(item);
         });
 
@@ -285,15 +294,18 @@ export class TaskBar {
         });
     }
 
-    private createItem(entry: {
-        itemId: string;
-        instanceId: string | null;
-        appId: string;
-        title: string;
-        icon?: string;
-        url: string;
-        isOpen: boolean;
-    }, isNew: boolean = false): HTMLDivElement {
+    private createItem(
+        entry: {
+            itemId: string;
+            instanceId: string | null;
+            appId: string;
+            title: string;
+            icon?: string;
+            url: string;
+            isOpen: boolean;
+        },
+        isNew: boolean = false,
+    ): HTMLDivElement {
         const item = document.createElement('div');
         item.classList.add('taskbar-item');
         item.dataset.id = entry.itemId;
@@ -324,16 +336,24 @@ export class TaskBar {
 
         item.addEventListener('click', (e) => {
             if (!item.classList.contains('dragging')) {
-                this.handleClick(
-                    entry.instanceId,
-                    entry.appId,
-                    entry.title,
-                    entry.icon,
-                );
+                this.handleClick(entry.instanceId, entry.appId, entry.title, entry.icon);
             }
         });
 
+        this.setupTaskbarItemContextMenu(item, entry.itemId);
+
         return item;
+    }
+
+    private setupTaskbarItemContextMenu(item: HTMLElement, itemId: string): void {
+        window.xen.contextMenu.attach(item, {
+            root: [
+                {
+                    title: 'Close',
+                    onClick: () => this.closeWindow(itemId),
+                },
+            ],
+        });
     }
 
     private animateItemIn(item: HTMLDivElement): void {
@@ -407,7 +427,9 @@ export class TaskBar {
         const win = window.xen.wm.windows.find((win) => win.id === id);
 
         if (win) {
-            const item = this.el.windowList.querySelector(`[data-id="${id}"]`) as HTMLDivElement;
+            const item = this.el.windowList.querySelector(
+                `[data-id="${id}"]`,
+            ) as HTMLDivElement;
 
             if (item) {
                 this.animateItemOut(item);
@@ -440,7 +462,9 @@ export class TaskBar {
     }
 
     private handleDragStart = (e: DragEvent): void => {
-        const target = (e.target as HTMLElement).closest('.taskbar-item') as HTMLDivElement;
+        const target = (e.target as HTMLElement).closest(
+            '.taskbar-item',
+        ) as HTMLDivElement;
 
         if (!target || target.classList.contains('launcher-button')) {
             e.preventDefault();
@@ -482,9 +506,16 @@ export class TaskBar {
 
         if (!this.draggedItem || !this.dragPlaceholder) return;
 
-        const target = (e.target as HTMLElement).closest('.taskbar-item') as HTMLDivElement;
+        const target = (e.target as HTMLElement).closest(
+            '.taskbar-item',
+        ) as HTMLDivElement;
 
-        if (target && target !== this.draggedItem && !target.classList.contains('launcher-button') && !target.classList.contains('drag-placeholder')) {
+        if (
+            target &&
+            target !== this.draggedItem &&
+            !target.classList.contains('launcher-button') &&
+            !target.classList.contains('drag-placeholder')
+        ) {
             const targetRect = target.getBoundingClientRect();
             const mouseX = e.clientX;
             const deadzone = targetRect.width * 0.3;
@@ -549,7 +580,7 @@ export class TaskBar {
     }
 
     private clearDrops(): void {
-        this.el.windowList.querySelectorAll('.drag-over').forEach(item => {
+        this.el.windowList.querySelectorAll('.drag-over').forEach((item) => {
             item.classList.remove('drag-over');
         });
     }
@@ -575,7 +606,7 @@ export class TaskBar {
             clearInterval(this.timeInterval);
             this.timeInterval = null;
         }
-    
+
         this.systray.destroy();
     }
 }

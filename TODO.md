@@ -15,15 +15,15 @@
 
 - Context menu
     - Prevent right click on elements that dont have a context menu
+        - App launcher
+        - Desktop
+        - Window shell
     - Taskbar
         - Entries
-            - Close
             - Open
             - Pin
         - Show name
     - App launcher entries
-        - Open
-        - Uninstall
         - Pin
 
 - Taskbar
