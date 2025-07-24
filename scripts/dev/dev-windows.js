@@ -31,9 +31,8 @@ function build() {
         cwd: process.cwd()
     });
 
-    // let output = '';
+    let output = '';
 
-    /*
     proc.stdout.on('data', (data) => {
         output += data.toString();
         process.stdout.write(data);
@@ -43,7 +42,6 @@ function build() {
         output += data.toString();
         process.stderr.write(data);
     });
-    */
 
     proc.on('close', (code) => {
         building = false;
@@ -52,7 +50,7 @@ function build() {
             console.log('Build complete');
         } else {
             console.log('Build failed with code:', code);
-            // console.log('Output:', output.slice(-500));
+            console.log('Output:', output.slice(-500));
         }
 
         if (buildQueue) {
