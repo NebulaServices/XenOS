@@ -10,8 +10,8 @@ async function install(type: 'apps' | 'libs') {
         index = 3;
     }
 
-    if (!(await fs.exists(`/${type}`))) {
-        await fs.mkdir(`/${type}`);
+    if (!(await fs.exists(`/usr/${type}`))) {
+        await fs.mkdir(`/usr/${type}`);
     }
 
         if (Array.isArray(Object.entries(res)[index])) {

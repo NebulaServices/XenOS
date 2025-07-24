@@ -42,7 +42,7 @@ function mergePolicies(policies: any[]): any {
 }
 
 export async function getPolicy(policy: string): Promise<any> {
-    const folder = `/system/policies/${policy}`;
+    const folder = `/usr/policies/${policy}`;
     const exists = await window.xen.fs.exists(folder);
 
     if (!exists) {
@@ -63,7 +63,7 @@ export async function setPolicy(
     file: string,
     content: any,
 ): Promise<void> {
-    const folder = `/system/policies/${policy}`;
+    const folder = `/usr/policies/${policy}`;
     const path = `${folder}/${file}`;
 
     if (!(await window.xen.fs.exists(folder))) {

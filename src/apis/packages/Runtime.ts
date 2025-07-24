@@ -10,14 +10,14 @@ export class Runtime {
         let url: string;
 
         if (manifest.type != 'webview') {
-            url = new URL(manifest.source, `${location.origin}/fs/apps/${manifest.id}/`).href;
+            url = new URL(manifest.source, `${location.origin}/fs/usr/apps/${manifest.id}/`).href;
         } else {
             //@ts-ignore
             url = window.__uv$config.prefix + window.__uv$config.encodeUrl(manifest.source)
         }
 
         if (manifest.icon) {
-            icon = new URL(manifest.icon, `${location.origin}/fs/apps/${manifest.id}/`).href;
+            icon = new URL(manifest.icon, `${location.origin}/fs/usr/apps/${manifest.id}/`).href;
         } else {
             icon = '/assets/logo.svg';
         }
@@ -48,7 +48,7 @@ export class Runtime {
     }
 
     public async import(manifest: Manifest) {
-        const path = `/libs/${manifest.id}/${manifest.source}`;
+        const path = `/usr/libs/${manifest.id}/${manifest.source}`;
 
         try {
             const code = await window.xen.fs.read(path, 'text');

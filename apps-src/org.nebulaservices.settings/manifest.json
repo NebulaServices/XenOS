@@ -1,0 +1,17 @@
+{
+    "id": "org.nebulaservices.settings",
+    "version": "1.0.0",
+    "type": "app",
+    "source": "index.html",
+    "title": "Settings",
+    "icon": "logo.svg",
+    "maintainer": {
+        "name": "Nebula Services",
+        "email": "contact@nebulaservices.org",
+        "website": "https://nebulaservices.org"
+    },
+    "window": {
+        "width": "582px",
+        "height": "339px"
+    }
+}

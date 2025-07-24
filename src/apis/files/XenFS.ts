@@ -15,7 +15,7 @@ export class XenFS {
 
     private normalizePath(path: string): string {
         if (!path) return this.cwd;
-        if (path.startsWith("~")) path = "/root" + path.slice(1);
+        if (path.startsWith("~")) path = "/usr" + path.slice(1);
         if (!path.startsWith("/")) path = this.cwd + "/" + path;
 
         const parts = path.split("/").filter(Boolean);

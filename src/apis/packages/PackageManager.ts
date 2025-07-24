@@ -27,8 +27,8 @@ export interface Manifest {
 }
 
 export class PackageManager {
-    private appPath = '/apps';
-    private libPath = '/libs';
+    private appPath = '/usr/apps';
+    private libPath = '/usr/libs';
     private runtime: Runtime;
     private zip: JSZip;
 

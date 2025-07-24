@@ -3,7 +3,6 @@
 - OOBE 
 
 - Core apps
-    - Settings
     - Browser
     - File manager
     - Task manager
@@ -23,3 +22,7 @@
 
 - Taskbar
     - Pinned entries
+
+- App Launcher dragging is buggy
+
+- Need postMessage communication for `location.reload()` and settings app needs an icon

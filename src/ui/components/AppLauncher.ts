@@ -162,7 +162,7 @@ export class AppLauncher {
         entry.draggable = true;
 
         const icon = document.createElement('img');
-        icon.src = `/fs/apps/${app.id}/${app.icon}`;
+        icon.src = `/fs/usr/apps/${app.id}/${app.icon}`;
         icon.alt = app.title;
 
         const name = document.createElement('span');

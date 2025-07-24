@@ -1,0 +1,138 @@
+:root {
+    --ctp-rosewater: #f5e0dc;
+    --ctp-pink: #f5bde6;
+    --ctp-red: #f38ba8;
+    --ctp-text: #cdd6f4;
+    --ctp-subtext1: #bac2de;
+    --ctp-surface1: #45475a;
+    --ctp-base: #1e1e2e;
+    --ctp-mantle: #181825;
+    --ctp-crust: #11111b;
+}
+
+body {
+    font-family:
+        'Inter',
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Fira Sans',
+        'Droid Sans',
+        'Helvetica Neue',
+        sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--ctp-base);
+    color: var(--ctp-text);
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    background-color: var(--ctp-base);
+    border-radius: 12px;
+    padding: 15px;
+    /*box-shadow:
+        0 8px 16px rgba(0, 0, 0, 0.2),
+        0 4px 8px rgba(0, 0, 0, 0.15);*/
+}
+
+h2 {
+    color: var(--ctp-rosewater);
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ctp-surface1);
+}
+
+h2:first-of-type {
+    margin-top: 0;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.setting-item:last-of-type {
+    border-bottom: none;
+}
+
+.input-group {
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+label {
+    white-space: nowrap;
+    font-size: 1.05em;
+    color: var(--ctp-subtext1);
+    flex-shrink: 0;
+}
+
+input[type='text'] {
+    flex-grow: 1;
+    min-width: 150px;
+    padding: 10px 15px;
+    border: 1px solid var(--ctp-surface1);
+    border-radius: 8px;
+    background-color: var(--ctp-surface1);
+    color: var(--ctp-text);
+    font-size: 1em;
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+input[type='text']:focus {
+    border-color: var(--ctp-pink);
+    box-shadow: 0 0 0 3px rgba(245, 189, 230, 0.3);
+}
+
+button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: var(--ctp-pink);
+    color: var(--ctp-mantle);
+    font-weight: 600;
+    font-size: 0.95em;
+    transition:
+        background-color 0.2s ease,
+        transform 0.1s ease;
+    flex-shrink: 0;
+}
+
+button:hover {
+    background-color: #f5a9da;
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.button-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+button.danger {
+    background-color: var(--ctp-red);
+    color: var(--ctp-mantle);
+}
+
+button.danger:hover {
+    background-color: #ed7a9b;
+}
