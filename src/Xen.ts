@@ -78,5 +78,9 @@ export class Xen {
 
         this.wm.onCreated = () => this.taskBar.onWindowCreated();
         this.wm.onClosed = () => this.taskBar.onWindowClosed();
+
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
     }
 }

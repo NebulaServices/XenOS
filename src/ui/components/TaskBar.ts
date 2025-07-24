@@ -33,9 +33,10 @@ export class TaskBar {
     private timeInterval: number | null = null;
     private calendar: Calendar;
     private systray: Systray;
+    private showAppNames: boolean = false; 
 
     constructor() {
-        this.packageManager = new PackageManager();
+        this.packageManager = window.xen.packages;
 
         this.el.taskbar = document.createElement('div');
         this.el.windowList = document.createElement('div');
@@ -58,6 +59,7 @@ export class TaskBar {
         this.initBattery();
         this.initTime();
         this.attachListeners();
+        this.contextMenu();
     }
 
     public create(): void {
@@ -89,7 +91,9 @@ export class TaskBar {
             </svg>
         `;
 
-        this.el.launcherBtn.addEventListener('click', () => this.appLauncher.toggle());
+        this.el.launcherBtn.addEventListener('click', () =>
+            this.appLauncher.toggle(),
+        );
         this.el.windowList.classList.add('taskbar-windows');
         this.el.rightModules.classList.add('taskbar-right-modules');
 
@@ -104,6 +108,27 @@ export class TaskBar {
         this.el.taskbar.appendChild(this.el.launcherBtn);
         this.el.taskbar.appendChild(this.el.windowList);
         this.el.taskbar.appendChild(this.el.rightModules);
+    }
+
+    private contextMenu(): void {
+        window.xen.contextMenu.attach(this.el.taskbar, {
+            root: [
+                {
+                    title: 'Show App Names',
+                    toggle: this.showAppNames,
+                    onClick: () => {
+                        this.toggleNames();
+                        this.contextMenu();
+                    },
+                },
+            ],
+        });
+    }
+
+    private toggleNames(): void {
+        this.showAppNames = !this.showAppNames;
+        this.el.taskbar.classList.toggle('show-app-names', this.showAppNames);
+        this.render();
     }
 
     private setupTimeModule(): void {
@@ -325,6 +350,16 @@ export class TaskBar {
         icon.draggable = false;
 
         item.appendChild(icon);
+
+        if (this.showAppNames) {
+            const appName = document.createElement('span');
+            appName.classList.add('taskbar-item-name');
+            appName.textContent = entry.title;
+            item.appendChild(appName);
+            item.classList.add('show-name');
+        } else {
+            item.classList.remove('show-name');
+        }
 
         if (entry.isOpen) {
             item.classList.add('is-open');

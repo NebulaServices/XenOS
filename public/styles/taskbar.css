@@ -47,6 +47,14 @@
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     user-select: none;
+    overflow: visible;
+}
+
+.taskbar.show-app-names .taskbar-item {
+    width: auto;
+    padding: 0 8px;
+    gap: 8px;
+    justify-content: flex-start;
 }
 
 .taskbar-item:hover:not(.dragging):not(.animate-out) {
@@ -81,6 +89,23 @@
     border-radius: 8px;
     transition: transform 0.2s ease;
     pointer-events: none;
+    flex-shrink: 0;
+}
+
+.taskbar-item-name {
+    color: var(--mocha-text);
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0;
+    max-width: 0;
+    transition: opacity 0.2s ease, max-width 0.2s ease;
+}
+
+.taskbar.show-app-names .taskbar-item-name {
+    opacity: 1;
+    max-width: 150px;
 }
 
 .launcher-button {
@@ -109,10 +134,12 @@
         transform: scale(0) rotate(-180deg);
         opacity: 0;
     }
+
     50% {
         transform: scale(1.2) rotate(-90deg);
         opacity: 0.8;
     }
+
     100% {
         transform: scale(1) rotate(0deg);
         opacity: 1;
@@ -130,10 +157,12 @@
         transform: scale(1) rotate(0deg);
         opacity: 1;
     }
+
     50% {
         transform: scale(1.2) rotate(90deg);
         opacity: 0.8;
     }
+
     100% {
         transform: scale(0) rotate(180deg);
         opacity: 0;
@@ -156,13 +185,13 @@
 }
 
 .drag-placeholder {
-    background: linear-gradient(45deg, 
-        rgba(137, 180, 250, 0.3) 25%, 
-        transparent 25%, 
-        transparent 50%, 
-        rgba(137, 180, 250, 0.3) 50%, 
-        rgba(137, 180, 250, 0.3) 75%, 
-        transparent 75%);
+    background: linear-gradient(45deg,
+            rgba(137, 180, 250, 0.3) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(137, 180, 250, 0.3) 50%,
+            rgba(137, 180, 250, 0.3) 75%,
+            transparent 75%);
     background-size: 8px 8px;
     border: 2px dashed var(--mocha-blue);
     border-radius: 12px;
@@ -175,6 +204,7 @@
         opacity: 0.5;
         transform: scale(0.95);
     }
+
     to {
         opacity: 0.8;
         transform: scale(1);
@@ -185,11 +215,34 @@
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.taskbar-item.animate-in:nth-child(1) { animation-delay: 0ms; }
-.taskbar-item.animate-in:nth-child(2) { animation-delay: 50ms; }
-.taskbar-item.animate-in:nth-child(3) { animation-delay: 100ms; }
-.taskbar-item.animate-in:nth-child(4) { animation-delay: 150ms; }
-.taskbar-item.animate-in:nth-child(5) { animation-delay: 200ms; }
-.taskbar-item.animate-in:nth-child(6) { animation-delay: 250ms; }
-.taskbar-item.animate-in:nth-child(7) { animation-delay: 300ms; }
-.taskbar-item.animate-in:nth-child(8) { animation-delay: 350ms; }
+.taskbar-item.animate-in:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.taskbar-item.animate-in:nth-child(2) {
+    animation-delay: 50ms;
+}
+
+.taskbar-item.animate-in:nth-child(3) {
+    animation-delay: 100ms;
+}
+
+.taskbar-item.animate-in:nth-child(4) {
+    animation-delay: 150ms;
+}
+
+.taskbar-item.animate-in:nth-child(5) {
+    animation-delay: 200ms;
+}
+
+.taskbar-item.animate-in:nth-child(6) {
+    animation-delay: 250ms;
+}
+
+.taskbar-item.animate-in:nth-child(7) {
+    animation-delay: 300ms;
+}
+
+.taskbar-item.animate-in:nth-child(8) {
+    animation-delay: 350ms;
+}

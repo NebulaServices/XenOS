@@ -12,6 +12,5 @@ $ pnpm build:windows # Windows
 $ pnpm dev # Linux, MacOS, etc.
 $ pnpm dev:windows # Windows
 
-# For production:
 $ pnpm start
 ```
