@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import { Manifest } from "./PackageManager";
+import { Manifest } from "../PackageManager";
 
 interface AnuraManifest {
     name: string;
@@ -15,14 +15,14 @@ interface AnuraManifest {
     };
 }
 
-export class AnuraTranslationLayer {
+export class AnuraPackages {
     private zip: JSZip;
 
     constructor() {
         this.zip = new JSZip();
     }
 
-    private manifestConverter(anuraM: AnuraManifest): Manifest {
+    public manifestConverter(anuraM: AnuraManifest): Manifest {
         const manifest: Manifest = {
             id: anuraM.package,
             version: '1.0.0',
@@ -43,7 +43,7 @@ export class AnuraTranslationLayer {
         return manifest;
     }
 
-    public async installApp(
+    public async install(
         source: 'prompt' | 'opfs' | 'url',
         path?: string
     ) {

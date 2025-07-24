@@ -25,11 +25,11 @@ export class Runtime {
         if (manifest.type == 'webview' || manifest.type == 'app') {
             code = `
                 const win = await xen.wm.create({
-                    title: '${manifest.title}',
-                    icon: '${icon}',
-                    url: '${url}',
-                    width: '${width}',
-                    height: '${height}',
+                    title: "${manifest.title}",
+                    icon: "${icon}",
+                    url: "${url}",
+                    width: "${width}",
+                    height: "${height}",
                     resizable: ${resizable}
                 });
             `;

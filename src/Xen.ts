@@ -14,7 +14,8 @@ import { init } from "./apis/process/init";
 import { getPolicy, setPolicy } from "./apis/policy/policy";
 import { Dialog } from "./ui/apis/Dialog";
 import { Systray } from "./ui/apis/Systray";
-import { AnuraTranslationLayer } from "./apis/packages/ATL";
+import { AnuraPackages } from "./apis/packages/anura/Packages";
+import { AnuraRepos } from "./apis/packages/anura/Repos";
 
 export class Xen {
     public settings: typeof settings;
@@ -36,7 +37,10 @@ export class Xen {
     }
     public dialog: Dialog;
     public systray: Systray;
-    public ATL: AnuraTranslationLayer;
+    public ATL: {
+        package: AnuraPackages;
+        repo: AnuraRepos;
+    }
 
     constructor() {
         this.settings = settings;
@@ -58,13 +62,16 @@ export class Xen {
         };
         this.dialog = new Dialog();
         this.systray = new Systray();
-        this.ATL = new AnuraTranslationLayer();
+        this.ATL = {
+            package: new AnuraPackages(),
+            repo: new AnuraRepos()
+        };
     }
 
     public version = {
-        prefix: 'XEN',
-        codename: 'Q',
-        major: 0,
+        prefix: 'XenOS',
+        codename: 'Nightcord',
+        major: 1,
         minor: 0,
         patch: 0,
         build: '',
@@ -73,7 +80,7 @@ export class Xen {
 
     async init() {
         this.version.build += `${(await (await fetch('/uuid')).text()).split('\n')[0]}`;
-        this.version.pretty = `${this.version.prefix}-${this.version.codename} v${this.version.major}.${this.version.minor}.${this.version.patch} (${this.version.build})`;
+        this.version.pretty = `${this.version.prefix} ${this.version.codename} v${this.version.major}.${this.version.minor}.${this.version.patch} (${this.version.build})`;
 
         this.taskBar = new TaskBar();
         this.taskBar.init();
@@ -86,6 +93,8 @@ export class Xen {
             e.preventDefault();
         });
 
-        await this.fs.rm('/temp');
+        if (await this.fs.exists('/temp')) {
+            await this.fs.rm('/temp');
+        }
     }
 }

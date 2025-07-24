@@ -225,7 +225,6 @@ export class PackageManager {
     }
 
     public async remove(packageId: string, type?: string): Promise<void> {
-        console.log(type);
         const fs = window.xen.fs;
 
         if (!type) {

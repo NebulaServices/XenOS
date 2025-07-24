@@ -3,9 +3,6 @@ import { getPolicy } from "./policy";
 import { getDefault } from "./default";
 
 function matchesPattern(patterns: (string | RegExp)[] | "*", value: string): boolean {
-    console.log(patterns);
-    console.log(value);
-
     if (patterns === "*") {
         return true;
     }

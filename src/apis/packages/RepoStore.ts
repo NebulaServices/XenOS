@@ -41,16 +41,16 @@ interface PackageManifest {
 }
 
 export class RepoStore {
-	private base: string;
+	private url: string;
 
-	constructor(base?: string) {
-		if (base) {
-			this.updateServer(base);
+	constructor(url?: string) {
+		if (url) {
+			this.setUrl(url);
 		}
 	}
 
-	async updateServer(base: string) {
-		const obj = new URL(base);
+	async setUrl(url: string) {
+		const obj = new URL(url);
 
 		if (!await repoHandler(obj)) {
 			window.xen.notifications.spawn({
@@ -63,26 +63,26 @@ export class RepoStore {
 			throw new Error('Repository URL blocked by policy');
 		}
 
-		this.base = new URL(base).origin;
+		this.url = new URL(url).origin;
 	}
 
 	async monoManifest(): Promise<MonoManifest> {
-		const res = await window.xen.net.fetch(`${this.base}/manifest.json`);
+		const res = await window.xen.net.fetch(`${this.url}/manifest.json`);
 		return res.json();
 	}
 
 	async repoManifest(repo: string): Promise<RepoManifest> {
-		const res = await window.xen.net.fetch(`${this.base}/repos/${repo}/manifest.json`);
+		const res = await window.xen.net.fetch(`${this.url}/repos/${repo}/manifest.json`);
 		return res.json();
 	}
 
 	async pkgManifest(repo: string, id: string): Promise<PackageManifest> {
-		const res = await window.xen.net.fetch(`${this.base}/repos/${repo}/packages/${id}/manifest.json`);
+		const res = await window.xen.net.fetch(`${this.url}/repos/${repo}/packages/${id}/manifest.json`);
 		return res.json();
 	}
 
 	async install(repo: string, id: string): Promise<void> {
-		const url = `${this.base}/repos/${repo}/packages/${id}/${id}.zip`;
+		const url = `${this.url}/repos/${repo}/packages/${id}/${id}.zip`;
 		await window.xen.packages.install('url', window.xen.net.encodeUrl(url));
 	}
 }
