@@ -6,14 +6,11 @@ $ cd xenos
 
 $ pnpm i
 
-# UNIX-like shells (Linux, MacOS, etc): 
-$ pnpm build
+$ pnpm build # Linux, MacOS, etc.
+$ pnpm build:windows # Windows
 
-# Powershell (Windows):
-$ pnpm build:windows
-
-# For development:
-$ pnpm dev
+$ pnpm dev # Linux, MacOS, etc.
+$ pnpm dev:windows # Windows
 
 # For production:
 $ pnpm start

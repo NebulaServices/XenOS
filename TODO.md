@@ -29,3 +29,5 @@
 - Taskbar
     - Pinned entries
     - Optional show name of entries
+
+- Docs
