@@ -68,3 +68,6 @@ You can view the projects TODO [here](https://github.com/NebulaServices/XenOS/bl
 - [libcurl.js](https://github.com/ading2210/libcurl.js)
   
 There are more dependencies used that are not listed here, for a full list, check the [package.json](https://github.com/NebulaServices/XenOS/blob/main/package.json)
+
+## What Framework Do You Use?!?
+None! Just TypeScript and CSS :)
