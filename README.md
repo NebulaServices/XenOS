@@ -27,7 +27,7 @@ Install dependencies
 pnpm i # Or npm i
 ```
 To start the dev server
-```
+```sh
 # If you are on Linux, MacOS, or some other UNIX-like OS:
 pnpm dev # or npm run build
 
@@ -41,7 +41,7 @@ pnpm build
 pnpm build:windows
 ```
 To serve the build
-```ssh
+```sh
 pnpm start # or npm start
 ```
 
