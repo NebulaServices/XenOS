@@ -2,18 +2,19 @@ import { LibcurlClient } from "./apis/networking/LibcurlClient";
 import { XenFS } from "./apis/files/XenFS";
 import { oobe } from "./ui/oobe/autoUpdate";
 import { WindowManager } from "./ui/windows/WindowManager";
-import { ContextMenu } from "./ui/components/ContextMenu";
+import { ContextMenu } from "./ui/apis/ContextMenu";
 import { TaskBar } from "./ui/components/TaskBar";
 import { Proccesses } from "./apis/process/Processes";
 import { PackageManager } from "./apis/packages/PackageManager";
 import { RepoStore } from "./apis/packages/RepoStore";
-import { Notifications } from "./ui/components/Notifications";
+import { Notifications } from "./ui/apis/Notifications";
 import { Wallpaper } from "./ui/Wallpaper";
 import { settings } from "./apis/settings";
 import { init } from "./apis/process/init";
 import { getPolicy, setPolicy } from "./apis/policy/policy";
-import { Dialog } from "./ui/Dialog";
-import { Systray } from "./ui/Systray";
+import { Dialog } from "./ui/apis/Dialog";
+import { Systray } from "./ui/apis/Systray";
+import { AnuraTranslationLayer } from "./apis/packages/ATL";
 
 export class Xen {
     public settings: typeof settings;
@@ -35,6 +36,7 @@ export class Xen {
     }
     public dialog: Dialog;
     public systray: Systray;
+    public ATL: AnuraTranslationLayer;
 
     constructor() {
         this.settings = settings;
@@ -56,6 +58,7 @@ export class Xen {
         };
         this.dialog = new Dialog();
         this.systray = new Systray();
+        this.ATL = new AnuraTranslationLayer();
     }
 
     public version = {
@@ -82,5 +85,7 @@ export class Xen {
         document.addEventListener('contextmenu', function (e) {
             e.preventDefault();
         });
+
+        await this.fs.rm('/temp');
     }
 }
