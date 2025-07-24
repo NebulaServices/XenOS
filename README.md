@@ -71,3 +71,6 @@ There are more dependencies used that are not listed here, for a full list, chec
 
 ## What Framework Do You Use?!?
 None! Just TypeScript and CSS :)
+
+## Source Code License
+XenOS is licensed under the [AGPLv3 License](https://www.gnu.org/licenses/agpl-3.0.en.html)
