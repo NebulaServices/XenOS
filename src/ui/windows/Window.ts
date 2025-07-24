@@ -131,9 +131,25 @@ export class Window {
             this.el.content.onload = () => {
                 const iframe = (this.el.content as HTMLIFrameElement);
 
+
                 Object.assign(iframe.contentWindow, {
-                    xen: (window as any).xen,
+                    xen: window.xen
                 });
+
+                if (window.xen.net.encodeUrl(this.props.url).startsWith(new URL('/fs/usr/apps', location.origin).href)) {
+                    iframe.contentWindow.window.eval(`
+                        const id = new URL(location.href).pathname.split('/')[4];
+
+                        Object.assign(window, {
+                            runtime: {
+                                id: id,
+                                url: new URL(("/fs/usr/apps/" + id), location.origin).href,
+                                fsPath: "/usr/apps/" + id
+                            }
+                        });
+                    `);
+
+                }
             };
         } else if (this.props.content) {
             const d = document.createElement("div");
