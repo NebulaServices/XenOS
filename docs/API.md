@@ -2,6 +2,39 @@
 Documentation covering (most) of the XenOS APIs
 - Notice: some APIs aren't very useful, so they haven't been documented, but they could be useful to you! If you're looking for a nieche feature it *probably* exists but you'll after to read some code.
 
+## `xen.ATL`
+Xen has (a little) bit of support for [Anura](https://github.com/mercuryworkshop/anuraos) Packages
+
+### `await xen.ATL.package.install`
+Same as `xen.packages.install` (i think)
+
+### await xen.ATL.repos
+todo
+
+## `xen.FilePicker`
+File Picker for XenOS
+
+### `await xen.FilePicker.pick(opts: FilePickerOpts): FilePickerResult`
+```ts
+interface FilePickerOptions {
+    title?: string;
+    multiple?: boolean; // Whether to select multiple entries
+    mode?: "file" | "directory";
+}
+
+// Its very confusing..
+interface FilePickerResult {
+    path: string | string[];
+    stat: any | any[];
+    content: string | ArrayBuffer | Uint8Array | Blob | (string | ArrayBuffer | Uint8Array | Blob)[];
+    url?: string | string[];
+    text?: () => Promise<string | string[]>;
+    arrayBuffer?: () => Promise<ArrayBuffer | ArrayBuffer[]>;
+}
+
+await xen.FilePicker.pick(opts: FilePickerOpts);
+```
+
 ## `xen.contextMenu`
 TODO SCARY
 
@@ -125,7 +158,7 @@ xen.systray.register(opts: SystrayOpts);
 Allows you to remove a systray given an ID
 
 ## `xen.wallpaper`
-API for interfacing with the wallpaper
+API for interfacing with the wallpaper TODO this got rewritten
 
 ### `await xen.wallpaper.get()`
 Returns path of the wallpaper

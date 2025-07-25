@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import mime from "mime";
 
 export class XenFS {
     private cwd: string = "/";
@@ -456,6 +457,7 @@ export class XenFS {
         createdAt: Date;
         lastModified: Date;
         lastAccessed: Date;
+        mime: string;
     }> {
         const handle = await this.resolveHandle(path);
 
@@ -467,6 +469,7 @@ export class XenFS {
             createdAt: new Date(),
             lastModified: new Date(),
             lastAccessed: new Date(),
+            mime: mime.getType(path)
         };
 
         if (handle.kind === "file") {

@@ -16,6 +16,7 @@ import { Dialog } from "./ui/apis/Dialog";
 import { Systray } from "./ui/apis/Systray";
 import { AnuraPackages } from "./apis/packages/anura/Packages";
 import { AnuraRepos } from "./apis/packages/anura/Repos";
+import { FilePicker } from "./apis/files/FilePicker";
 
 export class Xen {
     public settings: typeof settings;
@@ -41,6 +42,7 @@ export class Xen {
         package: AnuraPackages;
         repo: AnuraRepos;
     }
+    public FilePicker: typeof FilePicker;
 
     constructor() {
         this.settings = settings;
@@ -66,6 +68,7 @@ export class Xen {
             package: new AnuraPackages(),
             repo: new AnuraRepos()
         };
+        this.FilePicker = FilePicker;
     }
 
     public version = {
