@@ -1,0 +1,232 @@
+:root {
+    --cat-rosewater: #f5e0dc;
+    --cat-flamingo: #f2cdcd;
+    --cat-pink: #f5c2e7;
+    --cat-mauve: #cba6f7;
+    --cat-red: #f38ba8;
+    --cat-maroon: #eba0ac;
+    --cat-peach: #fab387;
+    --cat-yellow: #f9e2af;
+    --cat-green: #a6e3a1;
+    --cat-teal: #94e2d5;
+    --cat-sky: #89dceb;
+    --cat-sapphire: #74c7ce;
+    --cat-blue: #89b4fa;
+    --cat-lavender: #b4befe;
+    --cat-text: #cdd6f4;
+    --cat-subtext1: #bac2de;
+    --cat-subtext0: #a6adc8;
+    --cat-overlay2: #9399b2;
+    --cat-overlay1: #7f849c;
+    --cat-overlay0: #6c7086;
+    --cat-surface2: #585b70;
+    --cat-surface1: #45475a;
+    --cat-surface0: #313244;
+    --cat-crust: #181926;
+    --cat-mantle: #1e2030;
+    --cat-base: #24273a;
+}
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: var(--cat-base);
+    color: var(--cat-text);
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: block;
+}
+
+.app-container {
+    background: var(--cat-mantle);
+    border-radius: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+}
+
+.menu-bar {
+    background-color: var(--cat-mantle);
+    border-bottom: 1px solid var(--cat-surface0);
+    padding: 8px 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.menu-btn {
+    background-color: var(--cat-surface0);
+    border: 1px solid var(--cat-surface1);
+    color: var(--cat-text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition:
+        background-color 0.2s,
+        border-color 0.2s;
+}
+
+.menu-btn:hover {
+    background-color: var(--cat-surface1);
+    border-color: var(--cat-overlay0);
+}
+
+.menu-btn:active {
+    background-color: var(--cat-surface2);
+}
+
+.menu-btn i {
+    font-size: 1.1em;
+}
+
+.tab-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tabs {
+    display: flex;
+    background-color: var(--cat-crust);
+    border-bottom: 1px solid var(--cat-surface0);
+    padding: 0 5px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.tab {
+    padding: 8px 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition:
+        background-color 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+    font-size: 0.9em;
+    color: var(--cat-subtext0);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: var(--cat-surface0);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    margin-right: 3px;
+    margin-top: 3px;
+    z-index: 1;
+}
+
+.tab:first-child {
+    margin-left: 5px;
+}
+
+.tab:hover:not(.active) {
+    background-color: var(--cat-surface1);
+    color: var(--cat-text);
+}
+
+.tab.active {
+    background-color: var(--cat-mantle);
+    border-color: var(--cat-pink);
+    border-bottom-color: var(--cat-mantle);
+    color: var(--cat-text);
+    z-index: 2;
+}
+
+.tab-content {
+    flex-grow: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--cat-mantle);
+}
+
+.editor-tab-pane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+.editor-tab-pane.active {
+    display: block;
+}
+
+textarea {
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+    padding: 10px;
+    background-color: transparent;
+    border: none;
+    color: var(--cat-text);
+    font-family: monospace;
+    font-size: 1em;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    box-sizing: border-box;
+}
+
+textarea::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+textarea::-webkit-scrollbar-track {
+    background: var(--cat-surface0);
+    border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background-color: var(--cat-surface1);
+    border-radius: 4px;
+    border: 2px solid var(--cat-surface0);
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+    background-color: var(--cat-overlay0);
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        border-radius: 0;
+    }
+
+    .title-bar {
+        border-radius: 0;
+    }
+
+    .menu-bar {
+        padding: 5px;
+        gap: 5px;
+    }
+
+    .menu-btn {
+        padding: 4px 8px;
+        font-size: 0.8em;
+    }
+
+    .tab {
+        padding: 6px 12px;
+        font-size: 0.8em;
+    }
+}

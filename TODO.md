@@ -7,7 +7,6 @@
     - File manager
     - Repo store
     - Explore
-    - Text editor
 
 - Context menu
     - Taskbar

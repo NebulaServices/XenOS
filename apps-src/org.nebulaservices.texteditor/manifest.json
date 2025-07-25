@@ -1,0 +1,13 @@
+{
+    "id": "org.nebulaservices.texteditor",
+    "version": "1.0.0",
+    "type": "app",
+    "source": "index.html",
+    "title": "Text Editor",
+    "icon": "logo.png",
+    "maintainer": {
+        "name": "Nebula Services",
+        "email": "contact@nebulaservices.org",
+        "website": "https://nebulaservices.org"
+    }
+}

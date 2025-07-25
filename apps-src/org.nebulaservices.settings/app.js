@@ -648,6 +648,20 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
+        policyContent.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = policyContent.selectionStart;
+                const end = policyContent.selectionEnd;
+
+                const val = policyContent.value;
+                const indent = '    ';
+
+                policyContent.value = val.substring(0, start) + indent + val.substring(end);
+                policyContent.selectionStart = policyContent.selectionEnd = start + indent.length;
+            }
+        });
+
         document.querySelector(".nav-item.active").click();
     }
 
