@@ -27,7 +27,7 @@ Install dependencies
 pnpm i # Or npm i
 ```
 To start the dev server
-```
+```sh
 # If you are on Linux, MacOS, or some other UNIX-like OS:
 pnpm dev # or npm run build
 
@@ -41,7 +41,7 @@ pnpm build
 pnpm build:windows
 ```
 To serve the build
-```ssh
+```sh
 pnpm start # or npm start
 ```
 
@@ -68,3 +68,9 @@ You can view the projects TODO [here](https://github.com/NebulaServices/XenOS/bl
 - [libcurl.js](https://github.com/ading2210/libcurl.js)
   
 There are more dependencies used that are not listed here, for a full list, check the [package.json](https://github.com/NebulaServices/XenOS/blob/main/package.json)
+
+## What Framework Do You Use?!?
+None! Just TypeScript and CSS :)
+
+## Source Code License
+XenOS is licensed under the [AGPLv3 License](https://www.gnu.org/licenses/agpl-3.0.en.html)
