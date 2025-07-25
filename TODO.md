@@ -35,8 +35,4 @@
 - File handler in XenFS
 - Types for XenFS
 - `xen.d.ts`
-- Finished documentation
-- Complete support for Anura marketplaces and Anura packages
 - Better error handling for XenFS
-- Consistant usage of `encodeUrl`
-- Improve `xen.repos`

@@ -2,7 +2,7 @@ import { WindowManager } from "./WindowManager";
 import { v4 as uuidv4 } from "uuid";
 
 export interface WindowOpts {
-    title: string;
+    title?: string;
     width?: string;
     height?: string;
     x?: number;
@@ -12,6 +12,7 @@ export interface WindowOpts {
     content?: string;
     resizable?: boolean;
     display?: boolean;
+    borderless?: boolean;
 }
 
 export class Window {
@@ -27,6 +28,7 @@ export class Window {
         content?: string;
         resizable?: boolean;
         display?: boolean;
+        borderless?: boolean;
     } = {} as any;
     public is: {
         minimized: boolean;
@@ -51,8 +53,12 @@ export class Window {
 
     constructor(opts: WindowOpts, private wm: WindowManager) {
         this.id = uuidv4();
-        this.props.title = opts.title;
-        this.props.icon = window.xen.net.encodeUrl(opts.icon);
+        this.props.title = opts.title || 'Window';
+        if (opts.icon) {
+            this.props.icon = window.xen.net.encodeUrl(opts.icon)
+        } else {
+            this.props.icon = '/assets/logo.svg';
+        }
         this.props.url = opts.url;
         this.props.content = opts.content;
         this.props.width = opts.width || "600px";
@@ -64,6 +70,7 @@ export class Window {
             (window.innerHeight - 400 - window.xen.taskBar.getHeight() - 50);
         this.props.resizable = opts.resizable ?? true;
         this.props.display = opts.display ?? true;
+        this.props.borderless = opts.borderless ?? false;
         this.og.width = this.props.width;
         this.og.height = this.props.height;
         this.og.x = this.props.x;
@@ -83,24 +90,27 @@ export class Window {
         el.style.zIndex = "1";
 
         this.el.bar = document.createElement("div");
-        this.el.bar.classList.add("wm-title-bar");
-        this.el.bar.innerHTML = `
+
+        if (!this.props.borderless) {
+            this.el.bar.classList.add("wm-title-bar");
+            this.el.bar.innerHTML = `
             <div class="wm-title-left">
                 ${this.props.icon
-                ? `<img src="${this.props.icon}" class="wm-icon" alt="Window Icon" />`
-                : ""
-            }
+                    ? `<img src="${this.props.icon}" class="wm-icon" alt="Window Icon" />`
+                    : ""
+                }
                 <span class="wm-title">${this.props.title}</span>
             </div>
             <div class="wm-title-right">
                 ${this.props.resizable !== false
-                ? `<button class="wm-fullscreen-btn" title="Fullscreen"><img src="/assets/wm-fullscreen.png" alt="Fullscreen" style="width: 16px; height: 16px;"/></button>`
-                : ""
-            }
+                    ? `<button class="wm-fullscreen-btn" title="Fullscreen"><img src="/assets/wm-fullscreen.png" alt="Fullscreen" style="width: 16px; height: 16px;"/></button>`
+                    : ""
+                }
                 <button class="wm-minimize-btn" title="Minimize"><img src="/assets/wm-minimize.png" alt="Minimize" style="width: 16px; height: 16px;"/></button>
                 <button class="wm-close-btn" title="Close"><img src="/assets/wm-close.png" alt="Close" style="width: 16px; height: 16px;"/></button>
             </div>
         `;
+        }
 
         el.appendChild(this.el.bar);
 

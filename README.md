@@ -66,6 +66,7 @@ You can view the projects TODO [here](https://github.com/NebulaServices/XenOS/bl
 - [Comlink](https://github.com/GoogleChromeLabs/comlink)
 - [JSZip](https://stuk.github.io/jszip/)
 - [libcurl.js](https://github.com/ading2210/libcurl.js)
+- [wisp-client-js](github.com/mercuryworkshop/wisp-client-js)
   
 There are more dependencies used that are not listed here, for a full list, check the [package.json](https://github.com/NebulaServices/XenOS/blob/main/package.json)
 

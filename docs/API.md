@@ -3,13 +3,28 @@ Documentation covering (most) of the XenOS APIs
 - Notice: some APIs aren't very useful, so they haven't been documented, but they could be useful to you! If you're looking for a nieche feature it *probably* exists but you'll after to read some code.
 
 ## `xen.ATL`
-Xen has (a little) bit of support for [Anura](https://github.com/mercuryworkshop/anuraos) Packages
+The [Anura](https://github.com/mercuryworkshop/anuraos) Translation Layer for XenOS
 
 ### `await xen.ATL.package.install`
-Same as `xen.packages.install` (i think)
+Same as `xen.packages.install`
 
-### await xen.ATL.repos
-todo
+### `xen.ATL.repos`
+Interacting with Anura marketplaces
+
+#### `xen.ATL.repos.setUrl(url: string)`
+Set your marketplace URL
+
+#### `await xen.ATL.repos.listPks();`
+List all the packages in the marketplace
+
+#### `await xen.ATL.repos.listApps();`
+List all the apps in the marketplace
+
+#### `await xen.ATL.repos.listLibs();`
+List all the libraries in the marketplace
+
+#### `await xen.ATL.repos.install(type: 'name' | 'id', inp: string);`
+Install a package from the marketplace. Type tells it how to find the package.
 
 ## `xen.FilePicker`
 File Picker for XenOS
@@ -36,7 +51,36 @@ await xen.FilePicker.pick(opts: FilePickerOpts);
 ```
 
 ## `xen.contextMenu`
-TODO SCARY
+API for creating context menu's
+
+### `xen.contextMenu.attach(elOrId: string | HTMLElement, options: ContextMenuOptions)`
+You can either pass an ID and or element into elOrId, and it'll attatch the context menu to that
+```ts
+interface ContextMenuEntry {
+	title: string;
+	icon?: string;
+	toggle?: boolean; // Whether the entry is toggelable
+	once?: boolean; // Whether the entry isa  "on click" thing
+	onClick?: (...args: any[]) => void; // Code to run on click
+}
+
+interface ContextMenuOptions {
+	[folder: string]: ContextMenuEntry[];
+}
+```
+Context menu's work like this:
+```ts
+window.xen.contextMenu.attach('test', {
+    root: [ // Context menu's can have sub-folders, `root` is the, well, root!
+        {
+            title: 'Open',
+            onClick: () => {
+                alert(1);
+            }
+        }
+    ]
+});
+```
 
 ## `xen.dialog`
 API for creating dialog windows
@@ -76,7 +120,93 @@ await xen.dialog.prompt({
 TODO AAA
 
 ## `xen.net`
-TODO Too many features,,.
+The versatile networking client for XenOS
+
+### `await xen.net.fetch(req: url | Request, opts: RequestInit)`
+A fetch-like API expect it integrates with:
+- [Libcurl.js](github.com/ading2210/libcurl.js)
+    - Libcurl.js allows us to route requests through the [Wisp Protocol](github.com/mercuryworkshop/wisp-protocol/), Libcurl.js also bypasses CORS!
+- Loopbacks
+- Policies
+- Request Interceptors
+
+For example:
+```ts
+await xen.net.fetch('https://localhost'); // Loopback
+await xen.net.fetch('https://example.com'); // Any website
+```
+
+### `xen.net.direct.libcurl`
+This lets you directly access [Libcurl.js](github.com/ading2210/libcurl.js)
+
+### `xen.net.direct.wisp`
+This lets you directly acccess [wisp-client-js](github.com/mercuryworkshop/wisp-client-js)
+
+### `xen.net.HTTPSession`
+Behaves the same as `xen.net.direct.libcurl.HTTPSession`
+
+### `xen.net.WebSocket`
+Behaves the same as `xen.net.direct.libcurl.WebSocket`
+
+### `xen.net.CurlWebSocket`
+Behaves the same as `xen.net.direct.libcurl.CurlWebSocket`
+
+### `xen.net.TLSSocket`
+Behaves the same as `xen.net.direct.libcurl.TLSSocket`
+
+### `xen.net.onRequest(async (req) => {})`
+This lets you intercept requests
+```ts
+xen.net.onRequest(async (req) => {
+    // Here you can modify the request
+    console.log(req.url);
+    return req;
+});
+```
+
+### `xen.net.onResponse(async (res) => {})`
+This lets you intercept responses
+```ts
+xen.net.onRequest(async (res) => {
+    // Here you can modify the response
+    console.log(res.status);
+    return req;
+});
+```
+
+### `xen.net.encodeUrl(url: string)`
+This will encode a url into a Ultraviolet encoded URL, or if the URL starts with `location.origin` or `http(s)://localhost`, it wont be
+
+### `xen.net.loopback`
+Loopbacks!
+
+#### `await xen.net.loopback.set(port: number, handler: (req: Request) => Promise<Response>)`
+This lets you create essentially HTTP servers that run entirely inside of XenOS
+```ts
+await xen.net.loopback.set(443, async (req) => {
+    return new Response('hi!');
+});
+
+await (await xen.net.fetch('https://localhost')).text(); // hi!
+```
+
+#### `await xen.net.loopback.remove(port: number)`
+Removes a loopback
+
+### `xen.net.setUrl(url: string)`
+Update the current Wisp URL
+
+### `xen.net.wisp`
+Interact with Wisp servers, using [wisp-client-js](github.com/mercuryworkshop/wisp-client-js)
+
+#### `xen.net.wisp.wispConn`
+Wisp connection to the current Wisp URL
+
+#### `xen.net.wisp.createStream`
+Create a stream using the mentioned above Wisp connection
+
+#### `xen.net.wisp.WebSocket`
+WebSocket like API for the Wisp connection
 
 ## `xen.notifications`
 API for creating notifications
@@ -96,10 +226,76 @@ xen.notifications.spawn(opts: NotificationOpts)`
 ```
 
 ## `xen.packages`
-TODO I dont feel like it rn ngl
+API for interacting with packages
+
+### `await xen.packages.getManifest(id: string, type: 'apps' | 'libs')`
+Returns the manifest of a package given an ID and type
+
+### `await xen.packages.open(id: string)`
+Opens an app given an id
+
+### `await xen.packages.install(source: 'prompt' | 'opfs' | 'url', path?: string)`
+If `source` is prompt, it'll ask you to select a zip archive using the native file picker, if its `url`, put the url to the zip archive, if its `opfs`, put the path in XenFS. This will, well, install a package!
+
+### `await xen.packages.import(id: string)`
+Imports all the exported functions, objects, etc. of a library given an ID
+
+### `await xen.packages.remove(id: string, type: 'apps' | 'libs')`
+Removes a package given an ID of a certian type
+
+### `await xen.packages.listApps()`
+Lists all apps (manifests)
+
+### `await xen.packages.listLibs()`
+Lists all libraries (manifests)
 
 ## `xen.policy`
-TODO I also dont feel like it
+API for interacting with XenOS policies. All policies are stored in `/usr/policies` and policy groups are stored in `/usr/policies/POLICY_TYPE/GROUP_NAME.json`
+
+### Types
+```ts
+export interface NetworkPolicy {
+    ports: {
+        allowed: number[] | "*";
+        denied: number[] | "*";
+    }
+
+    ips: { // IPv4
+        allowed: string[] | "*";
+        denied: string[] | "*";
+    }
+
+    domains: {
+        allowed: (string | RegExp)[] | "*";
+        denied: (string | RegExp)[] | "*";
+    };
+
+    denyHTTP: boolean // Deny requests with protocol `http`
+}
+
+export interface PackagePolicy {
+    allowed: string[] | "*";
+    denied: string[] | "*";
+    forceInstalled: string[];
+}
+
+export interface RepoPolicy { // Repo URLs
+    allowed: string[] | "*";
+    denied: string[] | "*";
+}
+```
+
+### `await xen.policy.get(type: 'network' | 'repo' | 'package')`
+Returns the combined policy of all "policy groups" for a type
+
+### `await xen.policy.set(type: 'network' | 'repo' | 'package', name: string, content: NetworkPolicy | PackagePolicy | RepoPolicy)`
+```ts
+await xen.policy.set('network', 'custom.json', { // Policy type and group name
+    domains: {
+        denied: ['https://example.com']
+    }
+});
+```
 
 ## `xen.process`
 API for managing processes
@@ -158,16 +354,25 @@ xen.systray.register(opts: SystrayOpts);
 Allows you to remove a systray given an ID
 
 ## `xen.wallpaper`
-API for interfacing with the wallpaper TODO this got rewritten
+API for interfacing with the wallpaper. All wallpapers are stored in `/usr/wallpapers` in the FS
 
 ### `await xen.wallpaper.get()`
 Returns path of the wallpaper
 
-### `await xen.wallpaper.set(path?: string, type: 'url' | 'opfs' = 'url')`
-`type` allows you to specify whether the wallpaper is located inside of the XenFS, or is a URL. Path is optional as if no path provided it will set to the default wallpaper
+### `await xen.wallpaper.upload(type: 'url' | 'prompt', url?: string)`
+If `type` is prompt, it'll ask you to pick a wallpaper using the native file picker, if its `url`, then you provide a `url` and it'll download it
 
-### `await xen.wallpaper.remove()`
-Sets wallpaper to the default one
+### `await xen.wallpaper.set(file: string)`
+Sets the wallpaper
+
+### `await xen.wallpaper.remove(file: string)`
+Removes a wallpaper
+
+### `await xen.wallpaper.list()`
+Lists all wallpapers
+
+### `await xen.wallpaper.default()`
+Sets the default wallpaper
 
 ## `xen.wm`
 API for creating windows
@@ -178,7 +383,7 @@ Returns an array of all currently open windows, each item in the array is a refe
 ### `xen.wm.create(opts: WindowOpts)`
 ```ts
 interface WindowOpts {
-    title: string; 
+    title?: string; 
     width?: string;
     height?: string;
     x?: number;
