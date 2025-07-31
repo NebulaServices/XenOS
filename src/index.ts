@@ -29,13 +29,7 @@ async function taskbar() {
     window.xen.taskBar.render();
 }
 window.addEventListener('load', async () => {
-    if (!sessionStorage.getItem('rc')) {
-        sessionStorage.setItem('rc', 'true');
-        location.href = location.href;
-    }
-
     const splash = bootSplash();
-
     await setupDeps();
 
     await initSw().then(() => {

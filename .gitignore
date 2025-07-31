@@ -6,7 +6,6 @@ dist-transport/
 
 apps/
 build/
-temp/
 
 pnpm-lock.yaml
 package-lock.json
