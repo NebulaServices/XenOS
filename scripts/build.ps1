@@ -88,6 +88,7 @@ function copy_app {
 copy_app "org.nebulaservices.about"
 copy_app "org.nebulaservices.settings"
 copy_app "org.nebulaservices.texteditor"
+copy_app "org.nebulaservices.repostore"
 Copy-Item -Recurse ./apps/ ./build/apps/
 
 success "Copied apps"

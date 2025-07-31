@@ -1,32 +1,18 @@
-import { repoHandler } from "../policy/handler";
+// import { repoHandler } from "../policy/handler";
 
 interface Maintainer {
-	name: string;
-	email: string;
-	website: string;
-}
-
-interface MonoManifest {
-	title: string;
-	description: string;
-	version: string;
-	type: 'mono';
-	maintainer: Maintainer;
-	repos: string[];
+	name?: string;
+	email?: string;
+	website?: string;
+	repo?: string;
 }
 
 interface RepoManifest {
 	title: string;
 	description: string;
 	version: string;
-	type: 'repo';
-	maintainer: Maintainer;
+	maintainer?: Maintainer;
 	packages: string[];
-}
-
-interface Screenshot {
-	src: string;
-	alt: string;
 }
 
 interface PackageManifest {
@@ -35,54 +21,127 @@ interface PackageManifest {
 	type: 'app' | 'lib';
 	version: string;
 	icon: string;
-	maintainer: Maintainer;
-	tags: string[];
-	screenshots: Screenshot[];
+	maintainer?: Maintainer;
+}
+
+interface RepoSettingsStore {
+	url: string;
+	type: 'xen' | 'anura';
 }
 
 export class RepoStore {
-	private url: string;
+	private repos: RepoSettingsStore[];
 
-	constructor(url?: string) {
-		if (url) {
-			this.setUrl(url);
+	init() {
+		this.repos = window.xen.settings.get('repos');
+
+		if (!this.repos) {
+			this.repos = [
+				{
+					url: 'https://scaratech.github.io',
+					type: 'xen'
+				},
+				{
+					url: 'https://games.anura.pro',
+					type: 'anura'
+				}
+			];
+
+			window.xen.settings.set('repos', this.repos);
 		}
 	}
 
-	async setUrl(url: string) {
-		const obj = new URL(url);
-
-		if (!await repoHandler(obj)) {
-			window.xen.notifications.spawn({
-				title: "XenOS",
-				description: "This repository has been blocked by your policy and cannot be used",
-				icon: "/assets/logo.svg",
-				timeout: 2500
-			});
-
-			throw new Error('Repository URL blocked by policy');
+	addRepo(url: string, type: 'xen' | 'anura'): void {
+		if (this.repos.some(repo => repo.url === url)) {
+			throw new Error(`Repository ${url} already exists`);
 		}
 
-		this.url = new URL(url).origin;
+		this.repos.push({ url, type });
+		window.xen.settings.set('repos', this.repos);
 	}
 
-	async monoManifest(): Promise<MonoManifest> {
-		const res = await window.xen.net.fetch(`${this.url}/manifest.json`);
-		return res.json();
+	removeRepo(url: string): void {
+		const index = this.repos.findIndex(repo => repo.url === url);
+
+		if (index === -1) {
+			throw new Error(`Repository ${url} not found`);
+		}
+
+		this.repos.splice(index, 1);
+		window.xen.settings.set('repos', this.repos);
 	}
 
-	async repoManifest(repo: string): Promise<RepoManifest> {
-		const res = await window.xen.net.fetch(`${this.url}/repos/${repo}/manifest.json`);
-		return res.json();
+	async getManifest(url: string) {
+		const fUrl = new URL(
+			'/manifest.json',
+			new URL(url).origin
+		).href;
+
+		return await (await window.xen.net.fetch(fUrl)).json();
 	}
 
-	async pkgManifest(repo: string, id: string): Promise<PackageManifest> {
-		const res = await window.xen.net.fetch(`${this.url}/repos/${repo}/packages/${id}/manifest.json`);
-		return res.json();
+	async listPackages(repo: string, type: 'xen' | 'anura') {
+		if (type === 'xen') {
+			const manifest: RepoManifest = await this.getManifest(repo);
+			return manifest.packages;
+		} else if (type === 'anura') {
+			const fUrl = new URL(
+				'/list.json',
+				new URL(repo).origin
+			).href;
+
+			return await (await window.xen.net.fetch(fUrl)).json();
+		}
 	}
 
-	async install(repo: string, id: string): Promise<void> {
-		const url = `${this.url}/repos/${repo}/packages/${id}/${id}.zip`;
-		await window.xen.packages.install('url', window.xen.net.encodeUrl(url));
+	async getPackage(repo: string, id: string): Promise<PackageManifest> {
+		const url = new URL(
+			`/packages/${id}/manifest.json`,
+			new URL(repo).origin
+		).href;
+
+		return await (await window.xen.net.fetch(url)).json();
+	}
+
+	async install(
+		repo: string, 
+		id: string,
+		type: 'xen' | 'anura',
+		anura?: 'id' | 'name'
+	) {
+		if (type === 'xen') {
+			await window.xen.packages.install(
+				'url',
+				window.xen.net.encodeUrl(
+					new URL(
+						`/packages/${id}/package.zip`,
+						new URL(repo).origin
+					).href
+				)
+			);
+		} else if (type === 'anura') {
+			const packages = await this.listPackages(repo, 'anura');
+			let match;
+
+			if (anura == 'id') {
+				match = [...(packages.apps ?? []), ...(packages.libs ?? [])].find(
+					(pkg) => pkg.package === id
+				);
+			} else if (anura == 'name') {
+				match = [...(packages.apps ?? []), ...(packages.libs ?? [])].find(
+					(pkg) => pkg.name === id
+				);
+			}
+
+			const url = new URL(
+				`/${match.data}`,
+				new URL(repo).origin
+			).href;
+
+			await window.xen.ATL.package.install(
+				'url',
+				window.xen.net.encodeUrl(url)
+			);
+		}
 	}
 }

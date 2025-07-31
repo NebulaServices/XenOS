@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-box"></i> Repositories</h2>
+            </div>
+            <div class="repo-list" id="repoList">
+                <!-- Repos will be dynamically inserted here -->
+            </div>
+            <button class="add-repo-btn" id="addRepoBtn">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+        
+        <div class="main-content">
+            <div class="content-header">
+                <div class="header-info">
+                    <h1 id="repoTitle">Select a Repository</h1>
+                    <p id="repoDescription">Choose a repository from the sidebar to view packages</p>
+                </div>
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search packages..." />
+                </div>
+            </div>
+            
+            <div class="package-grid" id="packageGrid">
+                <div class="welcome-message">
+                    <i class="fas fa-box-open"></i>
+                    <h3>Welcome to Package Manager</h3>
+                    <p>Select a repository to browse available packages</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

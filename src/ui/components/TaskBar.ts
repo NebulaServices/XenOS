@@ -85,7 +85,7 @@ export class TaskBar {
                         instanceId: null,
                     });
                 } catch (e) {
-                    console.log(e);
+                    console.error(e);
                 }
             }
         }

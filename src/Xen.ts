@@ -15,7 +15,6 @@ import { getPolicy, setPolicy } from "./apis/policy/policy";
 import { Dialog } from "./ui/apis/Dialog";
 import { Systray } from "./ui/apis/Systray";
 import { AnuraPackages } from "./apis/packages/anura/Packages";
-import { AnuraRepos } from "./apis/packages/anura/Repos";
 import { FilePicker } from "./apis/files/FilePicker";
 
 export class Xen {
@@ -40,7 +39,6 @@ export class Xen {
     public systray: Systray;
     public ATL: {
         package: AnuraPackages;
-        repo: AnuraRepos;
     }
     public FilePicker: typeof FilePicker;
 
@@ -65,8 +63,7 @@ export class Xen {
         this.dialog = new Dialog();
         this.systray = new Systray();
         this.ATL = {
-            package: new AnuraPackages(),
-            repo: new AnuraRepos()
+            package: new AnuraPackages()
         };
         this.FilePicker = FilePicker;
     }
@@ -99,5 +96,7 @@ export class Xen {
         if (await this.fs.exists('/temp')) {
             await this.fs.rm('/temp');
         }
+
+        this.repos.init();
     }
 }

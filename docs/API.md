@@ -8,24 +8,6 @@ The [Anura](https://github.com/mercuryworkshop/anuraos) Translation Layer for Xe
 ### `await xen.ATL.package.install`
 Same as `xen.packages.install`
 
-### `xen.ATL.repos`
-Interacting with Anura marketplaces
-
-#### `xen.ATL.repos.setUrl(url: string)`
-Set your marketplace URL
-
-#### `await xen.ATL.repos.listPks();`
-List all the packages in the marketplace
-
-#### `await xen.ATL.repos.listApps();`
-List all the apps in the marketplace
-
-#### `await xen.ATL.repos.listLibs();`
-List all the libraries in the marketplace
-
-#### `await xen.ATL.repos.install(type: 'name' | 'id', inp: string);`
-Install a package from the marketplace. Type tells it how to find the package.
-
 ## `xen.FilePicker`
 File Picker for XenOS
 
@@ -39,12 +21,9 @@ interface FilePickerOptions {
 
 // Its very confusing..
 interface FilePickerResult {
-    path: string | string[];
-    stat: any | any[];
-    content: string | ArrayBuffer | Uint8Array | Blob | (string | ArrayBuffer | Uint8Array | Blob)[];
-    url?: string | string[];
-    text?: () => Promise<string | string[]>;
-    arrayBuffer?: () => Promise<ArrayBuffer | ArrayBuffer[]>;
+    path: string | string[]; // Path to file/directory in FS
+    stat: any | any[]; // Stat object
+    url?: string | string[]; // Blob URL (file only)
 }
 
 await xen.FilePicker.pick(opts: FilePickerOpts);
@@ -313,6 +292,8 @@ await xen.process.spawn(opts: ProcessOpts);
 ```
 
 ## `xen.repos`
+TODO: Rewrite this to be.. correct
+
 API for interacting with XenOS Package Repositories. To learn more about repos, please checkout the [XenOS Repository Documentation](./repos.md)
 - Notice: these method names will *probably* change
 

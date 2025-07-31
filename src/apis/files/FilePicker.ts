@@ -3,10 +3,7 @@ import { XenFS } from "./XenFS";
 interface FilePickerResult {
     path: string | string[];
     stat: any | any[];
-    content: string | ArrayBuffer | Uint8Array | Blob | (string | ArrayBuffer | Uint8Array | Blob)[];
     url?: string | string[];
-    text?: () => Promise<string | string[]>;
-    arrayBuffer?: () => Promise<ArrayBuffer | ArrayBuffer[]>;
 }
 
 interface FilePickerOptions {
@@ -91,7 +88,7 @@ export class FilePicker {
             return { icon: "fa-solid fa-file-powerpoint", color: "#fab387" };
         }
 
-        if (['js', 'ts', 'jsx', 'tsx', 'vue', 'svelte'].includes(ext)) {
+        if (['js', 'ts', 'jsx', 'tsx'].includes(ext)) {
             return { icon: "fa-brands fa-js-square", color: "#f9e2af" };
         }
 
@@ -103,64 +100,12 @@ export class FilePicker {
             return { icon: "fa-brands fa-css3-alt", color: "#74c0fc" };
         }
 
-        if (['py', 'pyc', 'pyo', 'pyw'].includes(ext)) {
-            return { icon: "fa-brands fa-python", color: "#a6e3a1" };
-        }
-
-        if (['java', 'class', 'jar'].includes(ext)) {
-            return { icon: "fa-brands fa-java", color: "#f38ba8" };
-        }
-
-        if (['php'].includes(ext)) {
-            return { icon: "fa-brands fa-php", color: "#cba6f7" };
-        }
-
-        if (['rb', 'gem'].includes(ext)) {
-            return { icon: "fa-solid fa-gem", color: "#f38ba8" };
-        }
-
-        if (['go'].includes(ext)) {
-            return { icon: "fa-solid fa-code", color: "#74c0fc" };
-        }
-
-        if (['rs'].includes(ext)) {
-            return { icon: "fa-solid fa-gear", color: "#fab387" };
-        }
-
-        if (['c', 'h'].includes(ext)) {
-            return { icon: "fa-solid fa-code", color: "#a6adc8" };
-        }
-
-        if (['cpp', 'cxx', 'cc', 'hpp'].includes(ext)) {
-            return { icon: "fa-solid fa-code", color: "#74c0fc" };
-        }
-
-        if (['cs'].includes(ext)) {
-            return { icon: "fa-solid fa-code", color: "#cba6f7" };
-        }
-
-        if (['json', 'yaml', 'yml', 'toml', 'ini', 'cfg', 'conf'].includes(ext)) {
+        if (['json', 'yaml', 'yml', 'toml'].includes(ext)) {
             return { icon: "fa-solid fa-gears", color: "#f9e2af" };
         }
 
-        if (['md', 'markdown', 'rst', 'txt'].includes(ext)) {
+        if (['md', 'markdown', 'txt'].includes(ext)) {
             return { icon: "fa-solid fa-file-lines", color: "#cdd6f4" };
-        }
-
-        if (['exe', 'msi', 'deb', 'rpm', 'dmg', 'pkg'].includes(ext)) {
-            return { icon: "fa-solid fa-download", color: "#f38ba8" };
-        }
-
-        if (['dll', 'so', 'dylib'].includes(ext)) {
-            return { icon: "fa-solid fa-puzzle-piece", color: "#a6adc8" };
-        }
-
-        if (['ttf', 'otf', 'woff', 'woff2', 'eot'].includes(ext)) {
-            return { icon: "fa-solid fa-font", color: "#cba6f7" };
-        }
-
-        if (['db', 'sqlite', 'sqlite3', 'sql'].includes(ext)) {
-            return { icon: "fa-solid fa-database", color: "#94e2d5" };
         }
 
         return { icon: "fa-solid fa-file", color: "#a6adc8" };
@@ -517,8 +462,7 @@ export class FilePicker {
                     const stat = await this.fs.stat(filePath);
                     const result: FilePickerResult = {
                         path: filePath,
-                        stat,
-                        content: null as any,
+                        stat
                     };
                     this.close(result);
                     return;
@@ -535,29 +479,7 @@ export class FilePicker {
                 const result: FilePickerResult = {
                     path: filePath,
                     stat,
-                    content,
-                    url,
-                    text: async () => {
-                        if (content instanceof Blob) {
-                            return await content.text();
-                        }
-                        return String(content);
-                    },
-                    //@ts-ignore
-                    arrayBuffer: async () => {
-                        if (content instanceof Blob) {
-                            const buffer = await content.arrayBuffer();
-                            return buffer as ArrayBuffer;
-                        }
-                        if (content instanceof ArrayBuffer) {
-                            return content;
-                        }
-                        if (content instanceof Uint8Array) {
-                            return content.buffer.slice(content.byteOffset, content.byteOffset + content.byteLength);
-                        }
-                        const encoded = new TextEncoder().encode(String(content));
-                        return encoded.buffer.slice(encoded.byteOffset, encoded.byteOffset + encoded.byteLength);
-                    }
+                    url
                 };
 
                 this.close(result);
@@ -583,33 +505,7 @@ export class FilePicker {
                 const result: FilePickerResult = {
                     path: results.map(r => r.path),
                     stat: results.map(r => r.stat),
-                    content: results.map(r => r.content),
-                    url: results.map(r => r.url).filter(Boolean) as string[],
-                    text: async () => {
-                        return Promise.all(results.map(async (r) => {
-                            if (r.content instanceof Blob) {
-                                return await r.content.text();
-                            }
-                            return String(r.content);
-                        }));
-                    },
-                    //@ts-ignore
-                    arrayBuffer: async () => {
-                        return Promise.all(results.map(async (r) => {
-                            if (r.content instanceof Blob) {
-                                const buffer = await r.content.arrayBuffer();
-                                return buffer as ArrayBuffer;
-                            }
-                            if (r.content instanceof ArrayBuffer) {
-                                return r.content;
-                            }
-                            if (r.content instanceof Uint8Array) {
-                                return r.content.buffer.slice(r.content.byteOffset, r.content.byteOffset + r.content.byteLength);
-                            }
-                            const encoded = new TextEncoder().encode(String(r.content));
-                            return encoded.buffer.slice(encoded.byteOffset, encoded.byteOffset + encoded.byteLength);
-                        }));
-                    }
+                    url: results.map(r => r.url).filter(Boolean) as string[]
                 };
 
                 this.close(result);
