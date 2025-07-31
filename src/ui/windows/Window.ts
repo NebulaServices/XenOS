@@ -102,11 +102,11 @@ export class Window {
                 <span class="wm-title">${this.props.title}</span>
             </div>
             <div class="wm-title-right">
+                <button class="wm-minimize-btn" title="Minimize"><img src="/assets/wm-minimize.png" alt="Minimize" style="width: 16px; height: 16px;"/></button>
                 ${this.props.resizable !== false
                     ? `<button class="wm-fullscreen-btn" title="Fullscreen"><img src="/assets/wm-fullscreen.png" alt="Fullscreen" style="width: 16px; height: 16px;"/></button>`
                     : ""
                 }
-                <button class="wm-minimize-btn" title="Minimize"><img src="/assets/wm-minimize.png" alt="Minimize" style="width: 16px; height: 16px;"/></button>
                 <button class="wm-close-btn" title="Close"><img src="/assets/wm-close.png" alt="Close" style="width: 16px; height: 16px;"/></button>
             </div>
         `;

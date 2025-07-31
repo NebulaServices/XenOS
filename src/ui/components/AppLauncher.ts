@@ -65,6 +65,7 @@ export class AppLauncher {
     public create(): void {
         document.body.appendChild(this.el.launcher);
     }
+
     public toggle(): void {
         this.isVisible ? this.hide() : this.show();
     }
@@ -76,8 +77,7 @@ export class AppLauncher {
         const taskbarRect = this.taskbar.getBoundingClientRect();
 
         this.el.launcher.style.left = `${taskbarRect.left}px`;
-        this.el.launcher.style.bottom = `${window.innerHeight - taskbarRect.top + 8
-            }px`;
+        this.el.launcher.style.bottom = `${window.innerHeight - taskbarRect.top + 8}px`;
         this.el.launcher.classList.add('visible');
         this.apps = await this.packageManager.listApps();
         this.renderApps();
@@ -104,10 +104,7 @@ export class AppLauncher {
     private handleClick = (e: MouseEvent): void => {
         const path = e.composedPath();
 
-        if (
-            !path.includes(this.el.launcher) &&
-            !path.includes(this.launcher)
-        ) {
+        if (!path.includes(this.el.launcher) && !path.includes(this.launcher)) {
             this.hide();
         }
     };
@@ -185,36 +182,39 @@ export class AppLauncher {
     }
 
     private setupContextMenu(entry: HTMLElement, appId: string): void {
-        window.xen.contextMenu.attach(entry, {
-            root: [
-                {
-                    title: 'Open',
-                    onClick: () => {
-                        this.packageManager.open(appId);
-                        this.hide();
-                    },
-                },
-                {
-                    title: 'Uninstall',
-                    onClick: async () => {
-                        try {
-                            await window.xen.dialog.confirm({
-                                title: 'XenOS',
-                                icon: '/assets/logo.svg',
-                                body: 'Are you sure you would like to uninstall this app?'
-                            }).then(async res => {
-                                if (res == true) {
-                                    await this.packageManager.remove(appId);
-                                    this.apps = await this.packageManager.listApps();
-                                    this.renderApps();
-                                }
-                            });
-                        } catch (error) {
-                            console.error(`Failed to uninstall ${appId}:`, error);
+        const menuItems = [];
+
+        menuItems.push({
+            title: 'Open',
+            onClick: () => {
+                this.packageManager.open(appId);
+                this.hide();
+            },
+        });
+
+        menuItems.push({
+            title: 'Uninstall',
+            onClick: async () => {
+                try {
+                    await window.xen.dialog.confirm({
+                        title: 'XenOS',
+                        icon: '/assets/logo.svg',
+                        body: 'Are you sure you would like to uninstall this app?'
+                    }).then(async res => {
+                        if (res == true) {
+                            await this.packageManager.remove(appId);
+                            this.apps = await this.packageManager.listApps();
+                            this.renderApps();
                         }
-                    },
-                },
-            ],
+                    });
+                } catch (error) {
+                    console.error(`Failed to uninstall ${appId}:`, error);
+                }
+            },
+        });
+
+        window.xen.contextMenu.attach(entry, {
+            root: menuItems
         });
     }
 
@@ -245,58 +245,98 @@ export class AppLauncher {
 
         entry.addEventListener('dragover', (e) => {
             e.preventDefault();
-            if (
-                this.dragState.draggedAppId &&
-                this.dragState.draggedAppId !== appId
-            ) {
-                this.handleDragOver(entry, e);
+            if (this.dragState.draggedAppId && this.dragState.draggedAppId !== appId) {
+                this.handleGridDragOver(entry, e);
             }
         });
 
-        entry.addEventListener('dragleave', () => {
-            entry.classList.remove('drop-target');
+        entry.addEventListener('dragleave', (e) => {
+            const rect = entry.getBoundingClientRect();
+            if (
+                e.clientX < rect.left ||
+                e.clientX > rect.right ||
+                e.clientY < rect.top ||
+                e.clientY > rect.bottom
+            ) {
+                entry.classList.remove('drop-target', 'drop-left', 'drop-right', 'drop-top', 'drop-bottom');
+            }
         });
 
         entry.addEventListener('drop', (e) => {
             e.preventDefault();
-            entry.classList.remove('drop-target');
+            entry.classList.remove('drop-target', 'drop-left', 'drop-right', 'drop-top', 'drop-bottom');
 
-            if (
-                this.dragState.draggedAppId &&
-                this.dragState.draggedAppId !== appId
-            ) {
-                this.reorderApps(this.dragState.draggedAppId, appId);
+            if (this.dragState.draggedAppId && this.dragState.draggedAppId !== appId) {
+                const position = this.getDropPosition(entry, e);
+                this.reorderApps(this.dragState.draggedAppId, appId, position);
             }
         });
     }
 
-    private handleDragOver(targetEntry: HTMLElement, e: DragEvent): void {
+    private handleGridDragOver(targetEntry: HTMLElement, e: DragEvent): void {
         const rect = targetEntry.getBoundingClientRect();
-        const midY = rect.top + rect.height / 2;
-        const insertBefore = e.clientY < midY;
-
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        const relativeX = e.clientX - rect.left;
+        const relativeY = e.clientY - rect.top;
+        
+        targetEntry.classList.remove('drop-left', 'drop-right', 'drop-top', 'drop-bottom');
         targetEntry.classList.add('drop-target');
 
-        if (insertBefore) {
-            targetEntry.classList.add('drop-before');
-            targetEntry.classList.remove('drop-after');
+        const distances = {
+            left: relativeX,
+            right: rect.width - relativeX,
+            top: relativeY,
+            bottom: rect.height - relativeY
+        };
+
+        const minDistance = Math.min(...Object.values(distances));
+        
+        if (distances.left === minDistance) {
+            targetEntry.classList.add('drop-left');
+        } else if (distances.right === minDistance) {
+            targetEntry.classList.add('drop-right');
+        } else if (distances.top === minDistance) {
+            targetEntry.classList.add('drop-top');
         } else {
-            targetEntry.classList.add('drop-after');
-            targetEntry.classList.remove('drop-before');
+            targetEntry.classList.add('drop-bottom');
         }
     }
 
-    private reorderApps(draggedAppId: string, targetAppId: string): void {
+    private getDropPosition(targetEntry: HTMLElement, e: DragEvent): 'before' | 'after' {
+        const rect = targetEntry.getBoundingClientRect();
+        const relativeX = e.clientX - rect.left;
+        const relativeY = e.clientY - rect.top;
+        
+        const distances = {
+            left: relativeX,
+            right: rect.width - relativeX,
+            top: relativeY,
+            bottom: rect.height - relativeY
+        };
+
+        const minDistance = Math.min(...Object.values(distances));
+        
+        return (distances.left === minDistance || distances.top === minDistance) ? 'before' : 'after';
+    }
+
+    private reorderApps(draggedAppId: string, targetAppId: string, position: 'before' | 'after'): void {
         const orderedApps = this.getOrderedApps();
         const draggedIndex = orderedApps.findIndex((app) => app.id === draggedAppId);
         const targetIndex = orderedApps.findIndex((app) => app.id === targetAppId);
 
-        if (draggedIndex === -1 || targetIndex === -1) return;
+        if (draggedIndex === -1 || targetIndex === -1 || draggedIndex === targetIndex) return;
 
         const [draggedApp] = orderedApps.splice(draggedIndex, 1);
-        const newTargetIndex =
-            draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
-        orderedApps.splice(newTargetIndex, 0, draggedApp);
+      
+        let newTargetIndex = targetIndex;
+        if (draggedIndex < targetIndex) {
+            newTargetIndex = targetIndex - 1;
+        }
+
+        const insertIndex = position === 'before' ? newTargetIndex : newTargetIndex + 1;
+        orderedApps.splice(insertIndex, 0, draggedApp);
 
         this.appOrder = orderedApps.map((app) => app.id);
         this.saveAppOrder();
@@ -332,9 +372,9 @@ export class AppLauncher {
         }
 
         this.el.grid
-            .querySelectorAll('.drop-target, .drop-before, .drop-after')
+            .querySelectorAll('.drop-target, .drop-left, .drop-right, .drop-top, .drop-bottom')
             .forEach((el) => {
-                el.classList.remove('drop-target', 'drop-before', 'drop-after');
+                el.classList.remove('drop-target', 'drop-left', 'drop-right', 'drop-top', 'drop-bottom');
             });
     }
 

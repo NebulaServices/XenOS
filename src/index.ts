@@ -63,6 +63,11 @@ async function initSw() {
     });
 }
 
+async function taskbar() {
+    await window.xen.taskBar.loadPinnedEntries();
+    window.xen.taskBar.render();
+}
+
 window.addEventListener('load', async () => {
     const splash = bootSplash();
 
@@ -93,6 +98,7 @@ window.addEventListener('load', async () => {
         });
     }, 600);
 
+    await taskbar();
     await window.xen.initSystem();    
 });
 
