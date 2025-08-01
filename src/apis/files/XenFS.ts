@@ -1,6 +1,21 @@
 import JSZip from "jszip";
 import mime from "mime";
 
+interface FileEntryInfo {
+    name: string;
+    isFile: boolean;
+    isDirectory: boolean;
+}
+
+interface FileStat {
+    name: string;
+    size: number;
+    isDirectory: boolean;
+    isFile: boolean;
+    lastModified: Date;
+    mime: string | null;
+}
+
 export class XenFS {
     private cwd: string = "/";
     private root: FileSystemDirectoryHandle;
@@ -10,6 +25,7 @@ export class XenFS {
     constructor() {
         this.zip = new JSZip();
     }
+
     async init(): Promise<void> {
         this.root = await navigator.storage.getDirectory();
     }
@@ -175,18 +191,14 @@ export class XenFS {
         await this.resolveHandle(path, true, true, "directory");
     }
 
-    async list(
-        path: string,
-        recursive: boolean = false,
-    ): Promise<{ name: string; isFile: boolean; isDirectory: boolean }[]> {
+    async list(path: string, recursive: boolean = false): Promise<FileEntryInfo[]> {
         const dirHandle = (await this.resolveHandle(
             path,
         )) as FileSystemDirectoryHandle;
-        const entries: { name: string; isFile: boolean; isDirectory: boolean }[] =
-            [];
+        const entries: FileEntryInfo[] = [];
 
         for await (const entry of dirHandle.values()) {
-            const info = {
+            const info: FileEntryInfo = {
                 name: entry.name,
                 isFile: entry.kind === "file",
                 isDirectory: entry.kind === "directory",
@@ -212,7 +224,7 @@ export class XenFS {
         return entries;
     }
 
-    async write(path: string, content: any): Promise<void> {
+    async write(path: string, content: Blob | string | ArrayBuffer): Promise<void> {
         const fileHandle = (await this.resolveHandle(
             path,
             true,
@@ -260,7 +272,7 @@ export class XenFS {
 
     async rm(path: string): Promise<void> {
         const symlinks = window.xen.settings.get("symlinks") || {};
-    
+
         if (symlinks[this.normalizePath(path)]) {
             this.unlink(path);
             return;
@@ -306,13 +318,15 @@ export class XenFS {
         const newPath = this.normalizePath(path);
         const handle = await this.resolveHandle(newPath);
 
-        if (handle.kind !== "directory") throw new Error(`${newPath} is not a directory`);
+        if (handle.kind !== "directory")
+            throw new Error(`${newPath} is not a directory`);
         this.cwd = newPath;
     }
 
     async fetch(url: string, path: string): Promise<void> {
         const res = await window.xen.net.fetch(url);
-        if (!res.ok) throw new Error(`Fetch failed: ${res.statusText} (${res.status})`);
+        if (!res.ok)
+            throw new Error(`Fetch failed: ${res.statusText} (${res.status})`);
 
         const blob = await res.blob();
         await this.write(path, blob);
@@ -366,11 +380,9 @@ export class XenFS {
     private async dirToZip(
         handle: FileSystemDirectoryHandle,
         curr: string,
-    ) {
+    ): Promise<void> {
         for await (const entry of handle.values()) {
-            const path = curr ?
-                `${curr}/${entry.name}` :
-                entry.name;
+            const path = curr ? `${curr}/${entry.name}` : entry.name;
             if (entry.kind === "file") {
                 const file = await (entry as FileSystemFileHandle).getFile();
                 this.zip.file(path, file);
@@ -449,27 +461,16 @@ export class XenFS {
         await this.rm(src);
     }
 
-    async stat(path: string): Promise<{
-        name: string;
-        size: number;
-        isDirectory: boolean;
-        isFile: boolean;
-        createdAt: Date;
-        lastModified: Date;
-        lastAccessed: Date;
-        mime: string;
-    }> {
+    async stat(path: string): Promise<FileStat> {
         const handle = await this.resolveHandle(path);
 
-        let stat = {
+        const stat: FileStat = {
             name: handle.name,
             size: 0,
             isDirectory: handle.kind === "directory",
             isFile: handle.kind === "file",
-            createdAt: new Date(),
             lastModified: new Date(),
-            lastAccessed: new Date(),
-            mime: mime.getType(path)
+            mime: mime.getType(path),
         };
 
         if (handle.kind === "file") {
@@ -574,10 +575,12 @@ export class XenFS {
 
     async import(): Promise<void> {
         const [handle] = await window.showOpenFilePicker({
-            types: [{
-                description: "ZIP files",
-                accept: { "application/zip": [".zip"] }
-            }]
+            types: [
+                {
+                    description: "ZIP files",
+                    accept: { "application/zip": [".zip"] },
+                },
+            ],
         });
 
         const file = await handle.getFile();

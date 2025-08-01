@@ -14,7 +14,6 @@ import { init } from "./apis/process/init";
 import { getPolicy, setPolicy } from "./apis/policy/policy";
 import { Dialog } from "./ui/apis/Dialog";
 import { Systray } from "./ui/apis/Systray";
-import { AnuraPackages } from "./apis/packages/anura/Packages";
 import { FilePicker } from "./apis/files/FilePicker";
 
 export class Xen {
@@ -37,9 +36,6 @@ export class Xen {
     }
     public dialog: Dialog;
     public systray: Systray;
-    public ATL: {
-        package: AnuraPackages;
-    }
     public FilePicker: typeof FilePicker;
 
     constructor() {
@@ -62,9 +58,6 @@ export class Xen {
         };
         this.dialog = new Dialog();
         this.systray = new Systray();
-        this.ATL = {
-            package: new AnuraPackages()
-        };
         this.FilePicker = FilePicker;
     }
 

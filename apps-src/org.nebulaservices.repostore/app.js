@@ -252,7 +252,7 @@ class Main {
             this.notifications.spawn({
                 title: 'Package Installed',
                 description: `${pkg.name} has been installed successfully`,
-                icon: this.getPackageIconUrl(pkg),
+                icon: `${location.origin}/assets/logo.svg`,
                 timeout: 3000
             });
 

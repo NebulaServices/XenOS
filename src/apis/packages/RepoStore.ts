@@ -138,7 +138,7 @@ export class RepoStore {
 				new URL(repo).origin
 			).href;
 
-			await window.xen.ATL.package.install(
+			await window.xen.packages.anuraInstall(
 				'url',
 				window.xen.net.encodeUrl(url)
 			);

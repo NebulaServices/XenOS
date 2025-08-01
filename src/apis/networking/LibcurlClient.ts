@@ -71,10 +71,10 @@ export class LibcurlClient {
             this.direct.libcurl.transport = this.networkSettings.transport;
             this.direct.libcurl.set_websocket(this.networkSettings.url);
 
-            this.HTTPSession = this.direct.libcurl.HTTPSession;
+            // this.HTTPSession = this.direct.libcurl.HTTPSession;
             this.WebSocket = this.direct.libcurl.WebSocket;
-            this.CurlWebSocket = this.direct.libcurl.CurlWebSocket;
-            this.TLSSocket = this.direct.libcurl.TLSSocket;
+            // this.CurlWebSocket = this.direct.libcurl.CurlWebSocket;
+            // this.TLSSocket = this.direct.libcurl.TLSSocket;
 
             this.setUrl = this.direct.libcurl.set_websocket;
 

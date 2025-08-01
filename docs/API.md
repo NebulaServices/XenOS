@@ -1,12 +1,6 @@
 # XenOS APIs
 Documentation covering (most) of the XenOS APIs
-- Notice: some APIs aren't very useful, so they haven't been documented, but they could be useful to you! If you're looking for a nieche feature it *probably* exists but you'll after to read some code.
-
-## `xen.ATL`
-The [Anura](https://github.com/mercuryworkshop/anuraos) Translation Layer for XenOS
-
-### `await xen.ATL.package.install`
-Same as `xen.packages.install`
+- Notice: some APIs aren't very useful, so they haven't been documented, but they could be useful to you! If you're looking for a niche feature it *probably* exists but you'll after to read some code.
 
 ## `xen.FilePicker`
 File Picker for XenOS
@@ -19,7 +13,6 @@ interface FilePickerOptions {
     mode?: "file" | "directory";
 }
 
-// Its very confusing..
 interface FilePickerResult {
     path: string | string[]; // Path to file/directory in FS
     stat: any | any[]; // Stat object
@@ -96,7 +89,97 @@ await xen.dialog.prompt({
 ```
 
 ## `xen.fs`
-TODO AAA
+API for interacting with XenOSes FS based on OPFS
+
+### Types
+```ts
+interface FileEntryInfo {
+    name: string;
+    isFile: boolean;
+    isDirectory: boolean;
+}
+
+interface FileStat {
+    name: string;
+    size: number;
+    isDirectory: boolean;
+    isFile: boolean;
+    lastModified: Date;
+    mime: string | null;
+}
+```
+
+### `await xen.fs.mkdir(path: string): Promise<void>`
+Creates a directory (this is recursive)
+
+### `await xen.fs.list(path: string, recursive: boolean = false): Promise<FileEntryInfo[]>`
+Lists the contents of a directory If `recursive` is true it'll list all sub-directories
+
+### `await xen.fs.write(path: string, content: Blob | string | ArrayBuffer): Promise<void>`
+Writes `content` to `path`
+
+### `await xen.fs.read(path: string, format: "text" | "arrayBuffer" | "uint8array" | "blob" = "text"): Promise<string | ArrayBuffer | Uint8Array | Blob>`
+Reads the contents of `path`. As you may notice there are a few ways to recieve that content...
+
+### `await xen.fs.rm(path: string): Promise<void>`
+Removes `path`
+
+### `await xen.fs.exists(path: string): Promise<boolean>`
+Checks if `path` exists
+
+### `await xen.fs.pwd(): Promise<string>`
+Returns the CWD
+
+### `await xen.fs.cd(path: string): Promise<void>`
+Changes the CWD to `path`
+
+### `await xen.fs.fetch(url: string, path: string): Promise<void>`
+Fetches `url` and writes response body to `path`
+
+### `await xen.fs.mount(path: string): Promise<void>`
+Mounts a native path on your host FS to `path` in XenFS. All files can be read and written.
+
+### `await xen.fs.unmount(path: string): Promise<void>`
+Unmounts a mounted path
+
+### `await xen.fs.upload(type: "file" | "directory", path: string): Promise<void>`
+Updloads a file or directory to `path` from your host FS
+
+### `await xen.fs.download(path: string): Promise<void>`
+Downloads `path` to your host FS
+
+### `await xen.fs.copy(src: string, dest: string): Promise<void>`
+Copy and pastes a file or directory. `src` is the thing to copy, `dest` is where to paste (duh).
+
+### `await xen.fs.move(src: string, dest: string): Promise<void>`
+moves a file or directory (`src`) to `dest`
+
+### `await xen.fs.stat(path: string): Promise<FileStat>`
+Returns the stats of a path
+
+### `await xen.fs.compress(path: string, dest: string): Promise<void>`
+Compresses a directory to a ZIP archive
+
+### `await xen.fs.decompress(path: string, dest: string): Promise<void>`
+Decompresses a ZIP archive
+
+### `await xen.fs.link(src: string, dest: string): Promise<void>`
+Creates a "symlink"
+
+### `await xen.fs.unlink(path: string): Promise<void>`
+Removes a symlink
+
+### `await xen.fs.readlink(path: string): Promise<string>`
+Reads real path of a symlink
+
+### `await xen.fs.wipe(): Promise<void>`
+Recursively deletes the entire XenFS (`/*`)
+
+### `await xen.fs.export(): Promise<void>`
+Exports the entire XenFS as a ZIP archive
+
+### `await xen.fs.import(): Promise<void>`
+Imports a ZIP archive from your host FS and replaces the current XenFS with the decompressed uploaded ZIP archive
 
 ## `xen.net`
 The versatile networking client for XenOS
@@ -121,17 +204,10 @@ This lets you directly access [Libcurl.js](github.com/ading2210/libcurl.js)
 ### `xen.net.direct.wisp`
 This lets you directly acccess [wisp-client-js](github.com/mercuryworkshop/wisp-client-js)
 
-### `xen.net.HTTPSession`
-Behaves the same as `xen.net.direct.libcurl.HTTPSession`
 
 ### `xen.net.WebSocket`
-Behaves the same as `xen.net.direct.libcurl.WebSocket`
+Behaves the same as `xen.net.direct.libcurl.WebSocket`. Please read libcurl.js's documentation on how to use this!
 
-### `xen.net.CurlWebSocket`
-Behaves the same as `xen.net.direct.libcurl.CurlWebSocket`
-
-### `xen.net.TLSSocket`
-Behaves the same as `xen.net.direct.libcurl.TLSSocket`
 
 ### `xen.net.onRequest(async (req) => {})`
 This lets you intercept requests
@@ -176,7 +252,7 @@ Removes a loopback
 Update the current Wisp URL
 
 ### `xen.net.wisp`
-Interact with Wisp servers, using [wisp-client-js](github.com/mercuryworkshop/wisp-client-js)
+Interact with Wisp servers, using [wisp-client-js](github.com/mercuryworkshop/wisp-client-js). Please read the documentation on the provided GitHub page on how to use this!!
 
 #### `xen.net.wisp.wispConn`
 Wisp connection to the current Wisp URL
@@ -216,6 +292,9 @@ Opens an app given an id
 ### `await xen.packages.install(source: 'prompt' | 'opfs' | 'url', path?: string)`
 If `source` is prompt, it'll ask you to select a zip archive using the native file picker, if its `url`, put the url to the zip archive, if its `opfs`, put the path in XenFS. This will, well, install a package!
 
+### `await xen.packages.anuraInstall(source: 'prompt' | 'opfs' | 'url', path?: string)`
+The exact same thing as above expect for Anura packages 
+
 ### `await xen.packages.import(id: string)`
 Imports all the exported functions, objects, etc. of a library given an ID
 
@@ -227,6 +306,50 @@ Lists all apps (manifests)
 
 ### `await xen.packages.listLibs()`
 Lists all libraries (manifests)
+
+### `xen.packages.anuraToXen(manifest: AnuraManifest): XenManifest`
+Converts an Anura package's manifest.json file into a Xen package manifest.json
+```ts
+interface XenManifest {
+    id: string;
+    version: string;
+
+    title?: string;
+    description?: string;
+    icon?: string;
+
+    type: 'webview' | 'app' | 'process' | 'library';
+    source: string;
+
+    maintainer: {
+        name: string;
+        email?: string;
+        website?: string;
+    }
+
+    window?: {
+        width?: string;
+        height?: string;
+        resizable?: boolean;
+    };
+}
+
+interface AnuraManifest {
+    name: string;
+    type: 'auto';
+    package: string;
+    index: string;
+    icon: string;
+    wininfo: {
+        title?: string;
+        width?: string;
+        height?: string;
+        resizable?: boolean;
+    };
+}
+
+window.xen.packages.anuraToXen(aM: AnuraManifest);
+```
 
 ## `xen.policy`
 API for interacting with XenOS policies. All policies are stored in `/usr/policies` and policy groups are stored in `/usr/policies/POLICY_TYPE/GROUP_NAME.json`
@@ -292,28 +415,71 @@ await xen.process.spawn(opts: ProcessOpts);
 ```
 
 ## `xen.repos`
-TODO: Rewrite this to be.. correct
+API for interacting with XenOS repos and Anura repos
 
-API for interacting with XenOS Package Repositories. To learn more about repos, please checkout the [XenOS Repository Documentation](./repos.md)
-- Notice: these method names will *probably* change
+### Types
+```ts
+interface Maintainer {
+	name?: string;
+	email?: string;
+	website?: string;
+	repo?: string;
+}
 
-### `await xen.repos.updateServer(url: string)`
-Sets the current repo URL
+interface RepoManifest {
+	title: string;
+	description: string;
+	version: string;
+	maintainer?: Maintainer;
+	packages: string[];
+}
 
-### `await xen.repos.monoManifest()`
-Returns the monorepo manifest
+interface PackageManifest {
+	name: string;
+	description: string;
+	type: 'app' | 'lib';
+	version: string;
+	icon: string;
+	maintainer?: Maintainer;
+}
 
-### `await xen.repos.repoManifest(repo: string)`
-Returns the manifest for a given repo
+interface RepoSettingsStore {
+	url: string;
+	type: 'xen' | 'anura';
+}
+```
 
-### `await xen.repos.pkgManifest(repo: string, id: string)`
-Returns a packages manifest given a repo and package ID
+### `xen.repos.addRepo(url: string, type: 'xen' | 'anura'): void`
+Adds a new repo for a given type (url should be the origin)
 
-### `await xen.repos.install(repo: string, id: string)`
-Installs a package using the ID from a given repo
+### `xen.repos.removeRepo(url: string): void`
+Removes a repo
+
+### `await xen.repos.getManifest(url: string)`
+Gets the `manifest.json` of a repo (This has different return types whether it is a Xen or Anura repo)
+
+### `await xen.repos.listPackages(repo: string, type: 'xen' | 'anura')`
+List all packages for a repo. If type is `xen`, it returns all package IDs as an array, if type is `anura`, returns `/list.json` of an Anura repo
+
+### `await xen.repos.getPackage(repo: string, id: string): Promise<PackageManifest>`
+This only works on Xen repos!! Returns the package manifest for a given package ID in a repo
+
+### `await xen.repos.install(repo: string, id: string, type: 'xen' | 'anura', anura?: 'id' | 'name'): Promise<void>`
+Installs a package given from a repo given an ID.
+- Repo: Repo URL origin (duh)
+- ID: Package ID (Or optionally the package name for Anura)
+- Type: Whether it is a Xen or Anura repo
+- Anura: For Anura repos, specify whether to search for package by ID or name
+
 
 ## `xen.settings`
-API for interacting with XenOS settings, it has the same API as `localStorage`, expect you can set any type of data, not just strings. It is recommended to use JSON.
+Simple `localStorage` based API but instead automatically handles JSON parsing and stringify
+- k = Key
+- v = Value
+### `xen.settings.get(k: string)`
+### `xen.settings.set(k: string, v: any)`
+### `xen.settings.remove(k: string)`
+### `xen.settings.getAll()`
 
 ## `xen.systray`
 API for interacting with systray's
@@ -379,3 +545,6 @@ interface WindowOpts {
 
 xen.wm.create(opts: WindowOpts);
 ```
+
+### Window Properties
+Each window instance (Ex. `window.xen.wm.windows[0]`) can have their `WindowOpts` read and written

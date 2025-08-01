@@ -28,6 +28,7 @@ async function taskbar() {
     await window.xen.taskBar.loadPinnedEntries();
     window.xen.taskBar.render();
 }
+
 window.addEventListener('load', async () => {
     const splash = bootSplash();
     await setupDeps();
