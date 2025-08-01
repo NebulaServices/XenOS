@@ -40,12 +40,24 @@ class Main {
 
         repoList.innerHTML = '';
 
-        repos.forEach(repo => {
+        repos.forEach(async (repo) => {
+            let title = "";
+
+            if (repo.type == 'xen') {
+                const res = await window.xen.net.fetch(repo.url + 'manifest.json');
+                const json = await res.json();
+
+                title = json.title;
+            } else {
+                title = this.getRepoDisplayName(repo.url);
+            }
+
+
             const repoItem = document.createElement('div');
             repoItem.className = 'repo-item';
             repoItem.innerHTML = `
                 <div class="repo-info">
-                    <div class="repo-name">${this.getRepoDisplayName(repo.url)}</div>
+                    <div class="repo-name">${title}</div>
                     <div class="repo-url">${repo.url}</div>
                 </div>
                 <div class="repo-actions">
@@ -219,11 +231,11 @@ class Main {
     getPackageIconUrl(pkg) {
         if (pkg.repoType === 'xen') {
             if (pkg.icon) {
-                return new URL(`/packages/${pkg.id}/${pkg.icon}`, pkg.repoUrl || this.currentRepo.url).href;
+                return new URL(`packages/${pkg.id}/${pkg.icon}`, pkg.repoUrl || this.currentRepo.url).href;
             }
         } else if (pkg.repoType === 'anura') {
             if (pkg.icon) {
-                return new URL(`/${pkg.icon}`, this.currentRepo.url).href;
+                return new URL(`${pkg.icon}`, this.currentRepo.url).href;
             }
         }
 

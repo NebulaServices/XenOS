@@ -3,6 +3,3 @@
 - Core apps
     - Browser
     - File manager
-
-- Repos
-    - Apps repo

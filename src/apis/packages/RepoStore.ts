@@ -1,4 +1,4 @@
-// import { repoHandler } from "../policy/handler";
+import { repoHandler } from '../policy/handler';
 
 interface Maintainer {
 	name?: string;
@@ -35,24 +35,54 @@ export class RepoStore {
 	init() {
 		this.repos = window.xen.settings.get('repos');
 
-		if (!this.repos) {
-			this.repos = [
-				{
-					url: 'https://scaratech.github.io',
-					type: 'xen'
-				},
-				{
-					url: 'https://games.anura.pro',
-					type: 'anura'
-				}
-			];
+		const defaultRepos: RepoSettingsStore[] = [
+			{
+				url: 'https://repos.xen-os.dev/apps/',
+				type: 'xen',
+			},
+			{
+				url: 'https://repos.xen-os.dev/webapps/',
+				type: 'xen',
+			},
+			{
+				url: 'https://repos.xen-os.dev/games/',
+				type: 'xen',
+			},
+			{
+				url: 'https://games.anura.pro',
+				type: 'anura',
+			},
+			{
+				url: 'https://xen-repos.scaratek.dev',
+				type: 'xen'
+			}
+		];
 
-			window.xen.settings.set('repos', this.repos);
+		if (!this.repos) {
+			this.repos = [];
 		}
+
+		for (const dRepo of defaultRepos) {
+			if (!this.repos.some((repo) => repo.url === dRepo.url)) {
+				this.repos.push(dRepo);
+			}
+		}
+
+		window.xen.settings.set('repos', this.repos);
 	}
 
 	addRepo(url: string, type: 'xen' | 'anura'): void {
-		if (this.repos.some(repo => repo.url === url)) {
+		if (!repoHandler(new URL(url))) {
+			window.xen.notifications.spawn({
+				title: 'XenOS',
+				description: `The repo URL ${url} is blocked by your policies`,
+				icon: '/assets/logo.svg',
+				timeout: 2500,
+			});
+
+			return;
+		}
+		if (this.repos.some((repo) => repo.url === url)) {
 			throw new Error(`Repository ${url} already exists`);
 		}
 
@@ -61,7 +91,7 @@ export class RepoStore {
 	}
 
 	removeRepo(url: string): void {
-		const index = this.repos.findIndex(repo => repo.url === url);
+		const index = this.repos.findIndex((repo) => repo.url === url);
 
 		if (index === -1) {
 			throw new Error(`Repository ${url} not found`);
@@ -71,76 +101,62 @@ export class RepoStore {
 		window.xen.settings.set('repos', this.repos);
 	}
 
-	async getManifest(url: string) {
-		const fUrl = new URL(
-			'/manifest.json',
-			new URL(url).origin
-		).href;
-
+	async getManifest(repoUrl: string) {
+		const fUrl = new URL('manifest.json', repoUrl).href;
 		return await (await window.xen.net.fetch(fUrl)).json();
 	}
 
-	async listPackages(repo: string, type: 'xen' | 'anura') {
+	async listPackages(repoUrl: string, type: 'xen' | 'anura') {
 		if (type === 'xen') {
-			const manifest: RepoManifest = await this.getManifest(repo);
+			const manifest: RepoManifest = await this.getManifest(repoUrl);
 			return manifest.packages;
 		} else if (type === 'anura') {
-			const fUrl = new URL(
-				'/list.json',
-				new URL(repo).origin
-			).href;
-
+			const fUrl = new URL('list.json', repoUrl).href;
 			return await (await window.xen.net.fetch(fUrl)).json();
 		}
 	}
 
-	async getPackage(repo: string, id: string): Promise<PackageManifest> {
-		const url = new URL(
-			`/packages/${id}/manifest.json`,
-			new URL(repo).origin
-		).href;
-
+	async getPackage(repoUrl: string, id: string): Promise<PackageManifest> {
+		const url = new URL(`packages/${id}/manifest.json`, repoUrl).href;
 		return await (await window.xen.net.fetch(url)).json();
 	}
 
 	async install(
-		repo: string, 
+		repoUrl: string,
 		id: string,
 		type: 'xen' | 'anura',
-		anura?: 'id' | 'name'
+		anura?: 'id' | 'name',
 	) {
 		if (type === 'xen') {
 			await window.xen.packages.install(
 				'url',
 				window.xen.net.encodeUrl(
-					new URL(
-						`/packages/${id}/package.zip`,
-						new URL(repo).origin
-					).href
-				)
+					new URL(`packages/${id}/package.zip`, repoUrl).href,
+				),
 			);
 		} else if (type === 'anura') {
-			const packages = await this.listPackages(repo, 'anura');
+			const packages = await this.listPackages(repoUrl, 'anura');
 			let match;
 
 			if (anura == 'id') {
 				match = [...(packages.apps ?? []), ...(packages.libs ?? [])].find(
-					(pkg) => pkg.package === id
+					(pkg) => pkg.package === id,
 				);
 			} else if (anura == 'name') {
 				match = [...(packages.apps ?? []), ...(packages.libs ?? [])].find(
-					(pkg) => pkg.name === id
+					(pkg) => pkg.name === id,
 				);
 			}
 
-			const url = new URL(
-				`/${match.data}`,
-				new URL(repo).origin
-			).href;
+			if (!match) {
+				throw new Error(`Package with id/name ${id} not found in Anura repo`);
+			}
+
+			const url = new URL(match.data, repoUrl).href;
 
 			await window.xen.packages.anuraInstall(
 				'url',
-				window.xen.net.encodeUrl(url)
+				window.xen.net.encodeUrl(url),
 			);
 		}
 	}
