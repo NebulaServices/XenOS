@@ -91,6 +91,7 @@ copy_app "org.nebulaservices.about"
 copy_app "org.nebulaservices.settings"
 copy_app "org.nebulaservices.texteditor"
 copy_app "org.nebulaservices.repostore"
+copy_app "org.nebulaservices.files"
 
 cp -r ./apps/ ./build/apps/
 

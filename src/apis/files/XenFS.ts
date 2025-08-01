@@ -601,4 +601,23 @@ export class XenFS {
             }
         }
     }
+
+    async open(path: string, callback?: (path: string, url: string) => void): Promise<void> {
+        const handle = await this.resolveHandle(path);
+
+        if (handle.kind === 'file') {
+            const file = await (handle as FileSystemFileHandle).getFile();
+            const url = URL.createObjectURL(file);
+
+            if (callback) {
+                callback(path, url);
+                return;
+            }
+
+            const mimeType = file.type || mime.getType(path) || 'application/octet-stream';
+            console.log(mimeType);
+        } else if (handle.kind === 'directory') {
+            throw new Error('Cannot call `open` method on directories');
+        }
+    }
 }

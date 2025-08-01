@@ -17,17 +17,18 @@ export class ContextMenu {
 
 	constructor() {
 		document.addEventListener('click', this.handleClick);
+		document.addEventListener('keydown', this.handleKeydown);
 	}
 
 	public attach(elementOrId: string | HTMLElement, options: ContextMenuOptions): void {
 		let el: HTMLElement | null;
-		
+
 		if (typeof elementOrId === 'string') {
 			el = document.getElementById(elementOrId);
 		} else {
 			el = elementOrId;
 		}
-		
+
 		if (!el) return;
 
 		this.attachments.delete(el);
@@ -61,11 +62,11 @@ export class ContextMenu {
 		});
 
 		document.body.appendChild(this.menuEl);
-		
+
 		const rect = this.menuEl.getBoundingClientRect();
 		this.menuEl.style.left = `${x}px`;
 		this.menuEl.style.top = `${y - rect.height - 10}px`;
-		
+
 		this.positionMenu(x, y);
 	}
 
@@ -103,11 +104,11 @@ export class ContextMenu {
 	private createFolderItem(folderName: string, entries: ContextMenuEntry[]): void {
 		const folderEl = document.createElement('div');
 		folderEl.classList.add('context-menu-folder');
-		
+
 		const text = document.createElement('span');
 		text.textContent = folderName;
 		folderEl.appendChild(text);
-		
+
 		const arrow = document.createElement('span');
 		arrow.classList.add('folder-arrow');
 		arrow.textContent = '>';
@@ -169,7 +170,7 @@ export class ContextMenu {
 
 		this.submenuEl.style.left = `${folderRect.right + 5}px`;
 		this.submenuEl.style.top = `${folderRect.top}px`;
-		this.submenuEl.addEventListener('mouseenter', () => {});
+		this.submenuEl.addEventListener('mouseenter', () => { });
 
 		this.submenuEl.addEventListener('mouseleave', () => {
 			setTimeout(() => {
@@ -200,7 +201,6 @@ export class ContextMenu {
 
 	private createSeparator(): void {
 		const sep = document.createElement('div');
-
 		sep.classList.add('context-menu-separator');
 		this.menuEl?.appendChild(sep);
 	}
@@ -227,8 +227,15 @@ export class ContextMenu {
 		this.hideSubmenu();
 	}
 
+	private handleKeydown = (e: KeyboardEvent): void => {
+		if (e.key === 'Escape' && (this.menuEl || this.submenuEl)) {
+			e.preventDefault();
+			this.closeMenu();
+		}
+	};
+
 	private handleClick = (e: MouseEvent): void => {
-		if (this.menuEl && !this.menuEl.contains(e.target as Node) && 
+		if (this.menuEl && !this.menuEl.contains(e.target as Node) &&
 			(!this.submenuEl || !this.submenuEl.contains(e.target as Node))) {
 			this.closeMenu();
 		}

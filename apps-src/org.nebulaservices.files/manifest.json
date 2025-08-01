@@ -1,0 +1,13 @@
+{
+    "id": "org.nebulaservices.files",
+    "version": "1.0.0",
+    "type": "app",
+    "source": "index.html",
+    "title": "Files",
+    "icon": "logo.svg",
+    "maintainer": {
+        "name": "Nebula Services",
+        "email": "contact@nebulaservices.org",
+        "website": "https://nebulaservices.org"
+    }
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Files</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="files-app">
+        <div class="sidebar">
+            <button class="home-btn" title="Go to /usr">
+                <i class="fas fa-home"></i>
+                <span>My Files</span>
+            </button>
+
+            <div class="mounts-section">
+                <div class="section-header">
+                    <i class="fas fa-hdd"></i>
+                    <span>Mounts</span>
+                </div>
+                <div class="mounts-list"></div>
+                <button class="add-mount-btn">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="topbar">
+                <div class="navigation">
+                    <button class="back-btn" title="Go back">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="breadcrumb"></div>
+                </div>
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="search-input" placeholder="Search...">
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="files-grid"></div>
+                <div class="loading-indicator">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading...</span>
+                </div>
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <span>This folder is empty</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

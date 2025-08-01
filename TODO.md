@@ -2,4 +2,5 @@
 ## `v1.0.0`
 - Core apps
     - Browser
-    - File manager
+
+- open handlers for images videos music and text files
