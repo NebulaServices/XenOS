@@ -54,8 +54,10 @@ export class Dialog {
                 width: 'auto',
                 height: 'auto',
                 content,
-                resizable: false,
+                resizable: false
             });
+
+            window.xen.wm.focus(win, 9999);
 
             const okBtn = win.el.window.querySelector('.dialog-btn-ok');
             const cancelBtn = win.el.window.querySelector('.dialog-btn-cancel');

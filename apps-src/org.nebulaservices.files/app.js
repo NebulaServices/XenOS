@@ -120,11 +120,8 @@ class Main {
     }
 
     async addMount() {
-        const path = await this.dialog.prompt({
-            title: 'Add Mount',
-            body: 'Enter the mount path:',
-            placeholder: '/mnt/external'
-        });
+        const h = await xen.FilePicker.pick({ mode: 'directory' });
+        const path = h.path;
 
         if (path) {
             try {

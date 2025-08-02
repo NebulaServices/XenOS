@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const galleryEmptyMsg = document.getElementById("gallery-empty-message");
         const uploadWpFileBtn = document.getElementById("upload-wallpaper-file");
         const uploadWpUrlBtn = document.getElementById("upload-wallpaper-url");
+        const uploadWpFsBtn = document.getElementById("upload-wallpaper-fs");
         const rmWpBtn = document.getElementById("remove-wallpaper");
 
         function resetPolicyEditor() {
@@ -580,6 +581,26 @@ document.addEventListener("DOMContentLoaded", () => {
                         timeout: 3000,
                     });
                 }
+            }
+        });
+
+        uploadWpFsBtn.addEventListener("click", async () => {
+            try {
+                await window.xen.wallpaper.upload("fs");
+                loadWallpapers();
+                window.xen.notifications.spawn({
+                    title: "XenOS UI",
+                    description: "Wallpaper uploaded successfully!",
+                    icon: `/assets/logo.svg`,
+                    timeout: 2500,
+                });
+            } catch (e) {
+                window.xen.notifications.spawn({
+                    title: "XenOS UI",
+                    description: `Failed to upload wallpaper: ${e.message}`,
+                    icon: `/assets/logo.svg`,
+                    timeout: 3000,
+                });
             }
         });
 

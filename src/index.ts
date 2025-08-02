@@ -3,6 +3,7 @@ import { XenTransport } from "./apis/networking/Transport";
 import { oobe } from "./ui/oobe/autoUpdate";
 import { bootSplash } from "./ui/bootSplash";
 import { initSw } from "./sw/register-sw";
+import { windowEndpoint } from "comlink";
 
 async function setupDeps() {
     const ComlinkPath = '/libs/comlink/esm/comlink.min.mjs';

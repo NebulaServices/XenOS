@@ -379,14 +379,14 @@ export class AppLauncher {
     }
 
     private saveAppOrder(): void {
-        localStorage.setItem('app-launcher-order', JSON.stringify(this.appOrder));
+        window.xen.settings.set('app-launcher-order', this.appOrder);
     }
 
     private loadAppOrder(): void {
-        const saved = localStorage.getItem('app-launcher-order');
+        const saved = window.xen.settings.get('app-launcher-order');
         if (saved) {
             try {
-                this.appOrder = JSON.parse(saved);
+                this.appOrder = saved;
             } catch (e) {
                 console.error('Failed to load app order:', e);
                 this.appOrder = [];

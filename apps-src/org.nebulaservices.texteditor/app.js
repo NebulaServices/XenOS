@@ -152,14 +152,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         async function saveFileAs(id, content) {
             try {
-                const suggestedName = openFiles.get(id)?.name || "untitled.txt";
-
-                const newPath = await window.xen.dialog.prompt({
-                    title: "Save File As",
-                    body: "Enter path to save file to:",
-                    placeholder: suggestedName,
-                    icon: "/assets/logo.svg",
-                });
+                const h = await window.xen.FilePicker.pick({});
+                const newPath = h.path;
 
                 if (!newPath) {
                     return;

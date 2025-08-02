@@ -44,10 +44,12 @@ export class RepoStore {
 				url: 'https://repos.xen-os.dev/webapps/',
 				type: 'xen',
 			},
+			/*
 			{
 				url: 'https://repos.xen-os.dev/games/',
 				type: 'xen',
 			},
+			*/
 			{
 				url: 'https://games.anura.pro',
 				type: 'anura',

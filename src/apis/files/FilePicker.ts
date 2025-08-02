@@ -38,6 +38,7 @@ export class FilePicker {
         this.loadFontAwesome();
         this.createElements();
         this.setupEvents();
+        this.setupContextMenu();
     }
 
     private loadFontAwesome(): void {
@@ -528,6 +529,47 @@ export class FilePicker {
             this.updateContent();
         });
     }
+
+    private setupContextMenu(): void {
+    window.xen.contextMenu.attach(this.el.content, {
+        root: [
+            {
+                title: "New File",
+                onClick: async () => {
+                    const name = await window.xen.dialog.prompt({
+                        title: "New File",
+                        placeholder: "Filename",
+                    });
+                    if (!name) return;
+                    const path = `${this.currentPath}/${name}`.replace(/\/+/g, "/");
+                    try {
+                        await this.fs.write(path, "");
+                        await this.updateContent();
+                    } catch (err) {
+                        console.error("Create file failed:", err);
+                    }
+                },
+            },
+            {
+                title: "New Folder",
+                onClick: async () => {
+                    const name = await window.xen.dialog.prompt({
+                        title: "New Folder",
+                        placeholder: "Folder name",
+                    });
+                    if (!name) return;
+                    const path = `${this.currentPath}/${name}`.replace(/\/+/g, "/");
+                    try {
+                        await this.fs.mkdir(path);
+                        await this.updateContent();
+                    } catch (err) {
+                        console.error("Create folder failed:", err);
+                    }
+                },
+            },
+        ],
+    });
+}
 
     public static async pick(options?: FilePickerOptions): Promise<FilePickerResult | null> {
         const picker = new FilePicker(options);
