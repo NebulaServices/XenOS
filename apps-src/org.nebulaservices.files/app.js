@@ -476,9 +476,7 @@ class Main {
     async openFile(entry) {
         const fullPath = `${this.currentPath}/${entry.name}`;
         try {
-            await this.fs.open(fullPath, (url) => {
-                console.log('File opened with URL:', url);
-            });
+            await this.fs.open(fullPath);
         } catch (error) {
             this.notifications.spawn({
                 title: 'Open Failed',

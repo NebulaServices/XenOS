@@ -1,7 +1,7 @@
 import { Manifest } from "./PackageManager";
 
 export class Runtime {
-    public async exec(manifest: Manifest) {
+    public async exec(manifest: Manifest, args?: any) {
         let code: string;
         const width = manifest.window?.width || '600px';
         const height = manifest.window?.height || '400px';
@@ -11,9 +11,15 @@ export class Runtime {
 
         if (manifest.type != 'webview') {
             url = new URL(manifest.source, `${location.origin}/fs/usr/apps/${manifest.id}/`).href;
+
+            if (args) {
+                const params = new URLSearchParams(args);
+                console.log(params.toString());
+                url += `?${params.toString()}`;
+            }
         } else {
             //@ts-ignore
-            url = window.__uv$config.prefix + window.__uv$config.encodeUrl(manifest.source)
+            url = window.__uv$config.prefix + window.__uv$config.encodeUrl(manifest.source);
         }
 
         if (manifest.icon) {

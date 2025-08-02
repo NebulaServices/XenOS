@@ -8,10 +8,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const saveAsFileBtn = document.getElementById("saveAsFileBtn");
         const renameFileBtn = document.getElementById("renameFileBtn");
 
+        const params = new URLSearchParams(window.location.search);
+
         let currentTabId = 0;
         const openFiles = new Map();
 
-        function createNewTab(name = "Untitled", content = "", filePath = null) {
+        async function createNewTab(name = "Untitled", content = "", filePath = null) {
+            try {
+                const c = await window.xen.fs.read(filePath, 'text');
+
+                if (c) {
+                    content = new String(c).toString();
+                }
+            } catch { };
+
             const id = ++currentTabId;
             const tab = document.createElement("div");
 
@@ -67,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const activeTab = tabsEl.querySelector(`.tab[data-tab-id="${id}"]`);
-            const activePane = tabContentEl.querySelector( `.editor-tab-pane[data-tab-id="${id}"]`);
+            const activePane = tabContentEl.querySelector(`.editor-tab-pane[data-tab-id="${id}"]`);
 
             if (activeTab && activePane) {
                 activeTab.classList.add("active");
@@ -102,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const firstRemainingTabId = parseInt(tabsEl.firstElementChild.dataset.tabId,);
                 activateTab(firstRemainingTabId);
             } else {
-                createNewTab();
+                await createNewTab();
             }
         }
 
@@ -221,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (existingTabId) {
                         activateTab(existingTabId);
                     } else {
-                        createNewTab(fileName, content, filePath);
+                        await createNewTab(fileName, content, filePath);
                     }
                 } else {
                 }
@@ -301,7 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        newFileBtn.addEventListener("click", () => createNewTab());
+        newFileBtn.addEventListener("click", async () => await createNewTab());
         openFileBtn.addEventListener("click", openFile);
         saveFileBtn.addEventListener("click", saveCurrentFile);
         saveAsFileBtn.addEventListener("click", async () => {
@@ -314,7 +324,15 @@ document.addEventListener("DOMContentLoaded", () => {
             await saveFileAs(id, textareaContent);
         });
         renameFileBtn.addEventListener("click", renameCurrentFile);
-        createNewTab();
+        await createNewTab();
+
+        if (params.get('file')) {
+           await createNewTab(
+            params.get('file').split('/').at(-1), 
+            '', 
+            params.get('file')
+        );
+        }
     }
 
     setTimeout(() => {

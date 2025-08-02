@@ -299,13 +299,21 @@ export class PackageManager {
         }
     }
 
-    public async open(packageId: string): Promise<void> {
+    public async open(packageId: string, args?: any): Promise<void> {
         try {
             let regs = await this.getRegs('apps');
 
             if (regs.includes(packageId)) {
                 const manifest = await this.getManifest(packageId, 'apps');
-                if (manifest) await this.runtime.exec(manifest);
+
+                if (manifest) {
+                    if (args) {
+                        await this.runtime.exec(manifest, args);
+                    } else {
+                        await this.runtime.exec(manifest);
+                    }
+                };
+
                 return;
             }
 
