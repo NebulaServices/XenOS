@@ -42,7 +42,8 @@ class Main {
             this.filterFiles(e.target.value);
         });
 
-        const filesGrid = document.querySelector('.files-grid');
+        const filesGrid = document.querySelector(/*'.files-grid'*/'.content-area');
+        /*
         filesGrid.addEventListener('mousedown', (e) => {
             if (e.target === filesGrid) {
                 this.startSelection(e);
@@ -58,6 +59,7 @@ class Main {
         filesGrid.addEventListener('mouseup', () => {
             this.endSelection();
         });
+        */
 
         document.addEventListener('keydown', (e) => {
             this.handleKeyboard(e);
@@ -68,7 +70,7 @@ class Main {
     }
 
     setupContextMenus() {
-        this.contextMenu.attach(document.querySelector('.files-grid'), {
+        this.contextMenu.attach(document.querySelector('.content-area'), {
             root: [
                 {
                     title: 'New Folder',
@@ -344,12 +346,18 @@ class Main {
             ]
         };
 
-        contextMenuOptions.Compress = [
+        /*
+        contextMenuOptions.Compression = [
             {
-                title: 'Compress to ZIP',
+                title: 'Compress',
                 onClick: () => this.compressSelected()
+            },
+            {
+                title: 'Decompress',
+                onClick: () => this.decompressSelected()
             }
         ];
+        */
 
         this.contextMenu.attach(fileItem, contextMenuOptions);
 
@@ -923,7 +931,6 @@ class Main {
                     }
 
                     await this.fs.compress(tempDir, `${this.currentPath}/${zipName}`);
-
                     await this.fs.rm(tempDir);
                 }
 
@@ -937,6 +944,48 @@ class Main {
             } catch (error) {
                 this.notifications.spawn({
                     title: 'Compress Failed',
+                    description: error.message,
+                    icon: '/assets/logo.svg'
+                });
+            }
+        }
+    }
+
+    async decompressSelected() {
+        const selected = Array.from(this.selectedItems);
+        if (selected.length === 0) return;
+
+        const zipFile = selected.find(item => item.endsWith('.zip'));
+        if (!zipFile) {
+            this.notifications.spawn({
+                title: 'Decompress Failed',
+                description: 'No zip file selected.',
+                icon: '/assets/logo.svg'
+            });
+            return;
+        }
+
+        const decompressPath = await this.dialog.prompt({
+            title: 'Decompress',
+            body: 'Enter destination folder:',
+            placeholder: this.currentPath
+        });
+
+        if (decompressPath) {
+            try {
+                await this.fs.decompress(
+                    `${this.currentPath}/${zipFile}`,
+                    decompressPath
+                );
+                await this.refresh();
+                this.notifications.spawn({
+                    title: 'Decompression Successful',
+                    description: `Decompressed ${zipFile} to ${decompressPath}`,
+                    icon: '/assets/logo.svg'
+                });
+            } catch (error) {
+                this.notifications.spawn({
+                    title: 'Decompress Failed',
                     description: error.message,
                     icon: '/assets/logo.svg'
                 });

@@ -207,6 +207,7 @@ export class ContextMenu {
 
 	private positionMenu(x: number, y: number): void {
 		if (!this.menuEl) return;
+		/*
 		const rect = this.menuEl.getBoundingClientRect();
 
 		if (rect.right > window.innerWidth) {
@@ -215,7 +216,9 @@ export class ContextMenu {
 
 		if (rect.top < 0) {
 			this.menuEl.style.top = `${y + 10}px`;
-		}
+		}*/
+		this.menuEl.style.left = `${x}px`;
+		this.menuEl.style.top = `${y - 35}px`;
 	}
 
 	public closeMenu(): void {
