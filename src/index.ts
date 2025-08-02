@@ -3,7 +3,6 @@ import { XenTransport } from "./apis/networking/Transport";
 import { oobe } from "./ui/oobe/autoUpdate";
 import { bootSplash } from "./ui/bootSplash";
 import { initSw } from "./sw/register-sw";
-import { windowEndpoint } from "comlink";
 
 async function setupDeps() {
     const ComlinkPath = '/libs/comlink/esm/comlink.min.mjs';
@@ -50,7 +49,9 @@ window.addEventListener('load', async () => {
     loadingBar.style.transition = "width 0.2s ease-out";
 
     const connection = new window.BareMux.BareMuxConnection('/libs/bare-mux/worker.js');
+    //@ts-ignore
     connection.setRemoteTransport(new XenTransport(), 'XenTransport');
+    
 
     setTimeout(() => {
         splash.style.opacity = "0";
@@ -62,6 +63,12 @@ window.addEventListener('load', async () => {
     await taskbar();
     await window.xen.initSystem();
 
+    // idk man
+    setInterval(() => {
+        fetch('/dnt', {
+            keepalive: true
+        }).catch(console.error);
+    }, 5000);
 });
 
 document.addEventListener('DOMContentLoaded', () => {

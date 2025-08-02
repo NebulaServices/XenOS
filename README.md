@@ -58,6 +58,7 @@ You can view the projects TODO [here](https://github.com/NebulaServices/XenOS/bl
 ## Credit
 - The default wallpaper used: https://userstyles.org/styles/277430/font-change
 - The color scheme used: https://catppuccin.com/palette/ (mocha)
+- Major inspiration: [AnuraOS](https://anura.pro)
 
 ## Dependencies used
 - [Workbox](https://developer.chrome.com/docs/workbox)

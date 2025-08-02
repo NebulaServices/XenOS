@@ -53,10 +53,6 @@ export class RepoStore {
 			{
 				url: 'https://games.anura.pro',
 				type: 'anura',
-			},
-			{
-				url: 'https://xen-repos.scaratek.dev',
-				type: 'xen'
 			}
 		];
 

@@ -73,6 +73,14 @@ workbox.routing.registerRoute(
     "GET"
 );
 
+workbox.routing.registerRoute(
+    "/dnt",
+    async () => {
+        return new Response("OK");
+    },
+    "GET"
+);
+
 //@ts-ignore
 const uv = new UVServiceWorker();
 const methods = ["GET", "POST", "HEAD", "PUT", "DELETE", "OPTIONS", "PATCH"];

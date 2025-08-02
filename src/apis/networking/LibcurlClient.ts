@@ -24,10 +24,10 @@ export class LibcurlClient {
         },
     };
 
-    public HTTPSession: any;
+    // public HTTPSession: any;
     public WebSocket: any;
-    public CurlWebSocket: any;
-    public TLSSocket: any;
+    // public CurlWebSocket: any;
+    // public TLSSocket: any;
     public setUrl: (url: string) => void;
 
     public wisp = {
@@ -62,14 +62,16 @@ export class LibcurlClient {
 
         const lcModule = await import(this.paths.lcJs);
         this.direct.libcurl = lcModule.libcurl;
-        this.direct.libcurl.load_wasm(this.paths.lcWasm);
+        await this.direct.libcurl.load_wasm(this.paths.lcWasm);
+        console.log('[LC] js + wasm loaded');
 
         this.direct.wisp = await import(this.paths.wisp);
         this.wisp.wispConn = new this.direct.wisp.WispConnection(this.networkSettings.url);
 
-        document.addEventListener("libcurl_load", () => {
+        /*document.addEventListener("libcurl_load", () => {*/
             this.direct.libcurl.transport = this.networkSettings.transport;
             this.direct.libcurl.set_websocket(this.networkSettings.url);
+            console.log('[LC] set url + transport');
 
             // this.HTTPSession = this.direct.libcurl.HTTPSession;
             this.WebSocket = this.direct.libcurl.WebSocket;
@@ -85,7 +87,7 @@ export class LibcurlClient {
             if (this.networkSettings.connections) {
                 this.session.set_connections(...this.networkSettings.connections);
             }
-        });
+        /*});*/
 
         this.wisp.wispConn.addEventListener("open", () => {
             this.wisp.createStream = (...args) => this.wisp.wispConn.create_stream(...args);
