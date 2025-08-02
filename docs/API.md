@@ -314,15 +314,15 @@ interface XenManifest {
     id: string;
     version: string;
 
-    title?: string;
+    title: string;
     description?: string;
-    icon?: string;
+    icon: string;
 
     type: 'webview' | 'app' | 'process' | 'library';
     source: string;
 
-    maintainer: {
-        name: string;
+    maintainer?: {
+        name?: string;
         email?: string;
         website?: string;
     }
@@ -331,6 +331,7 @@ interface XenManifest {
         width?: string;
         height?: string;
         resizable?: boolean;
+        xenFilePicker?: boolean; // If true, replaces the default file picker with one for XenOS, letting you pick files from XenOS instead of your PC
     };
 }
 
@@ -541,6 +542,7 @@ interface WindowOpts {
     resizable?: boolean; // Disables resizing, fullscreening, and clamping
     display?: boolean; // Whether the window should be visible. This allows for offscreen documents.
     borderless?: boolean; // Allows developers to implement there own window shell
+    xenFilePicker?: boolean; // If true, replaces the default file picker with one for XenOS, letting you pick files from XenOS instead of your PC
 }
 
 xen.wm.create(opts: WindowOpts);

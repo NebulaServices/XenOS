@@ -13,6 +13,7 @@ export interface WindowOpts {
     resizable?: boolean;
     display?: boolean;
     borderless?: boolean;
+    xenFilePicker?: boolean;
 }
 
 export class Window {
@@ -29,6 +30,7 @@ export class Window {
         resizable?: boolean;
         display?: boolean;
         borderless?: boolean;
+        xenFilePicker?: boolean;
     } = {} as any;
     public is: {
         minimized: boolean;
@@ -71,6 +73,7 @@ export class Window {
         this.props.resizable = opts.resizable ?? true;
         this.props.display = opts.display ?? true;
         this.props.borderless = opts.borderless ?? false;
+        this.props.xenFilePicker = opts.xenFilePicker ?? false;
         this.og.width = this.props.width;
         this.og.height = this.props.height;
         this.og.x = this.props.x;
@@ -158,6 +161,13 @@ export class Window {
                             }
                         });
                     `);
+                }
+
+                if (this.props.xenFilePicker == true) {
+                    //@ts-ignore
+                    iframe.contentWindow.window.showOpenFilePicker = window.xen.polyfill.sofp;
+                    //@ts-ignore
+                    iframe.contentWindow.window.showDirectoryPicker = window.xen.polyfill.sdp;
                 }
             };
         } else if (this.props.content) {

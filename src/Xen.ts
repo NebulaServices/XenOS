@@ -15,6 +15,7 @@ import { getPolicy, setPolicy } from "./apis/policy/policy";
 import { Dialog } from "./ui/apis/Dialog";
 import { Systray } from "./ui/apis/Systray";
 import { FilePicker } from "./apis/files/FilePicker";
+import { sofp, sdp } from "./apis/files/polyfill";
 
 export class Xen {
     public settings: typeof settings;
@@ -37,6 +38,11 @@ export class Xen {
     public dialog: Dialog;
     public systray: Systray;
     public FilePicker: typeof FilePicker;
+    public polyfill: {
+        sofp: typeof sofp;
+        sdp: typeof sdp;
+    }
+
 
     constructor() {
         this.settings = settings;
@@ -59,6 +65,10 @@ export class Xen {
         this.dialog = new Dialog();
         this.systray = new Systray();
         this.FilePicker = FilePicker;
+        this.polyfill = {
+            sofp: sofp,
+            sdp: sdp
+        };
     }
 
     public version = {

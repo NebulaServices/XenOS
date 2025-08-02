@@ -6,6 +6,7 @@ export class Runtime {
         const width = manifest.window?.width || '600px';
         const height = manifest.window?.height || '400px';
         const resizable = manifest.window?.resizable || true;
+        const xenFilePicker = manifest.window?.xenFilePicker ?? false;
         let icon: string;
         let url: string;
 
@@ -36,7 +37,8 @@ export class Runtime {
                     url: "${url}",
                     width: "${width}",
                     height: "${height}",
-                    resizable: ${resizable}
+                    resizable: ${resizable},
+                    xenFilePicker: ${xenFilePicker}
                 });
             `;
         } else if (manifest.type == 'process') {

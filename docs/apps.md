@@ -10,7 +10,7 @@ interface Manifest {
 
     title: string; // Name of your package
     description?: string;
-    icon?: string; // Path to the icon
+    icon: string; // Path to the icon
 
     type: 'webview' | 'app' | 'process' | 'library';
     /*
@@ -29,8 +29,8 @@ interface Manifest {
     */
     source: string; // See above
 
-    maintainer: { // Information about you (the developer!)
-        name: string;
+    maintainer?: { // Optinal information about you (the developer!)
+        name?: string;
         email?: string;
         website?: string;
     }
@@ -39,6 +39,7 @@ interface Manifest {
         width?: string;
         height?: string;
         resizable?: boolean;
+        xenFilePicker?: boolean; // If true, replaces the default file picker with one for XenOS, letting you pick files from XenOS instead of your PC
     };
 }
 ```

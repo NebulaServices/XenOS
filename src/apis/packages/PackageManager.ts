@@ -6,15 +6,15 @@ export interface Manifest {
     id: string;
     version: string;
 
-    title?: string;
+    title: string;
     description?: string;
-    icon?: string;
+    icon: string;
 
     type: 'webview' | 'app' | 'process' | 'library';
     source: string;
 
-    maintainer: {
-        name: string;
+    maintainer?: {
+        name?: string;
         email?: string;
         website?: string;
     }
@@ -23,6 +23,7 @@ export interface Manifest {
         width?: string;
         height?: string;
         resizable?: boolean;
+        xenFilePicker?: boolean;
     };
 }
 
@@ -59,9 +60,6 @@ export class PackageManager {
             icon: anuraM.icon,
             type: 'app',
             source: anuraM.index,
-            maintainer: {
-                name: 'ATL'
-            },
             window: {
                 width: anuraM.wininfo.width || '1000px',
                 height: anuraM.wininfo.height || '500px',
