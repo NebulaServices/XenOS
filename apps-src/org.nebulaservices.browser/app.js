@@ -15,16 +15,18 @@ class Main {
         this.initKeyboardShortcuts();
         this.initContextMenus();
         this.createNewTab();
-        this.renderBookmarksBar();
+        // this.renderBookmarksBar();
 
-        const bookmarksVisible = window.xen?.settings?.get('bookmarks-visible') ?? true;
-        this.toggleBookmarksBar(bookmarksVisible);
+        //const bookmarksVisible = window.xen?.settings?.get('bookmarks-visible') ?? true;
+        // this.toggleBookmarksBar(bookmarksVisible);
 
         const savedWidth = window.xen?.settings?.get('sidebar-width') || 250;
         this.tabSidebar.style.width = `${savedWidth}px`;
         this.checkIconMode(savedWidth);
 
         this.startUrlMonitoring();
+
+        firstTime();
     }
 
     initElements() {
@@ -37,8 +39,8 @@ class Main {
         this.omnibox = document.getElementById('omnibox');
         this.omniboxSuggestions = document.getElementById('omniboxSuggestions');
         this.historyBtn = document.getElementById('historyBtn');
-        this.bookmarksBar = document.getElementById('bookmarksBar');
-        this.bookmarksList = document.getElementById('bookmarksList');
+        // this.bookmarksBar = document.getElementById('bookmarksBar');
+        // this.bookmarksList = document.getElementById('bookmarksList');
         this.contentArea = document.getElementById('contentArea');
         this.welcomeScreen = document.getElementById('welcomeScreen');
         this.resizeHandle = document.getElementById('resizeHandle');
@@ -173,10 +175,12 @@ class Main {
                         break;
                 }
 
+                /*
                 if (e.shiftKey && e.key === 'B') {
                     e.preventDefault();
                     this.toggleBookmarksBar();
                 }
+                */
             }
         });
     }
@@ -822,7 +826,6 @@ function firstTime() {
 
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        firstTime();
         new Main();
-    }, 100);
+    }, 500);
 });
