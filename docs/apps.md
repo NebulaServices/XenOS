@@ -41,6 +41,8 @@ interface Manifest {
         resizable?: boolean;
         xenFilePicker?: boolean; // If true, replaces the default file picker with one for XenOS, letting you pick files from XenOS instead of your PC
     };
+
+    installHook?: string; // Optionally, you can specify a path (Ex. `hook.js`) and it will be run on install
 }
 ```
 
@@ -69,5 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
 ```
 This gives a bit of time for Xen to inject its APIs into your app, which is needed, since without this setTimeout, uses `xen` or `window.xen` will result in `undefined`
 
+## App Arguments
+You can parse URL Paramaters as app arguments. To learn more about this checkout the [API Docs](./API.md) and you can see an example in the text editor app.
+
 ## App Examples
-For example applications, please see the `apps-src` directory
+For example applications, please see the `apps-src` directory (The code is terrible, you have been warned)

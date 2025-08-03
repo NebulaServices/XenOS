@@ -6,9 +6,9 @@ export interface Manifest {
     id: string;
     version: string;
 
-    title: string;
+    title?: string;
     description?: string;
-    icon: string;
+    icon?: string;
 
     type: 'webview' | 'app' | 'process' | 'library';
     source: string;
@@ -25,6 +25,8 @@ export interface Manifest {
         resizable?: boolean;
         xenFilePicker?: boolean;
     };
+
+    installHook?: string
 }
 
 interface AnuraManifest {
@@ -177,6 +179,18 @@ export class PackageManager {
             if (!updatedRegs.includes(manifest.id)) {
                 updatedRegs.push(manifest.id);
                 await this.saveRegs(registryType, updatedRegs);
+            }
+
+            if (manifest.installHook) {
+                const path = `${pkgPath}/${manifest.installHook}`
+                if (await fs.exists(path)) {
+                    const code = (await fs.read(path, 'text')) as string
+                    await window.xen.process.spawn({
+                        async: false,
+                        type: 'direct',
+                        content: code
+                    });
+                }
             }
         } catch (err) {
             throw err;

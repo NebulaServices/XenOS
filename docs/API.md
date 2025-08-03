@@ -26,7 +26,7 @@ await xen.FilePicker.pick(opts: FilePickerOpts);
 API for creating context menu's
 
 ### `xen.contextMenu.attach(elOrId: string | HTMLElement, options: ContextMenuOptions)`
-You can either pass an ID and or element into elOrId, and it'll attatch the context menu to that
+You can either pass an ID or an element into elOrId, and it'll attatch the context menu to that
 ```ts
 interface ContextMenuEntry {
 	title: string;
@@ -286,8 +286,13 @@ API for interacting with packages
 ### `await xen.packages.getManifest(id: string, type: 'apps' | 'libs')`
 Returns the manifest of a package given an ID and type
 
-### `await xen.packages.open(id: string)`
-Opens an app given an id
+### `await xen.packages.open(id: string, args?: any)`
+Opens an app given an id. If args is present, you can pass in arguments that will get converted into URL paramaters for the app to parse. For example:
+```js
+xen.packages.open('org.nebulaservices.texteditor', {
+    file: '/usr/apps/org.nebulaservices.about/manifest.json'
+});
+```
 
 ### `await xen.packages.install(source: 'prompt' | 'opfs' | 'url', path?: string)`
 If `source` is prompt, it'll ask you to select a zip archive using the native file picker, if its `url`, put the url to the zip archive, if its `opfs`, put the path in XenFS. This will, well, install a package!

@@ -74,23 +74,27 @@ class Main {
             root: [
                 {
                     title: 'New Folder',
-                    onClick: () => this.createFolder()
+                    onClick: () => { this.createFolder(); this.refresh(); }
                 },
                 {
                     title: 'New File',
-                    onClick: () => this.createFile()
+                    onClick: () => { this.createFile(); this.refresh(); }
                 },
                 {
                     title: 'Upload File',
-                    onClick: () => this.uploadFile()
+                    onClick: () => { this.uploadFile(); this.refresh(); }
                 },
                 {
                     title: 'Upload Folder',
-                    onClick: () => this.uploadFolder()
+                    onClick: () => { this.uploadFolder(); this.refresh(); }
                 },
                 {
                     title: 'Paste',
-                    onClick: () => this.paste()
+                    onClick: () => { this.refresh(); this.paste(); }
+                },
+                {
+                    title: 'Refresh',
+                    onclick: () => this.refresh()
                 }
             ]
         });
@@ -318,46 +322,40 @@ class Main {
             root: [
                 {
                     title: 'Open',
-                    onClick: () => this.openFile(entry)
+                    onClick: () => {this.openFile(entry); this.refresh(); }
                 },
                 {
                     title: 'Cut',
-                    onClick: () => this.cut([entry])
+                    onClick: () => { this.cut([entry]); this.refresh(); }
                 },
                 {
                     title: 'Copy',
-                    onClick: () => this.copy([entry])
+                    onClick: () => { this.copy([entry]); this.refresh(); }
                 },
                 {
                     title: 'Rename',
-                    onClick: () => this.rename(entry)
+                    onClick: () => { this.rename(entry); this.refresh(); }
                 },
                 {
                     title: 'Delete',
-                    onClick: () => this.deleteWithConfirmation([entry])
+                    onClick: () => { this.deleteWithConfirmation([entry]); this.refresh(); }
                 },
                 {
                     title: 'Download',
-                    onClick: () => this.download(entry)
-                }
+                    onClick: () => { this.download(entry); this.refresh(); }
+                },
+                {
+                    title: 'Compress',
+                    onClick: () => { this.compress(entry); this.refresh(); }
+                },
+                {
+                    title: 'Decompress',
+                    onClick: () => { this.decompress(entry); this.refresh(); }
+                },             
             ]
         };
 
-        /*
-        contextMenuOptions.Compression = [
-            {
-                title: 'Compress',
-                onClick: () => this.compressSelected()
-            },
-            {
-                title: 'Decompress',
-                onClick: () => this.decompressSelected()
-            }
-        ];
-        */
-
         this.contextMenu.attach(fileItem, contextMenuOptions);
-
         return fileItem;
     }
 
@@ -899,94 +897,31 @@ class Main {
         }
     }
 
-    async compressSelected() {
-        const selected = Array.from(this.selectedItems);
-        if (selected.length === 0) return;
-
-        const zipName = await this.dialog.prompt({
-            title: 'Compress',
-            body: 'Enter ZIP file name:',
-            placeholder: selected.length === 1 ? `${selected[0]}.zip` : 'archive.zip'
-        });
-
-        if (zipName) {
-            try {
-                if (selected.length === 1) {
-                    await this.fs.compress(
-                        `${this.currentPath}/${selected[0]}`,
-                        `${this.currentPath}/${zipName}`
-                    );
-                } else {
-                    const tempDir = `${this.currentPath}/.temp_compress_${Date.now()}`;
-                    await this.fs.mkdir(tempDir);
-
-                    for (const item of selected) {
-                        await this.fs.copy(
-                            `${this.currentPath}/${item}`,
-                            `${tempDir}/${item}`
-                        );
-                    }
-
-                    await this.fs.compress(tempDir, `${this.currentPath}/${zipName}`);
-                    await this.fs.rm(tempDir);
-                }
-
+    async compress(entry) {
+        try {
+            await this.fs.compress(`${this.currentPath}/${entry.name}`, `${this.currentPath}/${entry.name}.zip`).then(async () => {
                 await this.refresh();
-
-                this.notifications.spawn({
-                    title: 'Compression Successful',
-                    description: `Created ${zipName}`,
-                    icon: '/assets/logo.svg'
-                });
-            } catch (error) {
-                this.notifications.spawn({
-                    title: 'Compress Failed',
-                    description: error.message,
-                    icon: '/assets/logo.svg'
-                });
-            }
+            });
+        } catch (err) {
+            this.notifications.spawn({
+                title: 'Failed to Compress',
+                description: err.message,
+                icon: '/assets/logo.svg'
+            });
         }
     }
 
-    async decompressSelected() {
-        const selected = Array.from(this.selectedItems);
-        if (selected.length === 0) return;
-
-        const zipFile = selected.find(item => item.endsWith('.zip'));
-        if (!zipFile) {
+    async decompress(entry) {
+        try {
+            await this.fs.decompress(`${this.currentPath}/${entry.name}`, `${this.currentPath}/${entry.name.split('.zip')[0]}`).then(async () => {
+                await this.refresh();
+            });
+        } catch (err) {
             this.notifications.spawn({
-                title: 'Decompress Failed',
-                description: 'No zip file selected.',
+                title: 'Failed to Decompress',
+                description: err.message,
                 icon: '/assets/logo.svg'
             });
-            return;
-        }
-
-        const decompressPath = await this.dialog.prompt({
-            title: 'Decompress',
-            body: 'Enter destination folder:',
-            placeholder: this.currentPath
-        });
-
-        if (decompressPath) {
-            try {
-                await this.fs.decompress(
-                    `${this.currentPath}/${zipFile}`,
-                    decompressPath
-                );
-                await this.refresh();
-                this.notifications.spawn({
-                    title: 'Decompression Successful',
-                    description: `Decompressed ${zipFile} to ${decompressPath}`,
-                    icon: '/assets/logo.svg'
-                });
-            } catch (error) {
-                this.notifications.spawn({
-                    title: 'Decompress Failed',
-                    description: error.message,
-                    icon: '/assets/logo.svg'
-                });
-            }
         }
     }
 
