@@ -47,14 +47,14 @@ async function serveFile(url: string): Promise<Response> {
     const path = new URL(url).pathname.replace(/^\/fs/, '');
     let content: Uint8Array;
 
-        try {
-            content = await fs.read(path, 'uint8array') as Uint8Array;
-        } catch {
-            return new Response(`File not found: ${path}`, {
-                status: 404,
-                statusText: 'Not Found',
-            });
-        }
+    try {
+        content = await fs.read(path, 'uint8array') as Uint8Array;
+    } catch {
+        return new Response(`File not found: ${path}`, {
+            status: 404,
+            statusText: 'Not Found',
+        });
+    }
 
     const extension = path.split('.').pop()?.toLowerCase() ?? '';
     let mimeType = await mime.default.getType(extension) || 'application/octet-stream';
@@ -87,10 +87,10 @@ const methods = ["GET", "POST", "HEAD", "PUT", "DELETE", "OPTIONS", "PATCH"];
 
 methods.forEach((method) => {
     workbox.routing.registerRoute(/\/proxy\//,
-        async (ev: FetchEvent) => { 
-            return await uv.fetch(ev) 
+        async (ev: FetchEvent) => {
+            return await uv.fetch(ev)
         },
-    method);
+        method);
 });
 
 async function init() {
