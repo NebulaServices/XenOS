@@ -421,5 +421,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const m = new Main();
         await m.init();
-    }, 300);
+    }, 500);
 });

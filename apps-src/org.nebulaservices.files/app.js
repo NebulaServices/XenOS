@@ -977,5 +977,5 @@ class Main {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         new Main();
-    }, 100);
+    }, 500);
 });

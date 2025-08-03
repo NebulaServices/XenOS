@@ -10,5 +10,5 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    setTimeout(() => { main() }, 100);
+    setTimeout(() => { main() }, 500);
 });

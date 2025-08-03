@@ -688,5 +688,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(() => {
         main();
-    }, 100);
+    }, 500);
 });
