@@ -86,7 +86,7 @@ const uv = new UVServiceWorker();
 const methods = ["GET", "POST", "HEAD", "PUT", "DELETE", "OPTIONS", "PATCH"];
 
 methods.forEach((method) => {
-    workbox.routing.registerRoute(/\/proxy\//,
+    workbox.routing.registerRoute(/\/uvp\//,
         async (ev: FetchEvent) => {
             return await uv.fetch(ev)
         },
