@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XenOS Browser</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="browser-container">
+        <div class="tab-sidebar" id="tabSidebar">
+            <div class="tab-list" id="tabList"></div>
+            <button class="new-tab-btn" id="newTabBtn">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+
+        <div class="resize-handle" id="resizeHandle"></div>
+
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="nav-controls">
+                    <button class="nav-btn" id="backBtn" disabled>
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="nav-btn" id="forwardBtn" disabled>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="nav-btn" id="reloadBtn">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+
+                <div class="omnibox-container">
+                    <input type="text" class="omnibox" id="omnibox" placeholder="Search or enter URL..." autocomplete="off">
+                    <div class="omnibox-suggestions" id="omniboxSuggestions"></div>
+                </div>
+
+                <div class="top-controls">
+                    <button class="control-btn" id="historyBtn">
+                        <i class="fas fa-history"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!--
+                <div class="bookmarks-bar" id="bookmarksBar">
+                    <div class="bookmarks-list" id="bookmarksList"></div>
+                </div>
+            -->
+
+            <div class="content-area" id="contentArea">
+                <div class="welcome-screen" id="welcomeScreen">
+                    <h1>Welcome to XenOS Browser</h1>
+                    <p>Enter a URL or search query to get started</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

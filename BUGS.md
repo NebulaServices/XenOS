@@ -1,0 +1,7 @@
+- The context menu is buggy as shit and likes to go where ever it wants
+- No mobile support yet
+- The SW is buggy and will sometimes return 'Service not ready', probably because it kills itself
+- the FS API can be a pain to work with
+- Theres no way to close the context menu easily
+- State between the install/open button in the RepoStore is jank
+- Sometimes resizing a window over a window can be laggy

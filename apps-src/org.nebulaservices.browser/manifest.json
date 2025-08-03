@@ -1,0 +1,17 @@
+{
+    "id": "org.nebulaservices.browser",
+    "version": "1.0.0",
+    "type": "app",
+    "source": "index.html",
+    "title": "Web Browser",
+    "icon": "logo.svg",
+    "maintainer": {
+        "name": "Nebula Services",
+        "email": "contact@nebulaservices.org",
+        "website": "https://nebulaservices.org"
+    },
+    "window": {
+        "width": "1000px",
+        "height": "500px"
+    }
+}

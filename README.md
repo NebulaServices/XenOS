@@ -51,6 +51,12 @@ Documentation about XenOS can be found [here!](https://github.com/NebulaServices
 ## Whats Left?
 You can view the projects TODO [here](https://github.com/NebulaServices/XenOS/blob/main/TODO.md)
 
+## I Found a Bug!!!!
+Cool! You can submit things like bug reports in our [Discord Server](https://discord.gg/unblocker), but please check if the bug has already been reported. You can check in the Discord or [here](./BUGS.md)
+
+## Changelog
+The changelog can be found [here](./CHANGELOG.md)
+
 ## Contributors
 - [Scaratek](https://github.com/scaratech) - Lead developer
 - [Madjik](https://github.com/madjikdotpng) - Various UI tweaks and logo designer

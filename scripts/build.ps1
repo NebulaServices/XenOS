@@ -90,6 +90,8 @@ copy_app "org.nebulaservices.settings"
 copy_app "org.nebulaservices.texteditor"
 copy_app "org.nebulaservices.repostore"
 copy_app "org.nebulaservices.files"
+copy_app "org.nebulaservices.browser"
+
 Copy-Item -Recurse ./apps/ ./build/apps/
 
 success "Copied apps"

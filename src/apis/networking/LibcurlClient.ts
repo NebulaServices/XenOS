@@ -175,4 +175,13 @@ export class LibcurlClient {
 
         return e;
     }
+
+    public decodeUrl(u: string): string {
+        //@ts-ignore
+        u = u.split(__uv$config.prefix)[1];
+        //@ts-ignore
+        u = __uv$config.decodeUrl(u);
+
+        return u;
+    }
 }
