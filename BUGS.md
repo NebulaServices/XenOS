@@ -5,3 +5,4 @@
 - Theres no way to close the context menu easily
 - State between the install/open button in the RepoStore is jank
 - Sometimes resizing a window over a window can be laggy
+- The bootsplash should be modified because it looks weird on prod but its fine
