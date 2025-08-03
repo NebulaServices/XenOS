@@ -15,7 +15,7 @@
     z-index: 9000;
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    border: 1px solid var(--mocha-surface2);
+    border: 1px solid rgba(186, 194, 222, 0.214);
 }
 
 .taskbar-windows {
