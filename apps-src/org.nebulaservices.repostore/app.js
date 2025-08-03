@@ -216,11 +216,11 @@ class Main {
             `;
 
             const btn = packageCard.querySelector('.package-btn');
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', async () => {
                 if (isInstalled) {
                     this.openPackage(pkg.id);
                 } else {
-                    this.installPackage(pkg);
+                    await this.installPackage(pkg).then(() => this.renderPackages());
                 }
             });
 
@@ -410,15 +410,6 @@ class Main {
 
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(async () => {
-        if (!window.xen.settings.get('ft-repo')) {
-            window.xen.settings.set('ft-repo', true);
-            window.xen.dialog.alert({
-                title: 'RepoStore',
-                body: 'Welcome to the XenOS RepoStore! Here is where you can download and browse for applications. Please note this app is still in WiP! Currently Anura Repos are buggy and there are issues with state between the install/open button.',
-                icon: '/assets/logo.svg'
-            });
-        }
-
         const m = new Main();
         await m.init();
     }, 500);

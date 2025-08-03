@@ -78,7 +78,7 @@ export class Xen {
         codename: 'Nightcord',
         major: 1,
         minor: 0,
-        patch: 0,
+        patch: 1,
         build: '',
         pretty: ''
     };

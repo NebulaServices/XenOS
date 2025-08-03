@@ -451,6 +451,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateBtn.addEventListener("click", async () => {
             try {
+                const reg = await navigator.serviceWorker.getRegistration();
+                if (reg) {
+                    await reg.unregister();
+                }
                 window.xen.settings.remove("build-cache");
                 window.parent.postMessage({ type: "reload-site" }, "*");
             } catch (e) {

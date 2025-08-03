@@ -46,6 +46,7 @@ export function bootSplash() {
     `;
     splash.appendChild(subtext);
 
+    /*
     const loadingBarContainer = document.createElement("div");
     loadingBarContainer.style.cssText = `
         width: 300px;
@@ -67,6 +68,7 @@ export function bootSplash() {
         animation: loading-animation 0.2s infinite constant;
     `;
     loadingBarContainer.appendChild(loadingBar);
+    */
 
     const style = document.createElement("style");
     style.textContent = `
