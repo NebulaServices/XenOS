@@ -6,3 +6,4 @@
 - State between the install/open button in the RepoStore is jank
 - Sometimes resizing a window over a window can be laggy
 - The bootsplash should be modified because it looks weird on prod but its fine
+- reloading with ctrl + shift + r causes the bootsplash to not load
