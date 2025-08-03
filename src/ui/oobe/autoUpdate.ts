@@ -39,6 +39,7 @@ export async function oobe() {
 
         window.xen.settings.set('oobe', true);
         window.xen.settings.set('build-cache', window.xen.version.build);
+        location.reload();
     }
 
     if (window.xen.version.build != window.xen.settings.get('build-cache')) {
