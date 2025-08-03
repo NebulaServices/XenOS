@@ -74,5 +74,17 @@ This gives a bit of time for Xen to inject its APIs into your app, which is need
 ## App Arguments
 You can parse URL Paramaters as app arguments. To learn more about this checkout the [API Docs](./API.md) and you can see an example in the text editor app.
 
+## App Runtimes
+All apps can access the `window.runtime` object which is dynamically injected into each app to give information tailored to it.
+
+### `window.runtime.fsPath`
+Gives the apps FS path (Ex. `/usr/apps/org.nebulaservices.about`)
+
+### `winow.runtime.id`
+Gives the apps ID (Ex. `org.nebulaservices.about`)
+
+### `window.runtime.url`
+Gives the apps URL (Ex. `http://localhost:3000/fs/usr/apps/org.nebulaservices.about`)
+
 ## App Examples
 For example applications, please see the `apps-src` directory (The code is terrible, you have been warned)

@@ -42,6 +42,7 @@ export class Xen {
         sofp: typeof sofp;
         sdp: typeof sdp;
     }
+    public import: typeof this.packages.import;
 
 
     constructor() {
@@ -69,6 +70,7 @@ export class Xen {
             sofp: sofp,
             sdp: sdp
         };
+        this.import = this.packages.import;
     }
 
     public version = {
