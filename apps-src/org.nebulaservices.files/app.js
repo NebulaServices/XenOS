@@ -322,7 +322,7 @@ class Main {
             root: [
                 {
                     title: 'Open',
-                    onClick: () => {this.openFile(entry); this.refresh(); }
+                    onClick: () => { this.openFile(entry); this.refresh(); }
                 },
                 {
                     title: 'Cut',
@@ -343,17 +343,28 @@ class Main {
                 {
                     title: 'Download',
                     onClick: () => { this.download(entry); this.refresh(); }
-                },
-                {
-                    title: 'Compress',
-                    onClick: () => { this.compress(entry); this.refresh(); }
-                },
-                {
-                    title: 'Decompress',
-                    onClick: () => { this.decompress(entry); this.refresh(); }
-                },             
+                }
             ]
         };
+
+        if (entry.isDirectory) {
+            contextMenuOptions['root'].push({
+                title: 'Compress',
+                onClick: () => { this.compress(entry); this.refresh(); }
+            });
+        }
+
+        if (entry.isFile && entry.name.endsWith('.zip')) {
+            contextMenuOptions['root'].push({
+                title: 'Decompress',
+                onClick: () => { this.decompress(entry); this.refresh(); }
+            });
+
+            contextMenuOptions['root'].push({
+                title: 'Install',
+                onClick: () => { this.installApp(entry); this.refresh(); }
+            });
+        }
 
         this.contextMenu.attach(fileItem, contextMenuOptions);
         return fileItem;
@@ -919,6 +930,18 @@ class Main {
         } catch (err) {
             this.notifications.spawn({
                 title: 'Failed to Decompress',
+                description: err.message,
+                icon: '/assets/logo.svg'
+            });
+        }
+    }
+
+    async installApp(entry) {
+        try {
+            await window.xen.packages.install('opfs', `${this.currentPath}/${entry.name}`);
+        } catch (err) {
+            this.notifications.spawn({
+                title: 'Failed to Install',
                 description: err.message,
                 icon: '/assets/logo.svg'
             });
