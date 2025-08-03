@@ -5,7 +5,8 @@
 		"build:windows": "pwsh -File ./scripts/build.ps1",
 		"start": "node ./scripts/server.js",
 		"dev": "node ./scripts/dev.js",
-		"dev:windows": "node ./scripts/dev-windows.js"
+		"dev:windows": "node ./scripts/dev-windows.js",
+		"cloc": "bash ./scripts/cloc.sh"
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.3",
