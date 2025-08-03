@@ -1,4 +1,2 @@
 # TODO
-## `v1.0.0`
-- Core apps
-    - Browser
+XENOS V1 IS DONE!!!
