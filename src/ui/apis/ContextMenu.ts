@@ -146,12 +146,10 @@ export class ContextMenu {
 	}
 
 	private position(el: HTMLElement, x: number, y: number): void {
-		// Force layout calculation
 		el.style.visibility = 'hidden';
 		el.style.left = '0px';
 		el.style.top = '0px';
 
-		// Force reflow to get accurate dimensions
 		el.offsetHeight;
 
 		const rect = el.getBoundingClientRect();
@@ -161,17 +159,14 @@ export class ContextMenu {
 		let finalX = x;
 		let finalY = y;
 
-		// Check right edge
 		if (x + rect.width > vw) {
 			finalX = x - rect.width;
 		}
 
-		// Check bottom edge  
 		if (y + rect.height > vh) {
 			finalY = y - rect.height;
 		}
 
-		// Ensure minimum margins
 		finalX = Math.max(5, Math.min(finalX, vw - rect.width - 5));
 		finalY = Math.max(5, Math.min(finalY, vh - rect.height - 5));
 
