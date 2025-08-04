@@ -31,9 +31,39 @@ export async function initSw() {
 
     await initComlink();
 
-    navigator.serviceWorker.addEventListener('message', (ev) => {
+    navigator.serviceWorker.addEventListener('message', async (ev) => {
         if (ev.data.target === 'sw-reinit') {
             initComlink();
+        }
+
+        if (ev.data?.target === 'show-file-picker') {
+            const { options } = ev.data;
+
+            try {
+                const result = await window.xen.FilePicker.pick({
+                    title: options.type === 'folder' ? 'Select Folder' : 'Select File',
+                    multiple: options.multiple,
+                    mode: options.mode
+                });
+
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        target: 'file-picker-response',
+                        result
+                    });
+                } else {
+                    console.error('No SW controller');
+                }
+            } catch (error) {
+                console.error('File picker error:', error);
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        target: 'file-picker-response',
+                        result: null,
+                        error: error.message
+                    });
+                }
+            }
         }
     });
 }

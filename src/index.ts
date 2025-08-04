@@ -46,13 +46,6 @@ window.addEventListener('load', async () => {
         window.xen.wm.handleWindowResize();
     });
 
-    /*
-    const loadingBar = document.getElementById("loading-bar") as HTMLDivElement;
-    loadingBar.style.animation = "none";
-    loadingBar.style.width = "100%";
-    loadingBar.style.transition = "width 0.2s ease-out";
-    */
-
     const connection = new window.BareMux.BareMuxConnection('/libs/bare-mux/worker.js');
     //@ts-ignore
     connection.setRemoteTransport(new XenTransport(), 'XenTransport');
@@ -82,4 +75,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-

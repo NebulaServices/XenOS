@@ -1,98 +1,97 @@
 .context-menu {
     position: fixed;
-    background: rgba(49, 50, 68, 0.5);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(186, 194, 222, 0.214);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    padding: 6px;
+    background: rgba(49, 50, 68, 0.9);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(186, 194, 222, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    padding: 4px;
     z-index: 10000;
-    min-width: 200px;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    font-size: 14px;
-    animation: contextMenuIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    min-width: 180px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 13px;
+    animation: menuIn 0.15s ease-out;
 }
 
 .context-submenu {
     z-index: 10001;
-    animation: submenuIn 0.15s ease-out;
+    animation: submenuIn 0.12s ease-out;
 }
 
 .context-menu-item {
     display: flex;
     align-items: center;
     padding: 8px 12px;
-    color: var(--mocha-text);
+    color: #cdd6f4;
     cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.15s ease;
-    position: relative;
-    gap: 12px;
+    border-radius: 4px;
+    transition: background 0.1s ease;
+    gap: 10px;
+    user-select: none;
 }
 
 .context-menu-item:hover {
-    background: var(--hover-bg);
-    color: var(--mocha-pink);
+    background: rgba(245, 194, 231, 0.15);
+    color: #f5c2e7;
 }
 
 .menu-icon {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     flex-shrink: 0;
+    opacity: 0.8;
 }
 
 .toggle-check {
     margin-left: auto;
-    color: var(--mocha-pink);
-    font-weight: bold;
-    min-width: 12px;
+    color: #f5c2e7;
+    font-weight: 600;
+    font-size: 12px;
 }
 
 .context-menu-folder {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: 8px 12px;
-    color: var(--mocha-text);
+    color: #cdd6f4;
     cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.15s ease;
-    gap: 12px;
+    border-radius: 4px;
+    transition: background 0.1s ease;
+    user-select: none;
 }
 
 .context-menu-folder:hover {
-    background: var(--hover-bg);
-    color: var(--mocha-pink);
+    background: rgba(245, 194, 231, 0.15);
+    color: #f5c2e7;
 }
 
 .folder-arrow {
-    font-size: 12px;
-    opacity: 0.7;
     margin-left: auto;
+    font-size: 10px;
+    opacity: 0.6;
 }
 
 .context-menu-separator {
     height: 1px;
-    background: var(--mocha-surface2);
-    margin: 4px 8px;
+    background: rgba(186, 194, 222, 0.2);
+    margin: 4px 6px;
 }
 
-@keyframes contextMenuIn {
+@keyframes menuIn {
     from {
         opacity: 0;
-        transform: scale(0.9) translateY(10px);
+        transform: scale(0.95);
     }
     to {
         opacity: 1;
-        transform: scale(1) translateY(0);
+        transform: scale(1);
     }
 }
 
 @keyframes submenuIn {
     from {
         opacity: 0;
-        transform: translateX(-10px);
+        transform: translateX(-8px);
     }
     to {
         opacity: 1;

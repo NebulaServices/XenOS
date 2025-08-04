@@ -649,7 +649,7 @@ export class XenFS {
                             controls
                         >
                             <source src="/fs${path}">
-                        </vide>
+                        </video>
                     `
                 });
             } else if (

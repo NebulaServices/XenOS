@@ -2,7 +2,7 @@
   <img src="./assets/logo.svg" width="32px" height="32px">
   <strong><a href="https://xen-os.dev">XenOS</a></strong>
 </h1>
-Redefining Web Operating Systems.
+A WebOS with the best UI to date
 
 ## What is XenOS?
 XenOS is a highly customizable "WebOS" with **a ton** of features and a sleek UI. You can view a live demo at: https://xen-os.dev/
