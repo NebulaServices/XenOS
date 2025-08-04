@@ -17,10 +17,10 @@ class Main {
         this.createNewTab();
         // this.renderBookmarksBar();
 
-        //const bookmarksVisible = window.xen?.settings?.get('bookmarks-visible') ?? true;
+        //const bookmarksVisible = parent.xen?.settings?.get('bookmarks-visible') ?? true;
         // this.toggleBookmarksBar(bookmarksVisible);
 
-        const savedWidth = window.xen?.settings?.get('sidebar-width') || 250;
+        const savedWidth = parent.xen?.settings?.get('sidebar-width') || 250;
         this.tabSidebar.style.width = `${savedWidth}px`;
         this.checkIconMode(savedWidth);
 
@@ -111,8 +111,8 @@ class Main {
 
                 // Save width to settings
                 const width = parseInt(this.tabSidebar.style.width);
-                if (window.xen?.settings) {
-                    window.xen.settings.set('sidebar-width', width);
+                if (parent.xen?.settings) {
+                    parent.xen.settings.set('sidebar-width', width);
                 }
             };
 
@@ -186,8 +186,8 @@ class Main {
     }
 
     initContextMenus() {
-        if (window.xen?.contextMenu) {
-            window.xen.contextMenu.attach(this.bookmarksBar, {
+        if (parent.xen?.contextMenu) {
+            parent.xen.contextMenu.attach(this.bookmarksBar, {
                 root: [
                     {
                         title: 'Add Bookmark',
@@ -237,9 +237,9 @@ class Main {
 
     getDisplayUrl(url) {
         if (!url) return '';
-        if (window.xen?.net?.decodeUrl && url.includes(location.origin)) {
+        if (parent.xen?.net?.decodeUrl && url.includes(location.origin)) {
             try {
-                return window.xen.net.decodeUrl(url);
+                return parent.xen.net.decodeUrl(url);
             } catch (e) {
                 return url;
             }
@@ -396,7 +396,7 @@ class Main {
             if (!activeTab.iframe) {
                 activeTab.iframe = document.createElement('iframe');
                 activeTab.iframe.className = 'content-frame';
-                activeTab.iframe.src = window.xen?.net?.encodeUrl(this.getDisplayUrl(activeTab.url)) || activeTab.url;
+                activeTab.iframe.src = parent.xen?.net?.encodeUrl(this.getDisplayUrl(activeTab.url)) || activeTab.url;
             }
             this.contentArea.appendChild(activeTab.iframe);
         } else {
@@ -442,7 +442,7 @@ class Main {
         this.visitCounts[url] = (this.visitCounts[url] || 0) + 1;
         this.saveVisitCounts();
 
-        const encodedUrl = window.xen?.net?.encodeUrl(url) || url;
+        const encodedUrl = parent.xen?.net?.encodeUrl(url) || url;
 
         if (activeTab.url && activeTab.url !== encodedUrl) {
             activeTab.history = activeTab.history.slice(0, activeTab.historyIndex + 1);
@@ -541,7 +541,7 @@ class Main {
     }
 
     showHistory() {
-        window.xen.dialog.alert({
+        parent.xen.dialog.alert({
             title: 'XenOS',
             icon: '/assets/logo.svg',
             body: 'The history page is Wip!'
@@ -668,8 +668,8 @@ class Main {
         const isVisible = visible !== null ? visible : !this.bookmarksBar.classList.contains('visible');
         this.bookmarksBar.classList.toggle('visible', isVisible);
 
-        if (window.xen?.settings) {
-            window.xen.settings.set('bookmarks-visible', isVisible);
+        if (parent.xen?.settings) {
+            parent.xen.settings.set('bookmarks-visible', isVisible);
         }
 
         this.updateBookmarksCloseButton();
@@ -679,8 +679,8 @@ class Main {
         const activeTab = this.tabs.find(t => t.id === this.activeTabId);
         if (!activeTab || !activeTab.url) return;
 
-        if (window.xen?.dialog) {
-            window.xen.dialog.prompt({
+        if (parent.xen?.dialog) {
+            parent.xen.dialog.prompt({
                 title: 'Add Bookmark',
                 body: 'Enter bookmark name:',
                 placeholder: activeTab.title
@@ -725,8 +725,8 @@ class Main {
                 this.navigateToUrl(bookmark.url);
             });
 
-            if (window.xen?.contextMenu) {
-                window.xen.contextMenu.attach(item, {
+            if (parent.xen?.contextMenu) {
+                parent.xen.contextMenu.attach(item, {
                     root: [
                         {
                             title: 'Edit',
@@ -766,9 +766,9 @@ class Main {
 
     editBookmark(index) {
         const bookmark = this.bookmarks[index];
-        if (!bookmark || !window.xen?.dialog) return;
+        if (!bookmark || !parent.xen?.dialog) return;
 
-        window.xen.dialog.prompt({
+        parent.xen.dialog.prompt({
             title: 'Edit Bookmark',
             body: 'Enter new name:',
             placeholder: bookmark.name
@@ -789,43 +789,39 @@ class Main {
 
     loadBookmarks() {
         try {
-            return window.xen.settings.get('browser-bookmarks') || '[]';
+            return parent.xen.settings.get('browser-bookmarks') || '[]';
         } catch {
             return [];
         }
     }
 
     saveBookmarks() {
-        window.xen.settings.set('browser-bookmarks', this.bookmarks);
+        parent.xen.settzings.set('browser-bookmarks', this.bookmarks);
     }
 
     loadVisitCounts() {
         try {
-            return window.xen.settins.get('browser-visits') || {};
+            return parent.xen.settins.get('browser-visits') || {};
         } catch {
             return {};
         }
     }
 
     saveVisitCounts() {
-        window.xen.settings.set('browser-visits', this.visitCounts);
+        parent.xen.settings.set('browser-visits', this.visitCounts);
     }
 }
 
 function firstTime() {
-    if (!window.xen.settings.get('browser-fv')) {
-        window.xen.dialog.alert({
+    if (!parent.xen.settings.get('browser-fv')) {
+        parent.xen.dialog.alert({
             title: 'XenOS',
             icon: '/assets/logo.svg',
             body: 'Welcome to XenOSes browser! This app is work-in-progress but it should behave just fine :D Also, there are keybinds! Just use alt instead of ctrl'
         });
 
-        window.xen.settings.set('browser-fv', true);
+        parent.xen.settings.set('browser-fv', true);
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        new Main();
-    }, 500);
-});
+new Main();

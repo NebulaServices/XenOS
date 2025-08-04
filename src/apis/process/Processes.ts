@@ -1,96 +1,119 @@
-// import { Xen } from "../../Xen";
-
-/*
-interface ProcessShared {
-    xen?: Xen;
-}
-
-export interface Process {
-    pid: number;
-    process: Worker;
-}
-*/
-
-interface ProcessOpts {
+export interface ProcessOpts {
     async?: boolean;
     type: 'direct' | 'url' | 'opfs';
-    content: string
+    content: string;
+};
+
+export interface ProcessInfo {
+    pid: number;
+    status: 'running' | 'terminated';
+    startTime: number;
+    memory: number | null;
+};
+
+interface ProcRec {
+    pid: number;
+    iframe: HTMLIFrameElement;
+    status: 'running' | 'terminated';
+    startTime: number;
+    url: string;
 }
 
-export class Proccesses {
-    public async spawn(opts: ProcessOpts) {
-        const prefix = opts.async ? "async" : "";
-        let content: string;
-
-        if (opts.type == 'direct') {
-            content = opts.content;
-        } else if (opts.type == 'url') {
-            content = await (await fetch(window.xen.net.encodeUrl(opts.content))).text();
-        } else if (opts.type == 'opfs') {
-            content = (await window.xen.fs.read(opts.content, 'text') as string);
-        }
-
-        eval(`(${prefix}()=>{${content}})()`);
-    }
-    /*
+export class ProcessManager {
     private npid = 0;
-    public processes: Process[] = [];
+    private procs = new Map<number, ProcRec>();
 
-     public async spawn(opts: ProcessOpts) {
-        const prefix = opts.async ? "async" : "";
-        const comlinkUrl = new URL("/libs/comlink/umd/comlink.min.js", window.location.origin).href;
-        let content: string | Promise<string>;
-
-        if (opts.type == 'direct') {
-            content = opts.content;
-        } else if (opts.type == 'url') {
-            content = (await fetch(window.xen.net.encodeUrl(opts.content))).text();
-        } else if (opts.type == 'opfs') {
-            content = (await window.xen.fs.read(opts.content, 'text') as string);
+    private async loadContent(opts: ProcessOpts): Promise<string> {
+        if (opts.type === 'direct') return opts.content;
+    
+        if (opts.type === 'url') {
+            const res = await fetch(window.xen.net.encodeUrl(opts.content));
+            return res.text();
         }
 
-        const template = `
-        importScripts('${comlinkUrl}');
-
-        let xen;
-
-        addEventListener('message', async (ev) => {
-            if (ev.data?.target == 'comlink-init') {
-                self.shared = Comlink.wrap(ev.data.value);
-                xen = self.shared.xen;
-
-                (
-                    ${prefix}() => {
-                        ${content}
-                    }
-                )();
-            }
-        });
-        `;
-        const blob = new Blob([template], { type: "application/javascript" });
-        const urlObj = URL.createObjectURL(blob);
-        const worker = new Worker(urlObj);
-        const process: Process = {
-            pid: this.npid,
-            process: worker,
-        };
-
-        this.processes[this.npid] = process;
-        this.npid++;
-
-        const { port1, port2 } = new MessageChannel();
-        const msg = {
-            target: "comlink-init",
-            value: port2,
-        };
-        const shared: ProcessShared = {
-            xen: window.modules.Comlink.proxy(window.xen) as unknown as Xen,
-        };
-
-        window.modules.Comlink.expose(shared, port1);
-        worker.postMessage(msg, [port2]);
+        // XenFS
+        return window.xen.fs.read(opts.content, 'text') as Promise<string>;
     }
 
-    public kill(pid: number) { this.processes[pid].process.terminate(); }
-    */
+    public async spawn(opts: ProcessOpts): Promise<number> {
+        const pid = this.npid++;
+        const src = await this.loadContent(opts);
+        const html = `
+<script>
+    window.__PID__ = ${pid}
+    window.xen = parent.xen
+</script>
+<script${opts.async ? ' type="module"' : ''}>
+${src}
+</script>`;
+        const blob = new Blob([html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const ifr = document.createElement('iframe');
+
+        ifr.sandbox.value = 'allow-scripts allow-same-origin';
+        ifr.style.display = 'none';
+        ifr.src = url;
+
+        document.body.appendChild(ifr);
+
+        this.procs.set(pid, {
+            pid,
+            iframe: ifr,
+            status: 'running',
+            startTime: Date.now(),
+            url
+        });
+
+        return pid;
+    }
+
+    public kill(pid: number): void {
+        const p = this.procs.get(pid);
+        if (!p) return;
+
+        p.iframe.remove();
+        URL.revokeObjectURL(p.url);
+        p.status = 'terminated';
+    }
+
+    public info(pid: number): ProcessInfo | null {
+        const p = this.procs.get(pid);
+        if (!p) return null;
+
+        let mem: number | null = null;
+        const cw = p.iframe.contentWindow;
+
+        if (cw && cw.performance && (cw.performance as any).memory) {
+            mem = (cw.performance as any).memory.usedJSHeapSize;
+        }
+
+        return {
+            pid: p.pid,
+            status: p.status,
+            startTime: p.startTime,
+            memory: mem
+        }
+    }
+
+    public list(): ProcessInfo[] {
+        const out: ProcessInfo[] = [];
+
+        for (const p of this.procs.values()) {
+            let mem: number | null = null;
+            const cw = p.iframe.contentWindow;
+
+            if (cw && cw.performance && (cw.performance as any).memory) {
+                mem = (cw.performance as any).memory.usedJSHeapSize;
+            }
+
+            out.push({
+                pid: p.pid,
+                status: p.status,
+                startTime: p.startTime,
+                memory: mem
+            });
+        }
+
+        return out;
+    }
 }

@@ -4,7 +4,7 @@ import { oobe } from "./ui/oobe/autoUpdate";
 import { WindowManager } from "./ui/windows/WindowManager";
 import { ContextMenu } from "./ui/apis/ContextMenu";
 import { TaskBar } from "./ui/components/TaskBar";
-import { Proccesses } from "./apis/process/Processes";
+import { ProcessManager } from "./apis/process/Processes";
 import { PackageManager } from "./apis/packages/PackageManager";
 import { RepoStore } from "./apis/packages/RepoStore";
 import { Notifications } from "./ui/apis/Notifications";
@@ -23,7 +23,7 @@ export class Xen {
     public net: LibcurlClient;
     public boot: typeof oobe;
     public wm: WindowManager;
-    public process: Proccesses;
+    public process: ProcessManager;
     public packages: PackageManager;
     public repos: RepoStore;
     public contextMenu: ContextMenu;
@@ -56,7 +56,7 @@ export class Xen {
         this.notifications = new Notifications();
         this.wallpaper = new Wallpaper();
         this.packages = new PackageManager();
-        this.process = new Proccesses();
+        this.process = new ProcessManager();
         this.repos = new RepoStore();
         this.initSystem = init;
         this.policy = {
@@ -78,7 +78,7 @@ export class Xen {
         codename: 'Nightcord',
         major: 1,
         minor: 1,
-        patch: 0,
+        patch: 1,
         build: '',
         pretty: ''
     };

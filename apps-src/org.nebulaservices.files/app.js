@@ -1,9 +1,9 @@
 class Main {
     constructor() {
-        this.fs = window.xen.fs;
-        this.dialog = window.xen.dialog;
-        this.notifications = window.xen.notifications;
-        this.contextMenu = window.xen.contextMenu;
+        this.fs = parent.xen.fs;
+        this.dialog = parent.xen.dialog;
+        this.notifications = parent.xen.notifications;
+        this.contextMenu = parent.xen.contextMenu;
 
         this.currentPath = '/usr';
         this.history = ['/usr'];
@@ -938,7 +938,7 @@ class Main {
 
     async installApp(entry) {
         try {
-            await window.xen.packages.install('opfs', `${this.currentPath}/${entry.name}`);
+            await parent.xen.packages.install('opfs', `${this.currentPath}/${entry.name}`);
         } catch (err) {
             this.notifications.spawn({
                 title: 'Failed to Install',
@@ -974,8 +974,4 @@ class Main {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        new Main();
-    }, 500);
-});
+new Main();

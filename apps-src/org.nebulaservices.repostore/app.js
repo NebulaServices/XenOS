@@ -1,9 +1,9 @@
 class Main {
     async init() {
-        this.repoStore = window.xen.repos;
-        this.packages = window.xen.packages;
-        this.notifications = window.xen.notifications;
-        this.dialog = window.xen.dialog;
+        this.repoStore = parent.xen.repos;
+        this.packages = parent.xen.packages;
+        this.notifications = parent.xen.notifications;
+        this.dialog = parent.xen.dialog;
 
         this.currentRepo = null;
         this.currentPackages = [];
@@ -44,7 +44,7 @@ class Main {
             let title = "";
 
             if (repo.type == 'xen') {
-                const res = await window.xen.net.fetch(repo.url + 'manifest.json');
+                const res = await parent.xen.net.fetch(repo.url + 'manifest.json');
                 const json = await res.json();
 
                 title = json.title;
@@ -408,9 +408,8 @@ class Main {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(async () => {
-        const m = new Main();
-        await m.init();
-    }, 500);
-});
+(async () => {
+    const m = new Main();
+    await m.init();
+})();
+

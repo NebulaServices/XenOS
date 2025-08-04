@@ -52,6 +52,16 @@ export class Runtime {
             async: true,
             type: 'direct',
             content: code,
+        }).then((pid) => {
+            setTimeout(async () => {
+                // stupid stupid stupid
+                window.xen.wm.windows.at(-1).onClose((win) => {
+                    //@ts-ignore
+                    if ((win.el.content as HTMLIFrameElement).contentWindow.parent[0].__PID__ == pid) {
+                        window.xen.process.kill(pid);
+                    }
+                });
+            }, 100);
         });
     }
 

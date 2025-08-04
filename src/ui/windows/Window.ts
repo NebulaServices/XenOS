@@ -52,6 +52,7 @@ export class Window {
         clampX?: number;
         clampY?: number;
     } = {} as any;
+    private closeCbs: ((win: Window) => void)[] = []
 
     constructor(opts: WindowOpts, private wm: WindowManager) {
         this.id = uuidv4();
@@ -85,6 +86,10 @@ export class Window {
         this.setupButtons();
         this.focus();
         this.display = this.props.display;
+    }
+
+    public onClose(cb: (win: Window) => void) {
+        this.closeCbs.push(cb)
     }
 
     private createWindowShell(): HTMLDivElement {
@@ -143,7 +148,6 @@ export class Window {
 
             this.el.content.onload = () => {
                 const iframe = (this.el.content as HTMLIFrameElement);
-
 
                 Object.assign(iframe.contentWindow, {
                     xen: window.xen
@@ -500,6 +504,10 @@ export class Window {
         if (this.el.content) {
             this.el.content.classList.add("wm-iframe-no-pointer");
         }
+
+        this.closeCbs.forEach(cb => {
+            try { cb(this) } catch { }
+        })
 
         const d = 200;
 

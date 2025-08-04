@@ -407,9 +407,8 @@ await xen.policy.set('network', 'custom.json', { // Policy type and group name
 
 ## `xen.process`
 API for managing processes
-- Notice: currently processes are like literally just `eval` because I can't figure out a better way to do them as of now D:
 
-### `await xen.process.spawn(opts: ProcessOpts)`
+### Types
 ```ts
 interface ProcessOpts {
     async?: boolean; // Whether your code should be ran asynchronously
@@ -417,8 +416,54 @@ interface ProcessOpts {
     content: string; // Either your code, a URL, or a path
 }
 
-await xen.process.spawn(opts: ProcessOpts);
+interface ProcessInfo {
+    pid: number; // Process ID (duh)
+    status: 'running' | 'terminated'; // Whether the process is running or terminated
+                                      // Process have to be manually terminated, they will not terminate after execution, expect if it is an app/webview
+    startTime: number                 // Date.now()
+    memory: number | null             // preformance.memory.usedJSHeapSize
+}
 ```
+
+### `await xen.process.spawn(opts: ProcessOpts)`
+Creates a process
+```ts
+// Example:
+const pid = await xen.process.spawn({
+    type: "direct",
+    content: `
+        console.log(parent.xen)
+    `
+});
+```
+
+### `xen.process.kill(pid: number)`
+Kills a process
+
+### `xen.info(pid: number): ProcessInfo`
+Returns information about a process
+```ts
+// Example
+const pid = await xen.process.spawn({
+    type: "direct",
+    content: `
+        console.log(parent.xen)
+    `
+});
+
+xen.process.info(pid1);
+/*
+{
+    memory: 31239316
+    pid: 0
+    startTime: 1754335446518
+    status: "running"
+}
+*/
+```
+
+## `xen.process.list(): ProcessInfo[]`
+Returns every processes info in an array
 
 ## `xen.repos`
 API for interacting with XenOS repos and Anura repos

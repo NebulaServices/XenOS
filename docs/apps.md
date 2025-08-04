@@ -57,19 +57,7 @@ Xen will install packages given a `zip` archive, so you'll want to zip your pack
 - Notice: MAKE SURE YOU ZIP THE FILES NOT THE DIRECTORY!! The files need to be at the root of the zip archive
 
 ## APIs
-All packages can utilize XenOS APIs, however, if you are developing an app, your script should follow this logic:
-```js
-document.addEventListener('DOMContentLoaded', () => {
-    function main() {
-      // code here
-    }
-
-    setTimeout(() => { 
-        main()
-    }, 100);
-});
-```
-This gives a bit of time for Xen to inject its APIs into your app, which is needed, since without this setTimeout, uses `xen` or `window.xen` will result in `undefined`
+All packages can utilize XenOS APIs, you can access them at `parent.xen`
 
 ## App Arguments
 You can parse URL Paramaters as app arguments. To learn more about this checkout the [API Docs](./API.md) and you can see an example in the text editor app.
