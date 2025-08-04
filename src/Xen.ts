@@ -77,8 +77,8 @@ export class Xen {
         prefix: 'XenOS',
         codename: 'Nightcord',
         major: 1,
-        minor: 0,
-        patch: 1,
+        minor: 1,
+        patch: 0,
         build: '',
         pretty: ''
     };
