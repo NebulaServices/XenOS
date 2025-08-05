@@ -537,35 +537,43 @@ export class TaskBar {
         });
     }
 
-    private async handleClick(
-        instanceId: string | null,
-        appId: string,
-        title: string,
-        icon?: string,
-    ): Promise<void> {
-        let instance = instanceId ? this.current.get(instanceId) : undefined;
+private async handleClick(
+    instanceId: string | null,
+    appId: string,
+    title: string,
+    icon?: string,
+): Promise<void> {
+    let instance = instanceId ? this.current.get(instanceId) : undefined;
 
-        if (!instance) {
-            for (const win of window.xen.wm.windows) {
-                if (this.getAppId(win.props.url) === this.getAppId(appId)) {
-                    instance = win;
-                    break;
-                }
-            }
-        }
-
-        if (instance) {
-            instance.focus();
-            if (instance.isMinimized) instance.minimize();
-        } else {
-            const realAppId = this.getAppId(appId);
-            if (this.isPinned(realAppId)) {
-                await window.xen.packages.open(realAppId);
-            } else {
-                window.xen.wm.create({ url: appId, title, icon });
+    if (!instance) {
+        for (const win of window.xen.wm.windows) {
+            if (this.getAppId(win.props.url) === this.getAppId(appId)) {
+                instance = win;
+                break;
             }
         }
     }
+
+    if (instance) {
+        if (instance.isFocused && !instance.isMinimized) {
+            instance.minimize();
+        } else {
+            instance.focus();
+
+            if (instance.isMinimized) {
+                instance.minimize();
+            }
+        }
+    } else {
+        const realAppId = this.getAppId(appId);
+
+        if (this.isPinned(realAppId)) {
+            await window.xen.packages.open(realAppId);
+        } else {
+            window.xen.wm.create({ url: appId, title, icon });
+        }
+    }
+}
 
     public onWindowCreated = (): void => {
         setTimeout(() => {

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app">
+        <div class="content">
+            <div class="process-table">
+                <div class="table-header">
+                    <div class="col pid">PID</div>
+                    <div class="col status">Status</div>
+                    <div class="col memory">Memory</div>
+                    <div class="col start-time">Start Time</div>
+                    <div class="col actions">Actions</div>
+                </div>
+                <div class="table-body" id="processTable">
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="stats">
+                <span id="processCount">0 processes</span>
+                <span id="totalMemory">0 KB total</span>
+            </div>
+            <div class="controls">
+                <button class="refresh-btn" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

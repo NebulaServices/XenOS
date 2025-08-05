@@ -1,0 +1,233 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #1e1e2e;
+    --surface0: #313244;
+    --surface1: #45475a;
+    --surface2: #585b70;
+    --text: #cdd6f4;
+    --subtext1: #bac2de;
+    --subtext0: #a6adc8;
+    --pink: #f5c2e7;
+    --green: #a6e3a1;
+    --red: #f38ba8;
+    --yellow: #f9e2af;
+    --blue: #89b4fa;
+    --overlay0: #6c7086;
+    --ctp-surface1: #45475a;
+    --ctp-crust: #11111b;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--ctp-crust);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--ctp-surface1);
+    border-radius: 10px;
+    border: 2px solid var(--ctp-crust);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ctp-surface1) var(--ctp-crust);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--bg);
+    overflow: hidden;
+}
+
+.controls {
+    display: flex;
+    gap: 8px;
+}
+
+.refresh-btn {
+    background: var(--surface1);
+    border: none;
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.refresh-btn:hover {
+    background: var(--surface2);
+    color: var(--pink);
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.process-table {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface0);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-header {
+    display: grid;
+    grid-template-columns: 80px 100px 120px 1fr 80px;
+    gap: 16px;
+    padding: 12px 16px;
+    background: var(--surface1);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--subtext1);
+}
+
+.table-body {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.process-row {
+    display: grid;
+    grid-template-columns: 80px 100px 120px 1fr 80px;
+    gap: 16px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--surface1);
+    transition: background 0.2s ease;
+    align-items: center;
+}
+
+.process-row:hover {
+    background: var(--surface1);
+}
+
+.col {
+    display: flex;
+    align-items: center;
+}
+
+.pid {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--blue);
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-running {
+    background: rgba(166, 227, 161, 0.2);
+    color: var(--green);
+}
+
+.status-terminated {
+    background: rgba(243, 139, 168, 0.2);
+    color: var(--red);
+}
+
+.memory {
+    font-family: 'Courier New', monospace;
+    color: var(--yellow);
+}
+
+.start-time {
+    color: var(--subtext0);
+    font-size: 13px;
+}
+
+.actions {
+    justify-content: center;
+}
+
+.kill-btn {
+    background: rgba(243, 139, 168, 0.2);
+    border: 1px solid var(--red);
+    color: var(--red);
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+
+.kill-btn:hover {
+    background: var(--red);
+    color: var(--bg);
+}
+
+.kill-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: var(--surface0);
+    border-top: 1px solid var(--surface1);
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--subtext0);
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--subtext0);
+    gap: 8px;
+}
+
+.empty-state i {
+    font-size: 48px;
+    opacity: 0.5;
+}

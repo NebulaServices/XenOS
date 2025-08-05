@@ -19,3 +19,10 @@ Processes have greatly improved:
     - PID
     - Memory usage
 - Apps can now access `parent.xen` for immediate access to the global without having to wait for `window.xen` to be loaded 
+
+## `v1.1.2`
+- Removed the runtime global for apps, please check docs for more info
+- Improved termination of processes
+- Add a process manager app
+- Clicking on an already focused entry on the taskbar will minimize it
+- Fullscreen state will persist across minimizations

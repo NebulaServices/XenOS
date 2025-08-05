@@ -13,3 +13,6 @@ const mod = await window.xen.import('package.id');
 mod.a; // 'b'
 mod.hi();
 ```
+
+## Runtime
+Libraries can use the same runtime apps get, check [app docs](./apps.md) for more info

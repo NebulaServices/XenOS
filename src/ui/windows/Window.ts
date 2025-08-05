@@ -52,7 +52,7 @@ export class Window {
         clampX?: number;
         clampY?: number;
     } = {} as any;
-    private closeCbs: ((win: Window) => void)[] = []
+    public closeCbs: ((win: Window) => void)[] = []
 
     constructor(opts: WindowOpts, private wm: WindowManager) {
         this.id = uuidv4();
@@ -152,20 +152,6 @@ export class Window {
                 Object.assign(iframe.contentWindow, {
                     xen: window.xen
                 });
-
-                if (window.xen.net.encodeUrl(this.props.url).startsWith(new URL('/fs/usr/apps', location.origin).href)) {
-                    iframe.contentWindow.window.eval(`
-                        const id = new URL(location.href).pathname.split('/')[4];
-
-                        Object.assign(window, {
-                            runtime: {
-                                id: id,
-                                url: new URL(("/fs/usr/apps/" + id), location.origin).href,
-                                fsPath: "/usr/apps/" + id
-                            }
-                        });
-                    `);
-                }
 
                 if (this.props.xenFilePicker == true) {
                     //@ts-ignore
@@ -517,12 +503,22 @@ export class Window {
         }, d);
     }
     minimize(): void {
-        if (this.is.fullscreened) this.fullscreen();
         this.is.minimized = !this.is.minimized;
         this.el.window.classList.toggle("wm-minimized", this.is.minimized);
 
         if (!this.is.minimized) {
             this.focus();
+
+            if (this.is.fullscreened) {
+                this.el.window.style.width = "100%";
+                this.el.window.style.height = "100%";
+                this.el.window.style.left = "0px";
+                this.el.window.style.top = "0px";
+                this.props.width = "100%";
+                this.props.height = "100%";
+                this.props.x = 0;
+                this.props.y = 0;
+            }
         } else {
             this._setFocusState(false);
         }

@@ -42,7 +42,6 @@ export class Xen {
         sofp: typeof sofp;
         sdp: typeof sdp;
     }
-    public import: typeof this.packages.import;
 
 
     constructor() {
@@ -70,7 +69,6 @@ export class Xen {
             sofp: sofp,
             sdp: sdp
         };
-        this.import = this.packages.import;
     }
 
     public version = {
@@ -78,7 +76,7 @@ export class Xen {
         codename: 'Nightcord',
         major: 1,
         minor: 1,
-        patch: 1,
+        patch: 2,
         build: '',
         pretty: ''
     };

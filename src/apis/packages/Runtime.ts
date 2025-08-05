@@ -31,7 +31,7 @@ export class Runtime {
 
         if (manifest.type == 'webview' || manifest.type == 'app') {
             code = `
-                const win = await xen.wm.create({
+                const win = window.xen.wm.create({
                     title: "${manifest.title}",
                     icon: "${icon}",
                     url: "${url}",
@@ -40,6 +40,18 @@ export class Runtime {
                     resizable: ${resizable},
                     xenFilePicker: ${xenFilePicker}
                 });
+                
+                if (window.__PID__ !== undefined) {
+                    window.xen.process.associateWindow(window.__PID__, win.id);
+                    
+                    win.onClose((closingWin) => {
+                        setTimeout(() => {
+                            if (window.__PID__ !== undefined) {
+                                window.xen.process.kill(window.__PID__);
+                            }
+                        }, 0);
+                    });
+                }
             `;
         } else if (manifest.type == 'process') {
             const req = await fetch(url);
@@ -48,21 +60,13 @@ export class Runtime {
             code = res;
         }
 
-        await window.xen.process.spawn({
+        const pid = await window.xen.process.spawn({
             async: true,
             type: 'direct',
             content: code,
-        }).then((pid) => {
-            setTimeout(async () => {
-                // stupid stupid stupid
-                window.xen.wm.windows.at(-1).onClose((win) => {
-                    //@ts-ignore
-                    if ((win.el.content as HTMLIFrameElement).contentWindow.parent[0].__PID__ == pid) {
-                        window.xen.process.kill(pid);
-                    }
-                });
-            }, 100);
         });
+
+        return pid;
     }
 
     public async import(manifest: Manifest) {

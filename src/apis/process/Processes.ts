@@ -17,11 +17,13 @@ interface ProcRec {
     status: 'running' | 'terminated';
     startTime: number;
     url: string;
+    associatedWindows?: Set<string>;
 }
 
 export class ProcessManager {
     private npid = 0;
     private procs = new Map<number, ProcRec>();
+    private killingProcesses = new Set<number>();
 
     private async loadContent(opts: ProcessOpts): Promise<string> {
         if (opts.type === 'direct') return opts.content;
@@ -61,19 +63,62 @@ ${src}
             iframe: ifr,
             status: 'running',
             startTime: Date.now(),
-            url
+            url,
+            associatedWindows: new Set()
         });
 
         return pid;
     }
 
+    public associateWindow(pid: number, windowId: string): void {
+        const p = this.procs.get(pid);
+
+        if (p && p.status === 'running') {
+            if (!p.associatedWindows) {
+                p.associatedWindows = new Set();
+            }
+    
+            p.associatedWindows.add(windowId);
+        }
+    }
+
     public kill(pid: number): void {
         const p = this.procs.get(pid);
-        if (!p) return;
+        if (!p || this.killingProcesses.has(pid)) return;
 
-        p.iframe.remove();
-        URL.revokeObjectURL(p.url);
-        p.status = 'terminated';
+        this.killingProcesses.add(pid);
+
+        try {
+            if (p.associatedWindows) {
+                p.associatedWindows.forEach(windowId => {
+                    const w = window.xen.wm.windows.find(w => w.id === windowId);
+
+                    if (w) {
+                        w.closeCbs = [];
+                        w.close();
+                    }
+                });
+            }
+
+            window.xen.wm.windows.forEach(win => {
+                if (win.el.content instanceof HTMLIFrameElement) {
+                    try {
+                        const cw = win.el.content.contentWindow;
+                        if (cw && (cw as any).__PID__ === pid) {
+                            win.closeCbs = [];
+                            win.close();
+                        }
+                    } catch { }
+                }
+            });
+
+            p.iframe.remove();
+            URL.revokeObjectURL(p.url);
+            
+            this.procs.delete(pid);
+        } finally {
+            this.killingProcesses.delete(pid);
+        }
     }
 
     public info(pid: number): ProcessInfo | null {
@@ -115,5 +160,13 @@ ${src}
         }
 
         return out;
+    }
+
+    public cleanup(): void {
+        for (const [pid, proc] of this.procs.entries()) {
+            if (proc.status === 'terminated') {
+                this.kill(pid);
+            }
+        }
     }
 }

@@ -63,16 +63,24 @@ All packages can utilize XenOS APIs, you can access them at `parent.xen`
 You can parse URL Paramaters as app arguments. To learn more about this checkout the [API Docs](./API.md) and you can see an example in the text editor app.
 
 ## App Runtimes
-All apps can access the `window.runtime` object which is dynamically injected into each app to give information tailored to it.
+There is a default library included in XenOS you can use to retrieve information about the current app or library, you can use it by doing:
+```js
+const lib = await parent.xen.packages.import('xen.runtime');
+const rt = await lib.createRuntime(location.href);
+window.runtime = rt;
+```
 
 ### `window.runtime.fsPath`
-Gives the apps FS path (Ex. `/usr/apps/org.nebulaservices.about`)
+Gives the packages FS path (Ex. `/usr/apps/org.nebulaservices.about`)
 
 ### `winow.runtime.id`
-Gives the apps ID (Ex. `org.nebulaservices.about`)
+Gives the packages ID (Ex. `org.nebulaservices.about`)
 
 ### `window.runtime.url`
-Gives the apps URL (Ex. `http://localhost:3000/fs/usr/apps/org.nebulaservices.about`)
+Gives the packages URL (Ex. `http://localhost:3000/fs/usr/apps/org.nebulaservices.about`)
+
+### `window.runtime.manifest`
+Returns the packages manifest
 
 ## App Examples
 For example applications, please see the `apps-src` directory (The code is terrible, you have been warned)

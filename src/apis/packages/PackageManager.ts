@@ -72,7 +72,7 @@ export class PackageManager {
         return manifest;
     }
 
-    private async getRegs(type: 'apps' | 'libs'): Promise<string[]> {
+    public async getRegs(type: 'apps' | 'libs'): Promise<string[]> {
         const regs = window.xen.settings.get(type);
         return regs || [];
     }

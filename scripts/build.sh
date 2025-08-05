@@ -93,10 +93,12 @@ copy_app "org.nebulaservices.texteditor"
 copy_app "org.nebulaservices.repostore"
 copy_app "org.nebulaservices.files"
 copy_app "org.nebulaservices.browser"
+copy_app "org.nebulaservices.processmanager"
+copy_app "xen.runtime"
 
 cp -r ./apps/ ./build/apps/
 
-success "Copied apps"
+success "Copied apps and libs"
 section "Building Workbox libraries"
 
 mkdir -p build/libs/workbox/
