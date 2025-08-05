@@ -31,3 +31,12 @@ Processes have greatly improved:
 - Scoped KV
 - Removed un-needed options in LibcurlClient
 - Apps now use said scoped KV
+
+## `v1.1.4`
+- Reseting an instance will now delete all:
+    - Cookies
+    - localStorage values
+    - sessionStorage values
+    - iDBs
+- Double clicking a zip archive will now unzip it and navigate to the unzipped archive
+- You can no longer delete core applications (all apps that are pre-installed or have `org.nebulaservices.*`)

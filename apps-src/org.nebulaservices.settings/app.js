@@ -29,9 +29,9 @@ function main() {
     const rmWpBtn = document.getElementById("remove-wallpaper");
 
     wispIn.placeholder = (location.protocol === "https:" ? "wss" : "ws") +
-                "://" +
-                location.host +
-                "/wisp/";
+        "://" +
+        location.host +
+        "/wisp/";
 
     function resetPolicyEditor() {
         selectedPath = null;
@@ -471,6 +471,29 @@ function main() {
         }
     });
 
+    async function clearAllStorage() {
+        localStorage.clear();
+        sessionStorage.clear();
+
+        document.cookie.split(';').forEach(c => {
+            const eq = c.indexOf('=');
+            const name = c.substr(0, eq).trim();
+            document.cookie = name +
+                '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+        });
+
+        if (indexedDB && indexedDB.databases) {
+            const dbs = await indexedDB.databases();
+
+            await Promise.all(
+                dbs
+                    .map(db => db.name)
+                    .filter(name => name)
+                    .map(name => indexedDB.deleteDatabase(name))
+            );
+        }
+    }
+
     resetBtn.addEventListener("click", async () => {
         await parent.xen.dialog
             .confirm({
@@ -480,7 +503,7 @@ function main() {
             .then(async (res) => {
                 if (res === true) {
                     try {
-                        localStorage.removeItem("xen-settings");
+                        await clearAllStorage();
                         await parent.xen.fs.wipe();
                         const reg = await navigator.serviceWorker.getRegistration();
                         if (reg) {

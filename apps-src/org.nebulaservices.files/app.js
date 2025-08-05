@@ -480,8 +480,17 @@ class Main {
     }
 
     async handleFileDoubleClick(entry) {
+        const fullPath = `${this.currentPath}/${entry.name}`;
+
         if (entry.isDirectory) {
-            await this.navigateTo(`${this.currentPath}/${entry.name}`);
+            await this.navigateTo(fullPath);
+        } else if (entry.name.toLowerCase().endsWith('.zip')) {
+            await this.fs.open(fullPath, async () => {
+                const dest = fullPath.replace(/\.zip$/i, '');
+    
+                await this.fs.decompress(fullPath, dest);
+                await this.navigateTo(dest);
+            });
         } else {
             await this.openFile(entry);
         }

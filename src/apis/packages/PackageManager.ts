@@ -367,6 +367,17 @@ export class PackageManager {
         const fs = window.xen.fs;
 
         if (!type) {
+            if (packageId.startsWith('org.nebulaservices.')) {
+                window.xen.notifications.spawn({
+                    title: "XenOS",
+                    description: "This package is a core application and cannot be uninstalled",
+                    icon: "/assets/logo.svg",
+                    timeout: 2500
+                });
+
+                throw new Error('Package cannot be uninstalled');
+            }
+
             if (!await packageHandler(packageId, 'uninstall')) {
                 window.xen.notifications.spawn({
                     title: "XenOS",
