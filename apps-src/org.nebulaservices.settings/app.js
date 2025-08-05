@@ -455,12 +455,15 @@ function main() {
 
     updateBtn.addEventListener("click", async () => {
         try {
-            const reg = await navigator.serviceWorker.getRegistration();
-            if (reg) {
-                await reg.unregister();
-            }
-            parent.xen.settings.remove("build-cache");
-            window.parent.location.reload();
+            await parent.xen.dialog.confirm({
+                title: 'XenOS',
+                body: 'Checking for updates will delete the cache, the cache is what allows XenOS to prevent some filtering, are you sure you would like to continue?',
+                icon: '/assets/logo.svg'
+            }).then(async res => {
+                if (res == true) {
+                    await parent.xen.update();
+                }
+            });
         } catch (e) {
             parent.xen.notifications.spawn({
                 title: "XenOS",

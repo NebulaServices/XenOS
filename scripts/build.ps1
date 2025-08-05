@@ -97,14 +97,6 @@ copy_app "xen.runtime"
 Copy-Item -Recurse ./apps/ ./build/apps/
 
 success "Copied apps and libs"
-section "Building Workbox libraries"
-
-New-Item -ItemType Directory -Force build/libs/workbox/ | Out-Null
-npx workbox-cli@7.3.0 copyLibraries build/libs/workbox/ | Out-Null
-Move-Item build/libs/workbox/workbox-v7.3.0/* build/libs/workbox/
-Remove-Item -Recurse -Force build/libs/workbox/workbox-v7.3.0
-
-success "Built Workbox"
 
 section "Generating files.json"
 node ./scripts/generate.cjs

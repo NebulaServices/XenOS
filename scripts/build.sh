@@ -99,14 +99,6 @@ copy_app "xen.runtime"
 cp -r ./apps/ ./build/apps/
 
 success "Copied apps and libs"
-section "Building Workbox libraries"
-
-mkdir -p build/libs/workbox/
-npx workbox-cli@7.3.0 copyLibraries build/libs/workbox/ >/dev/null
-mv build/libs/workbox/workbox-v7.3.0/* build/libs/workbox/
-rm -r build/libs/workbox/workbox-v7.3.0
-
-success "Built Workbox"
 
 section "Generating files.json"
 node ./scripts/generate.cjs

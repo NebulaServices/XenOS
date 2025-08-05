@@ -59,19 +59,4 @@ window.addEventListener('load', async () => {
 
     await taskbar();
     await window.xen.initSystem();
-
-    // idk man
-    setInterval(() => {
-        fetch('/dnt', {
-            keepalive: true
-        }).catch(console.error);
-    }, 5000);
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    window.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'reload-site') {
-            window.location.reload();
-        }
-    });
 });

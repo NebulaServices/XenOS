@@ -14,7 +14,7 @@ async function install(type: 'apps' | 'libs') {
         await fs.mkdir(`/usr/${type}`);
     }
 
-        if (Array.isArray(Object.entries(res)[index])) {
+    if (Array.isArray(Object.entries(res)[index])) {
         for (const el of Object.entries(res)[index]) {
             if (Array.isArray(el)) {
                 for (const filename of el) {
@@ -34,16 +34,24 @@ async function update() {
 }
 
 export async function oobe() {
+    console.log('oobe');
     if (!window.xen.settings.get('oobe')) {
         await update();
-
         window.xen.settings.set('oobe', true);
         window.xen.settings.set('build-cache', window.xen.version.build);
         location.reload();
     }
+}
 
-    if (window.xen.version.build != window.xen.settings.get('build-cache')) {
-        await update();
-        window.xen.settings.set('build-cache', window.xen.version.build);
+export async function checkUpdate() {
+    console.log('update');
+    await fetch('/cc');
+    await update();
+    window.xen.settings.set('build-cache', window.xen.version.build);
+    
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (reg) {
+        await reg.unregister();
     }
+    window.parent.location.reload();
 }

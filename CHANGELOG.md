@@ -40,3 +40,10 @@ Processes have greatly improved:
     - iDBs
 - Double clicking a zip archive will now unzip it and navigate to the unzipped archive
 - You can no longer delete core applications (all apps that are pre-installed or have `org.nebulaservices.*`)
+
+## `v1.1.5`
+- SW was re-written (No more Workbox)
+- Theres no caching, this allows the site to:
+    - Work offline
+    - Bypass web-filters (if you have the PWA installed, I think)
+- The site will no longer auto update on boot, instead, you have to manually update by pressing the "check for updates" button in the settings app
