@@ -47,3 +47,8 @@ Processes have greatly improved:
     - Work offline
     - Bypass web-filters (if you have the PWA installed, I think)
 - The site will no longer auto update on boot, instead, you have to manually update by pressing the "check for updates" button in the settings app
+
+## `v1.1.6`
+- Mobile support!
+    - You can drag, resize, and clamp windows on mobile devices. This works best on tablets but you could do it on your phone if you really wanted too
+    - New platform API for getting information about the current platform

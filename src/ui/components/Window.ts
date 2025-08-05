@@ -185,12 +185,10 @@ export class Window {
 
         this.el.bar.addEventListener("mousedown", (e: MouseEvent) => {
             if (this.isMinimized || !this.props.display) return;
-
             isDragging = true;
             dragStartY = e.clientY;
             oX = e.clientX - this.el.window.getBoundingClientRect().left;
             oY = e.clientY - this.el.window.getBoundingClientRect().top;
-
             this.focus();
             document.body.classList.add("no-select");
             this.el.window.classList.add("dragging");
@@ -199,37 +197,78 @@ export class Window {
             }
         });
 
+        this.el.bar.addEventListener(
+            "touchstart",
+            (e: TouchEvent) => {
+                const t = e.touches[0];
+                if ((e.target as Element).closest("button")) return;
+                e.preventDefault();
+                this.el.bar.dispatchEvent(
+                    new MouseEvent("mousedown", {
+                        clientX: t.clientX,
+                        clientY: t.clientY,
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                    })
+                );
+            },
+            { passive: false }
+        );
+
         document.addEventListener("mousemove", (e: MouseEvent) => {
             if (!isDragging) return;
-
             if (this.isFullscreened && e.clientY - dragStartY > 50) {
                 this.fullscreen();
                 oX = this.el.window.offsetWidth / 2;
                 oY = 20;
-
                 return;
             }
-
             if (this.el.window.classList.contains("wm-clamped")) {
                 this.wm.unclampWindow(this);
             }
-
             if (!this.isFullscreened) {
                 this.x = e.clientX - oX;
                 this.y = e.clientY - oY;
             }
         });
 
-        document.addEventListener("mouseup", () => {
-            if (isDragging) {
-                isDragging = false;
+        document.addEventListener(
+            "touchmove",
+            (e: TouchEvent) => {
+                const t = e.touches[0];
+                document.dispatchEvent(
+                    new MouseEvent("mousemove", {
+                        clientX: t.clientX,
+                        clientY: t.clientY,
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                    })
+                );
+                e.preventDefault();
+            },
+            { passive: false }
+        );
 
-                document.body.classList.remove("no-select");
-                this.el.window.classList.remove("dragging");
-                if (this.el.content) {
-                    this.el.content.classList.remove("wm-iframe-no-pointer");
-                }
+        document.addEventListener("mouseup", () => {
+            if (!isDragging) return;
+            isDragging = false;
+            document.body.classList.remove("no-select");
+            this.el.window.classList.remove("dragging");
+            if (this.el.content) {
+                this.el.content.classList.remove("wm-iframe-no-pointer");
             }
+        });
+
+        document.addEventListener("touchend", () => {
+            document.dispatchEvent(
+                new MouseEvent("mouseup", {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                })
+            );
         });
 
         this.el.window.querySelectorAll(".wm-resizer").forEach((rEl) => {
@@ -240,11 +279,9 @@ export class Window {
             r.addEventListener("mousedown", (e: MouseEvent) => {
                 if (this.isMinimized || this.isFullscreened || !this.props.display)
                     return;
-
                 if (this.el.window.classList.contains("wm-clamped")) {
                     this.wm.unclampWindow(this);
                 }
-
                 isResizing = true;
                 sX = e.clientX;
                 sY = e.clientY;
@@ -252,10 +289,8 @@ export class Window {
                 sH = this.el.window.offsetHeight;
                 sL = this.el.window.offsetLeft;
                 sT = this.el.window.offsetTop;
-
                 e.preventDefault();
                 this.focus();
-
                 document.body.classList.add("no-select");
                 this.el.window.classList.add("resizing");
                 if (this.el.content) {
@@ -263,13 +298,31 @@ export class Window {
                 }
             });
 
+            r.addEventListener(
+                "touchstart",
+                (e: TouchEvent) => {
+                    const t = e.touches[0];
+                    if ((e.target as Element).closest("button")) return;
+                    e.preventDefault();
+                    r.dispatchEvent(
+                        new MouseEvent("mousedown", {
+                            clientX: t.clientX,
+                            clientY: t.clientY,
+                            bubbles: true,
+                            cancelable: true,
+                            view: window
+                        })
+                    );
+                },
+                { passive: false }
+            );
+
             document.addEventListener("mousemove", (e: MouseEvent) => {
                 if (!isResizing) return;
-
                 const dX = e.clientX - sX;
                 const dY = e.clientY - sY;
-                const d = Array.from(r.classList).find((cls) =>
-                    cls.startsWith("wm-resizer-"),
+                const dir = Array.from(r.classList).find((cls) =>
+                    cls.startsWith("wm-resizer-")
                 )!;
                 const minW = 200;
                 const minH = 100;
@@ -277,17 +330,19 @@ export class Window {
                 let nH = sH;
                 let nX = sL;
                 let nY = sT;
-
-                switch (d) {
+                switch (dir) {
                     case "wm-resizer-n":
                         nH = Math.max(minH, sH - dY);
                         nY = sT + (sH - nH);
                         break;
                     case "wm-resizer-s":
                         nH = Math.max(minH, sH + dY);
-                        const maxHeight =
-                            window.innerHeight - sT - (window as any).xen.taskBar.getHeight();
-                        nH = Math.min(nH, maxHeight);
+                        nH = Math.min(
+                            nH,
+                            window.innerHeight -
+                            sT -
+                            (window as any).xen.taskBar.getHeight()
+                        );
                         break;
                     case "wm-resizer-e":
                         nW = Math.max(minW, sW + dX);
@@ -310,38 +365,67 @@ export class Window {
                     case "wm-resizer-se":
                         nH = Math.max(minH, sH + dY);
                         nW = Math.max(minW, sW + dX);
-
-                        const maxHeightSE =
-                            window.innerHeight - sT - (window as any).xen.taskBar.getHeight();
-                        nH = Math.min(nH, maxHeightSE);
+                        nH = Math.min(
+                            nH,
+                            window.innerHeight -
+                            sT -
+                            (window as any).xen.taskBar.getHeight()
+                        );
                         break;
                     case "wm-resizer-sw":
                         nH = Math.max(minH, sH + dY);
                         nW = Math.max(minW, sW - dX);
                         nX = sL + (sW - nW);
-
-                        const maxHeightSW =
-                            window.innerHeight - sT - (window as any).xen.taskBar.getHeight();
-                        nH = Math.min(nH, maxHeightSW);
+                        nH = Math.min(
+                            nH,
+                            window.innerHeight -
+                            sT -
+                            (window as any).xen.taskBar.getHeight()
+                        );
                         break;
                 }
-
                 this.width = `${nW}px`;
                 this.height = `${nH}px`;
                 this.x = nX;
                 this.y = nY;
             });
 
-            document.addEventListener("mouseup", () => {
-                if (isResizing) {
-                    isResizing = false;
+            document.addEventListener(
+                "touchmove",
+                (e: TouchEvent) => {
+                    const t = e.touches[0];
+                    document.dispatchEvent(
+                        new MouseEvent("mousemove", {
+                            clientX: t.clientX,
+                            clientY: t.clientY,
+                            bubbles: true,
+                            cancelable: true,
+                            view: window
+                        })
+                    );
+                    e.preventDefault();
+                },
+                { passive: false }
+            );
 
-                    document.body.classList.remove("no-select");
-                    this.el.window.classList.remove("resizing");
-                    if (this.el.content) {
-                        this.el.content.classList.remove("wm-iframe-no-pointer");
-                    }
+            document.addEventListener("mouseup", () => {
+                if (!isResizing) return;
+                isResizing = false;
+                document.body.classList.remove("no-select");
+                this.el.window.classList.remove("resizing");
+                if (this.el.content) {
+                    this.el.content.classList.remove("wm-iframe-no-pointer");
                 }
+            });
+
+            document.addEventListener("touchend", () => {
+                document.dispatchEvent(
+                    new MouseEvent("mouseup", {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                    })
+                );
             });
         });
 
@@ -353,7 +437,6 @@ export class Window {
                 return;
             }
             if (!this.props.display) return;
-
             this.focus();
             if (this.el.content) {
                 this.el.content.classList.add("wm-iframe-no-pointer");

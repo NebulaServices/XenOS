@@ -1,4 +1,4 @@
-## `v1.1.6`
+## `v1.1.7`
 - Persistent external file handlers
 - Auto update packages from the repostore if a new version is available
 

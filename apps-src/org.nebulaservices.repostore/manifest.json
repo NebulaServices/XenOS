@@ -9,9 +9,5 @@
         "name": "Nebula Services",
         "email": "contact@nebulaservices.org",
         "website": "https://nebulaservices.org"
-    },
-    "window": {
-        "width": "1000px",
-        "height": "650px"
     }
 }

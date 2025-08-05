@@ -144,8 +144,7 @@ async function cacheResource(request: Request, response: Response): Promise<void
         const cache = await caches.open(CACHE_NAME);
         const cachedResponse = await cache.match(request);
         
-        if (!cachedResponse) {
-            console.log('Caching resource:', request.url);
+        if (!cachedResponse) {;
             await cache.put(request, response);
         }
     }
@@ -159,7 +158,6 @@ self.addEventListener('fetch', (event) => {
     if (pathname === '/cc') {
         event.respondWith(
             caches.delete(CACHE_NAME).then(() => {
-                console.log('Cache cleared');
                 return new Response('Cache cleared', { status: 200 });
             })
         );

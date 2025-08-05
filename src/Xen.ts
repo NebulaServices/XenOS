@@ -18,6 +18,7 @@ import { Systray } from "./ui/apis/Systray";
 import { FilePicker } from "./apis/files/FilePicker";
 import { sofp, sdp } from "./apis/files/polyfill";
 import { updater } from "./core/update";
+import { platform } from "./apis/platform";
 
 export class Xen {
     public settings: typeof settings;
@@ -46,6 +47,7 @@ export class Xen {
         sdp: typeof sdp;
     }
     public update: typeof updater;
+    public platform: typeof platform;
 
 
     constructor() {
@@ -75,6 +77,7 @@ export class Xen {
             sdp: sdp
         };
         this.update = updater;
+        this.platform = platform;
     }
 
     public version = {
@@ -82,7 +85,7 @@ export class Xen {
         codename: 'Nightcord',
         major: 1,
         minor: 1,
-        patch: 5,
+        patch: 6,
         build: '',
         pretty: ''
     };
