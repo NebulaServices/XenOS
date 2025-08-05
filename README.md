@@ -6,7 +6,9 @@ A WebOS with the best UI to date
 
 ## What is XenOS?
 XenOS is a highly customizable "WebOS" with **a ton** of features and a sleek UI. You can view a live demo at: https://xen-os.dev/
-![Screenshot](./assets//screenshot.png)
+
+![Screenshot](./assets/screenshot.png) | ![Screenshot 2](./assets/screenshot-two.png) |
+| --- | --- |
 
 ## Developing XenOS
 ### Dependencies
