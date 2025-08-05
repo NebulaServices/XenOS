@@ -75,29 +75,41 @@ export class WindowManager {
     }
 
     private setupClampListeners(): void {
-        document.addEventListener("mousemove", (e) => {
+        const onPointerMove = (x: number, y: number) => {
             if (!this.isDraggingWindow()) return;
-
-            const draggedWindow = this.getDraggedWindow();
-
-            if (draggedWindow && !draggedWindow.props.resizable) {
-                return;
-            }
-
-            const zone = this.getClampZone(e.clientX, e.clientY);
+            const dragged = this.getDraggedWindow();
+            if (dragged && !dragged.props.resizable) return;
+            const zone = this.getClampZone(x, y);
             this.showClampZone(zone);
-        });
+        };
 
-        document.addEventListener("mouseup", (e) => {
+        const onPointerUp = (): void => {
             if (this.activeClampZone && this.isDraggingWindow()) {
-                const draggedWindow = this.getDraggedWindow();
-
-                if (draggedWindow && draggedWindow.props.resizable) {
-                    this.clampWindow(draggedWindow, this.activeClampZone);
+                const dragged = this.getDraggedWindow();
+                if (dragged && dragged.props.resizable) {
+                    this.clampWindow(dragged, this.activeClampZone);
                 }
             }
-
             this.hideAllClampZones();
+        };
+
+        document.addEventListener("mousemove", e => {
+            onPointerMove(e.clientX, e.clientY);
+        });
+
+        document.addEventListener("mouseup", () => {
+            onPointerUp();
+        });
+
+        document.addEventListener("touchmove", e => {
+            const t = e.touches[0];
+
+            onPointerMove(t.clientX, t.clientY);
+            e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener("touchend", () => {
+            onPointerUp();
         });
     }
 
