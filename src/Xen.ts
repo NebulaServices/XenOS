@@ -1,23 +1,23 @@
-import { LibcurlClient } from "./apis/networking/LibcurlClient";
+import { LibcurlClient } from "./apis/LibcurlClient";
 import { XenFS } from "./apis/files/XenFS";
-import { oobe } from "./ui/oobe/autoUpdate";
-import { WindowManager } from "./ui/windows/WindowManager";
+import { oobe } from "./core/update";
+import { WindowManager } from "./ui/apis/WindowManager";
 import { ContextMenu } from "./ui/apis/ContextMenu";
 import { TaskBar } from "./ui/components/TaskBar";
-import { ProcessManager } from "./apis/process/Processes";
+import { ProcessManager } from "./apis/Processes";
 import { PackageManager } from "./apis/packages/PackageManager";
 import { RepoStore } from "./apis/packages/RepoStore";
 import { Notifications } from "./ui/apis/Notifications";
 import { Wallpaper } from "./ui/Wallpaper";
-import { settings } from "./apis/kv/settings";
-import { KV } from "./apis/kv/KV";
-import { init } from "./apis/process/init";
+import { settings } from "./apis/settings";
+import { KV } from "./apis/KV";
+import { init } from "./core/init";
 import { getPolicy, setPolicy } from "./apis/policy/policy";
 import { Dialog } from "./ui/apis/Dialog";
 import { Systray } from "./ui/apis/Systray";
 import { FilePicker } from "./apis/files/FilePicker";
 import { sofp, sdp } from "./apis/files/polyfill";
-import { checkUpdate } from "./ui/oobe/autoUpdate";
+import { updater } from "./core/update";
 
 export class Xen {
     public settings: typeof settings;
@@ -45,7 +45,7 @@ export class Xen {
         sofp: typeof sofp;
         sdp: typeof sdp;
     }
-    public update: typeof checkUpdate;
+    public update: typeof updater;
 
 
     constructor() {
@@ -74,7 +74,7 @@ export class Xen {
             sofp: sofp,
             sdp: sdp
         };
-        this.update = checkUpdate;
+        this.update = updater;
     }
 
     public version = {

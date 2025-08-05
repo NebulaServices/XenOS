@@ -34,24 +34,26 @@ async function update() {
 }
 
 export async function oobe() {
-    console.log('oobe');
     if (!window.xen.settings.get('oobe')) {
         await update();
+
         window.xen.settings.set('oobe', true);
         window.xen.settings.set('build-cache', window.xen.version.build);
+    
         location.reload();
     }
 }
 
-export async function checkUpdate() {
-    console.log('update');
+export async function updater() {
     await fetch('/cc');
     await update();
+
     window.xen.settings.set('build-cache', window.xen.version.build);
     
     const reg = await navigator.serviceWorker.getRegistration();
     if (reg) {
         await reg.unregister();
     }
+
     window.parent.location.reload();
 }

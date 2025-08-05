@@ -1,5 +1,7 @@
-import { RequestInterceptor, ResponseInterceptor } from "./types";
-import { networkHandler } from "../policy/handler";
+import { networkHandler } from "./policy/handler";
+
+type RequestInterceptor = (request: Request) => Promise<Request | Response> | Request | Response;
+type ResponseInterceptor = (response: Response) => Promise<Response> | Response;
 
 export class LibcurlClient {
     public loopback = {

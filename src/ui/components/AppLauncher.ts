@@ -41,6 +41,22 @@ export class AppLauncher {
 
         this.setup();
         this.loadAppOrder();
+        this.initGlobalShortcut();
+    }
+
+    private initGlobalShortcut(): void {
+        document.addEventListener('keydown', (e: KeyboardEvent) => {
+            if (
+                !e.repeat &&
+                e.altKey &&
+                e.ctrlKey &&
+                !e.shiftKey &&
+                !e.metaKey
+            ) {
+                e.preventDefault();
+                this.toggle();
+            }
+        });
     }
 
     private setup(): void {
@@ -277,10 +293,10 @@ export class AppLauncher {
         const rect = targetEntry.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
-        
+
         const relativeX = e.clientX - rect.left;
         const relativeY = e.clientY - rect.top;
-        
+
         targetEntry.classList.remove('drop-left', 'drop-right', 'drop-top', 'drop-bottom');
         targetEntry.classList.add('drop-target');
 
@@ -292,7 +308,7 @@ export class AppLauncher {
         };
 
         const minDistance = Math.min(...Object.values(distances));
-        
+
         if (distances.left === minDistance) {
             targetEntry.classList.add('drop-left');
         } else if (distances.right === minDistance) {
@@ -308,7 +324,7 @@ export class AppLauncher {
         const rect = targetEntry.getBoundingClientRect();
         const relativeX = e.clientX - rect.left;
         const relativeY = e.clientY - rect.top;
-        
+
         const distances = {
             left: relativeX,
             right: rect.width - relativeX,
@@ -317,7 +333,7 @@ export class AppLauncher {
         };
 
         const minDistance = Math.min(...Object.values(distances));
-        
+
         return (distances.left === minDistance || distances.top === minDistance) ? 'before' : 'after';
     }
 
@@ -329,7 +345,7 @@ export class AppLauncher {
         if (draggedIndex === -1 || targetIndex === -1 || draggedIndex === targetIndex) return;
 
         const [draggedApp] = orderedApps.splice(draggedIndex, 1);
-      
+
         let newTargetIndex = targetIndex;
         if (draggedIndex < targetIndex) {
             newTargetIndex = targetIndex - 1;

@@ -1,6 +1,6 @@
 import { Xen } from "./Xen";
-import { XenTransport } from "./apis/networking/Transport";
-import { oobe } from "./ui/oobe/autoUpdate";
+import { XenTransport } from "./core/Transport";
+import { oobe } from "./core/update";
 import { bootSplash } from "./ui/bootSplash";
 import { initSw } from "./sw/register-sw";
 

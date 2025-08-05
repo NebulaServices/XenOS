@@ -1,4 +1,4 @@
-import { WindowManager } from "./WindowManager";
+import { WindowManager } from "../apis/WindowManager";
 import { v4 as uuidv4 } from "uuid";
 
 export interface WindowOpts {

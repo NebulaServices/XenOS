@@ -1,4 +1,4 @@
-import { Window, WindowOpts } from "./Window";
+import { Window, WindowOpts } from "../components/Window";
 
 export class WindowManager {
     public windows: Window[] = [];
@@ -18,6 +18,27 @@ export class WindowManager {
         document.body.appendChild(this.container);
         this.setupClampZones();
         this.setupClampListeners();
+        this.initShortcuts();
+    }
+
+    private initShortcuts(): void {
+        document.addEventListener("keydown", this.handleShortcuts, true);
+    }
+
+    private handleShortcuts = (e: KeyboardEvent): void => {
+        if (e.altKey && e.shiftKey && !e.ctrlKey && e.key === "Shift") {
+            e.preventDefault();
+            this.cycleFocus();
+        }
+    };
+
+    private cycleFocus(): void {
+        if (this.windows.length < 2) return;
+
+        const idx = this.windows.findIndex(w => w.isFocused);
+        const next = this.windows[(idx + 1) % this.windows.length];
+
+        this.focus(next);
     }
 
     private setupClampZones(): void {
@@ -256,12 +277,25 @@ export class WindowManager {
         });
     }
 
-    create(opts: WindowOpts): Window {
+    public create(opts: WindowOpts): Window {
         const win = new Window(opts, this);
-
         this.windows.push(win);
         this.onCreated?.(win);
+        this.attachContentListener(win);
         return win;
+    }
+
+    private attachContentListener(win: Window): void {
+        const iframe = win.el.content as HTMLIFrameElement;
+
+        if (iframe && iframe.tagName === "IFRAME") {
+            iframe.addEventListener("load", () => {
+                try {
+                    const doc = iframe.contentWindow!.document;
+                    doc.addEventListener("keydown", this.handleShortcuts, true);
+                } catch { }
+            });
+        }
     }
 
     remove(win: Window): void {

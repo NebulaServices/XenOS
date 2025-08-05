@@ -2,7 +2,7 @@ import { build } from 'esbuild';
 
 await build({
     entryPoints: {
-        index: 'src/index.ts',
+        index: 'src/boot.ts',
     },
     entryNames: '[name]',
     outdir: 'dist',
@@ -15,7 +15,7 @@ await build({
 // Build transport (Needs both cjs and mjs)
 await build({
     entryPoints: {
-        index: 'src/apis/networking/Transport.ts',
+        index: 'src/core/Transport.ts',
     },
     entryNames: '[name]',
     outfile: './dist-transport/index.js',
@@ -27,7 +27,7 @@ await build({
 
 await build({
     entryPoints: {
-        index: 'src/apis/networking/Transport.ts',
+        index: 'src/core/Transport.ts',
     },
     entryNames: '[name]',
     outfile: './dist-transport/index.mjs',
