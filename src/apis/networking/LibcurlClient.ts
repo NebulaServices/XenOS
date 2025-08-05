@@ -1,4 +1,4 @@
-import { RequestInterceptor, ResponseInterceptor, NetworkSettings, defaultSettings } from "./types";
+import { RequestInterceptor, ResponseInterceptor } from "./types";
 import { networkHandler } from "../policy/handler";
 
 export class LibcurlClient {
@@ -47,18 +47,21 @@ export class LibcurlClient {
         libcurl: null as any,
     };
 
-    private networkSettings: NetworkSettings;
-
     private session: any;
 
     private requestInterceptors: RequestInterceptor[] = [];
     private responseInterceptors: ResponseInterceptor[] = [];
 
+    private wispUrl: string;
+
     constructor() { }
 
     public async init() {
-        this.networkSettings = window.xen.settings.get("network-settings") || defaultSettings;
-        window.xen.settings.set("network-settings", this.networkSettings);
+        this.wispUrl = window.xen.settings.get('wisp-url');
+        if (!this.wispUrl) {
+            window.xen.settings.set('wisp-url', (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
+            this.wispUrl = window.xen.settings.get('wisp-url');
+        }
 
         const lcModule = await import(this.paths.lcJs);
         this.direct.libcurl = lcModule.libcurl;
@@ -66,11 +69,10 @@ export class LibcurlClient {
         console.log('[LC] js + wasm loaded');
 
         this.direct.wisp = await import(this.paths.wisp);
-        this.wisp.wispConn = new this.direct.wisp.WispConnection(this.networkSettings.url);
+        this.wisp.wispConn = new this.direct.wisp.WispConnection(this.wispUrl);
 
         /*document.addEventListener("libcurl_load", () => {*/
-            this.direct.libcurl.transport = this.networkSettings.transport;
-            this.direct.libcurl.set_websocket(this.networkSettings.url);
+            this.direct.libcurl.set_websocket(this.wispUrl);
             console.log('[LC] set url + transport');
 
             // this.HTTPSession = this.direct.libcurl.HTTPSession;
@@ -80,13 +82,7 @@ export class LibcurlClient {
 
             this.setUrl = this.direct.libcurl.set_websocket;
 
-            this.session = new this.direct.libcurl.HTTPSession({
-                proxy: this.networkSettings.proxy
-            });
-
-            if (this.networkSettings.connections) {
-                this.session.set_connections(...this.networkSettings.connections);
-            }
+            this.session = new this.direct.libcurl.HTTPSession();
         /*});*/
 
         this.wisp.wispConn.addEventListener("open", () => {

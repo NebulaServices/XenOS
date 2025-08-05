@@ -1,11 +1,15 @@
 class Main {
-    constructor() {
+    constructor(kv) {
+        this.kv = kv;
+    }
+
+    async init() {
         this.tabs = [];
         this.activeTabId = null;
         this.tabCounter = 0;
         this.history = [];
-        this.bookmarks = this.loadBookmarks();
-        this.visitCounts = this.loadVisitCounts();
+        //  this.bookmarks = this.loadBookmarks();
+        this.visitCounts = await this.loadVisitCounts();
         this.selectedSuggestion = -1;
         this.isIconMode = false;
         this.urlUpdateInterval = null;
@@ -20,13 +24,13 @@ class Main {
         //const bookmarksVisible = parent.xen?.settings?.get('bookmarks-visible') ?? true;
         // this.toggleBookmarksBar(bookmarksVisible);
 
-        const savedWidth = parent.xen?.settings?.get('sidebar-width') || 250;
+        const savedWidth = await this.kv.get('sidebar-width') || 250;
         this.tabSidebar.style.width = `${savedWidth}px`;
         this.checkIconMode(savedWidth);
 
         this.startUrlMonitoring();
 
-        firstTime();
+        // firstTime();
     }
 
     initElements() {
@@ -96,7 +100,7 @@ class Main {
                 this.checkIconMode(newWidth);
             };
 
-            const stopResize = () => {
+            const stopResize = async () => {
                 if (!isResizing) return;
                 isResizing = false;
 
@@ -109,11 +113,8 @@ class Main {
                 document.removeEventListener('mousemove', handleResize);
                 document.removeEventListener('mouseup', stopResize);
 
-                // Save width to settings
                 const width = parseInt(this.tabSidebar.style.width);
-                if (parent.xen?.settings) {
-                    parent.xen.settings.set('sidebar-width', width);
-                }
+                await this.kv.set('sidebar-width', width);
             };
 
             document.addEventListener('mousemove', handleResize);
@@ -265,7 +266,7 @@ class Main {
         } catch { }
     }
 
-    updateTabUrl(tab, newUrl) {
+    async updateTabUrl(tab, newUrl) {
         if (tab.url !== newUrl) {
             tab.url = newUrl;
 
@@ -277,7 +278,7 @@ class Main {
 
             const decodedUrl = this.getDisplayUrl(newUrl);
             this.visitCounts[decodedUrl] = (this.visitCounts[decodedUrl] || 0) + 1;
-            this.saveVisitCounts();
+            await this.saveVisitCounts();
 
             if (tab.history[tab.historyIndex] !== newUrl) {
                 tab.history = tab.history.slice(0, tab.historyIndex + 1);
@@ -425,7 +426,7 @@ class Main {
         }
     }
 
-    navigateToUrl(url) {
+    async navigateToUrl(url) {
         if (!this.activeTabId) return;
 
         const activeTab = this.tabs.find(t => t.id === this.activeTabId);
@@ -440,7 +441,7 @@ class Main {
         }
 
         this.visitCounts[url] = (this.visitCounts[url] || 0) + 1;
-        this.saveVisitCounts();
+        await this.saveVisitCounts();
 
         const encodedUrl = parent.xen?.net?.encodeUrl(url) || url;
 
@@ -799,16 +800,16 @@ class Main {
         parent.xen.settzings.set('browser-bookmarks', this.bookmarks);
     }
 
-    loadVisitCounts() {
+    async loadVisitCounts() {
         try {
-            return parent.xen.settins.get('browser-visits') || {};
+            return await this.kv.get('browser-visits') || {};
         } catch {
             return {};
         }
     }
 
-    saveVisitCounts() {
-        parent.xen.settings.set('browser-visits', this.visitCounts);
+    async saveVisitCounts() {
+        await this.kv.set('browser-visits', this.visitCounts);
     }
 }
 
@@ -824,4 +825,9 @@ function firstTime() {
     }
 }
 
-new Main();
+(async () => {
+    const kv = new parent.xen.KV(location.href);
+    const m = new Main(kv);
+    await m.init();
+})();
+

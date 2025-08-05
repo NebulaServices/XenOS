@@ -9,7 +9,8 @@ import { PackageManager } from "./apis/packages/PackageManager";
 import { RepoStore } from "./apis/packages/RepoStore";
 import { Notifications } from "./ui/apis/Notifications";
 import { Wallpaper } from "./ui/Wallpaper";
-import { settings } from "./apis/settings";
+import { settings } from "./apis/kv/settings";
+import { KV } from "./apis/kv/KV";
 import { init } from "./apis/process/init";
 import { getPolicy, setPolicy } from "./apis/policy/policy";
 import { Dialog } from "./ui/apis/Dialog";
@@ -19,6 +20,7 @@ import { sofp, sdp } from "./apis/files/polyfill";
 
 export class Xen {
     public settings: typeof settings;
+    public KV: typeof KV;
     public fs: XenFS;
     public net: LibcurlClient;
     public boot: typeof oobe;
@@ -46,6 +48,7 @@ export class Xen {
 
     constructor() {
         this.settings = settings;
+        this.KV = KV;
         this.fs = new XenFS();
         this.net = new LibcurlClient();
         this.boot = oobe;
@@ -76,7 +79,7 @@ export class Xen {
         codename: 'Nightcord',
         major: 1,
         minor: 1,
-        patch: 2,
+        patch: 3,
         build: '',
         pretty: ''
     };

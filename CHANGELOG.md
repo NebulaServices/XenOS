@@ -26,3 +26,8 @@ Processes have greatly improved:
 - Add a process manager app
 - Clicking on an already focused entry on the taskbar will minimize it
 - Fullscreen state will persist across minimizations
+
+## `v1.1.3`
+- Scoped KV
+- Removed un-needed options in LibcurlClient
+- Apps now use said scoped KV

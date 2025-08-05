@@ -28,6 +28,11 @@ function main() {
     const uploadWpFsBtn = document.getElementById("upload-wallpaper-fs");
     const rmWpBtn = document.getElementById("remove-wallpaper");
 
+    wispIn.placeholder = (location.protocol === "https:" ? "wss" : "ws") +
+                "://" +
+                location.host +
+                "/wisp/";
+
     function resetPolicyEditor() {
         selectedPath = null;
         isPolicyFile = false;
@@ -391,9 +396,9 @@ function main() {
     createPolicyBtn.addEventListener("click", createPolicy);
 
     try {
-        const settings = parent.xen.settings.get("network-settings");
-        if (settings && settings.url) {
-            wispIn.value = settings.url;
+        const settings = parent.xen.settings.get("wisp-url");
+        if (settings) {
+            wispIn.value = settings;
         }
     } catch (e) { }
 
@@ -401,9 +406,9 @@ function main() {
         const url = wispIn.value.trim();
         if (url) {
             try {
-                const s = parent.xen.settings.get("network-settings");
-                s.url = url;
-                parent.xen.settings.set("network-settings", s);
+                let s = parent.xen.settings.get("wisp-url");
+                s = url;
+                parent.xen.settings.set("wisp-url", s);
                 parent.xen.net.setUrl(url);
                 parent.xen.notifications.spawn({
                     title: "XenOS",
@@ -426,9 +431,9 @@ function main() {
                 location.host +
                 "/wisp/";
             try {
-                const s = parent.xen.settings.get("network-settings");
-                s.url = defaultUrl;
-                parent.xen.settings.set("network-settings", s);
+                let s = parent.xen.settings.get("wisp-url");
+                s = defaultUrl;
+                parent.xen.settings.set("wisp-url", s);
                 parent.xen.net.setUrl(defaultUrl);
                 wispIn.value = defaultUrl;
                 parent.xen.notifications.spawn({
@@ -455,7 +460,7 @@ function main() {
                 await reg.unregister();
             }
             parent.xen.settings.remove("build-cache");
-            window.parent.postMessage({ type: "reload-site" }, "*");
+            window.parent.location.reload();
         } catch (e) {
             parent.xen.notifications.spawn({
                 title: "XenOS",
@@ -481,7 +486,7 @@ function main() {
                         if (reg) {
                             await reg.unregister();
                         }
-                        window.parent.postMessage({ type: "reload-site" }, "*");
+                        window.parent.location.reload();
                     } catch (e) {
                         parent.xen.notifications.spawn({
                             title: "XenOS",
