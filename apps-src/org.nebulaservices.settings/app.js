@@ -507,7 +507,7 @@ function main() {
                 if (res === true) {
                     try {
                         await clearAllStorage();
-                        await parent.xen.fs.wipe();
+                        await parent.xen.fs.rm('/system');
                         const reg = await navigator.serviceWorker.getRegistration();
                         if (reg) {
                             await reg.unregister();

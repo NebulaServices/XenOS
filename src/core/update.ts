@@ -45,7 +45,7 @@ export async function oobe() {
 }
 
 export async function updater() {
-    await fetch('/cc');
+    await window.xen.fs.rm('/system');
     await update();
 
     window.xen.settings.set('build-cache', window.xen.version.build);

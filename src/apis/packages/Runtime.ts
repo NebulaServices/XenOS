@@ -15,7 +15,6 @@ export class Runtime {
 
             if (args) {
                 const params = new URLSearchParams(args);
-                console.log(params.toString());
                 url += `?${params.toString()}`;
             }
         } else {
