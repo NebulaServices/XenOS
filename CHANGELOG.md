@@ -52,3 +52,8 @@ Processes have greatly improved:
 - Mobile support!
     - You can drag, resize, and clamp windows on mobile devices. This works best on tablets but you could do it on your phone if you really wanted too
     - New platform API for getting information about the current platform
+
+## `v1.1.7`
+XenOS now boostraps the FS.
+- What does this mean?
+    - You get all the benefits of caching (offline usage), but now, you can edit the sites content! Everything is stored on the FS

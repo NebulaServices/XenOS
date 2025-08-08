@@ -1,4 +1,3 @@
-export const CACHE_NAME = 'xen-cache-v1';
 export const PRECACHE_RESOURCES = [
     '/',
     '/index.html',
