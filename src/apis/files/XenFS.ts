@@ -30,7 +30,8 @@ export class XenFS {
         this.root = await navigator.storage.getDirectory();
     }
 
-    private normalizePath(path: string): string {
+    public normalizePath(path: string, cwd?: string): string {
+        if (cwd) this.cwd = cwd;
         if (!path) return this.cwd;
         if (path.startsWith("~")) path = "/usr" + path.slice(1);
         if (!path.startsWith("/")) path = this.cwd + "/" + path;

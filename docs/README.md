@@ -4,3 +4,4 @@
 - [Creating Apps for XenOS](./apps.md)
 - [Create Libraries for XenOS](./libs.md)
 - [XenOSes Init System](./init.md)
+- [XenOSes Shell](./shell.md)

@@ -92,6 +92,7 @@ copy_app "org.nebulaservices.repostore"
 copy_app "org.nebulaservices.files"
 copy_app "org.nebulaservices.browser"
 copy_app "org.nebulaservices.processmanager"
+copy_app "org.nebulaservices.terminal"
 copy_app "xen.runtime"  
 
 Copy-Item -Recurse ./apps/ ./build/apps/

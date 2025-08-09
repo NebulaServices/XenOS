@@ -19,6 +19,7 @@ import { FilePicker } from "./apis/files/FilePicker";
 import { sofp, sdp } from "./apis/files/polyfill";
 import { updater } from "./core/update";
 import { platform } from "./apis/platform";
+import { XenShell } from "./shell/XenShell";
 
 export class Xen {
     public settings: typeof settings;
@@ -48,6 +49,7 @@ export class Xen {
     }
     public update: typeof updater;
     public platform: typeof platform;
+    public shell: typeof XenShell;
 
 
     constructor() {
@@ -78,6 +80,7 @@ export class Xen {
         };
         this.update = updater;
         this.platform = platform;
+        this.shell = XenShell;
     }
 
     public version = {
@@ -85,7 +88,7 @@ export class Xen {
         codename: 'Nightcord',
         major: 1,
         minor: 1,
-        patch: 7,
+        patch: 8,
         build: '',
         pretty: ''
     };

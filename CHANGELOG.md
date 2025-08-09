@@ -57,3 +57,7 @@ Processes have greatly improved:
 XenOS now boostraps the FS.
 - What does this mean?
     - You get all the benefits of caching (offline usage), but now, you can edit the sites content! Everything is stored on the FS
+
+## `v1.1.8`
+- XenOS now has a UNIX-like shell and terminal app!
+    - For more info check docs
