@@ -31,31 +31,24 @@ async function taskbar() {
 
 window.addEventListener('load', async () => {
     const splash = bootSplash();
-
     await setupDeps();
 
     const reg = await navigator.serviceWorker.getRegistration();
-
     if (reg) {
         await reg.unregister();
     }
 
     await initSw();
-
-    const connection = new window.BareMux.BareMuxConnection('/libs/bare-mux/worker.js');
-    //@ts-ignore
-    connection.setRemoteTransport(new XenTransport(), 'XenTransport');
-
-    await window.xen.boot();
-
-    await window.xen.initSystem();
-
     window.xen.wallpaper.set();
-    await taskbar();
+    await window.xen.boot();
 
     window.addEventListener('resize', () => {
         window.xen.wm.handleWindowResize();
     });
+
+    const connection = new window.BareMux.BareMuxConnection('/libs/bare-mux/worker.js');
+    //@ts-ignore
+    connection.setRemoteTransport(new XenTransport(), 'XenTransport');
 
     setTimeout(() => {
         splash.style.opacity = "0";
@@ -63,4 +56,7 @@ window.addEventListener('load', async () => {
             splash.remove();
         });
     }, 600);
+
+    await taskbar();
+    await window.xen.initSystem();
 });
