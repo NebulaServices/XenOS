@@ -51,7 +51,6 @@ export class Xen {
     public platform: typeof platform;
     public shell: typeof XenShell;
 
-
     constructor() {
         this.settings = settings;
         this.KV = KV;

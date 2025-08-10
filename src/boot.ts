@@ -31,15 +31,18 @@ async function taskbar() {
 
 window.addEventListener('load', async () => {
     const splash = bootSplash();
+    (window as any).bootSplash = splash;
+
     await setupDeps();
 
     const reg = await navigator.serviceWorker.getRegistration();
     if (reg) {
         await reg.unregister();
     }
-
     await initSw();
+
     window.xen.wallpaper.set();
+
     await window.xen.boot();
 
     window.addEventListener('resize', () => {
@@ -50,13 +53,13 @@ window.addEventListener('load', async () => {
     //@ts-ignore
     connection.setRemoteTransport(new XenTransport(), 'XenTransport');
 
-    setTimeout(() => {
-        splash.style.opacity = "0";
-        splash.addEventListener("transitionend", () => {
-            splash.remove();
-        });
-    }, 600);
-
     await taskbar();
     await window.xen.initSystem();
+
+    setTimeout(() => {
+        splash.element.style.opacity = "0";
+        splash.element.addEventListener("transitionend", () => {
+            splash.element.remove();
+        });
+    }, 600);
 });

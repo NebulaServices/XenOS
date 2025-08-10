@@ -29,6 +29,11 @@ async function install(type: 'apps' | 'libs') {
 }
 
 async function update() {
+    const splash = (window as any).bootSplash;
+    if (splash) {
+        splash.updateSubtext("Downloading resources... (depending on your internet, this could take a while)");
+    }
+    
     await install('apps');
     await install('libs');
 }
@@ -54,6 +59,8 @@ export async function updater() {
     if (reg) {
         await reg.unregister();
     }
-
-    window.parent.location.reload();
+    
+    setTimeout(() => {
+        window.parent.location.reload();
+    }, 1500);
 }

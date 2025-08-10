@@ -46,6 +46,20 @@ export function bootSplash() {
     `;
     splash.appendChild(subtext);
 
+    const helperText = document.createElement("p");
+    helperText.id = "boot-helper-text";
+    helperText.textContent = "";
+    helperText.style.cssText = `
+        font-size: 0.9em;
+        margin-top: 20px;
+        color: var(--mocha-subtext1);
+        opacity: 0.8;
+        text-align: center;
+        max-width: 400px;
+        line-height: 1.4;
+    `;
+    splash.appendChild(helperText);
+
     /*
     const loadingBarContainer = document.createElement("div");
     loadingBarContainer.style.cssText = `
@@ -81,5 +95,14 @@ export function bootSplash() {
 
     document.head.appendChild(style);
     document.body.appendChild(splash);
-    return splash;
+    
+    return {
+        element: splash,
+        updateHelperText: (text: string) => {
+            helperText.textContent = text;
+        },
+        updateSubtext: (text: string) => {
+            subtext.textContent = text;
+        }
+    };
 }

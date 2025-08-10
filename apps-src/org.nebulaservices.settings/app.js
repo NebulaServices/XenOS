@@ -462,6 +462,13 @@ function main() {
             }).then(async res => {
                 if (res == true) {
                     await parent.xen.update();
+
+                    parent.xen.notifications.spawn({
+                        title: "XenOS",
+                        description: "Update checker started! Depending on your internet, this could take a while   ",
+                        icon: `/assets/logo.svg`,
+                        timeout: 3000,
+                    });
                 }
             });
         } catch (e) {
