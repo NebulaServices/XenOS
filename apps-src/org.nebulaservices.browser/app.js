@@ -826,7 +826,9 @@ function firstTime() {
 }
 
 (async () => {
-    const kv = new parent.xen.KV(location.href);
+    const mod = await parent.xen.packages.import('xen.kv');
+    const kv = new mod.KV(location.href);
+
     const m = new Main(kv);
     await m.init();
 })();

@@ -61,3 +61,6 @@ XenOS now boostraps the FS.
 ## `v1.1.8`
 - XenOS now has a UNIX-like shell and terminal app!
     - For more info check docs
+
+# `v1.1.9`
+Migrate `xen.KV` to a library

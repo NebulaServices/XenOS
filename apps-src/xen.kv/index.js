@@ -1,13 +1,9 @@
 export class KV {
-    private name = 'xen-kv'
-    private hrefStore: string
-    private db: IDBDatabase | null = null
-
-    constructor(href: string) {
+    constructor(href) {
         this.hrefStore = href.split('/')[6]
     }
 
-    private init(): Promise<IDBDatabase> {
+    init() {
         return new Promise((res, rej) => {
             const rq = indexedDB.open(this.name)
             rq.onerror = () => rej(rq.error)
@@ -35,7 +31,7 @@ export class KV {
         })
     }
 
-    async get(k: string) {
+    async get(k) {
         const d = await this.init()
         return new Promise((res, rej) => {
             const r = d.transaction(this.hrefStore).objectStore(this.hrefStore).get(k)
@@ -51,21 +47,21 @@ export class KV {
             const s = tx.objectStore(this.hrefStore)
             const rV = s.getAll()
             const rK = s.getAllKeys()
-            let vs: any[], ks: IDBValidKey[]
+            let vs, ks;
             rV.onsuccess = () => (vs = rV.result)
             rK.onsuccess = () => (ks = rK.result)
             tx.oncomplete = () => {
-                const o: Record<string, any> = {}
-                ks.forEach((k, i) => (o[k as string] = vs[i]))
+                const o = {}
+                ks.forEach((k, i) => (o[k] = vs[i]))
                 res(o)
             }
             tx.onerror = () => rej(tx.error)
         })
     }
 
-    async set(k: string, v: any) {
+    async set(k, v) {
         const d = await this.init()
-        return new Promise<void>((res, rej) => {
+        return new Promise((res, rej) => {
             const r = d.transaction(this.hrefStore, 'readwrite')
                 .objectStore(this.hrefStore)
                 .put(v, k)
@@ -74,9 +70,9 @@ export class KV {
         })
     }
 
-    async remove(k: string) {
+    async remove(k) {
         const d = await this.init()
-        return new Promise<void>((res, rej) => {
+        return new Promise((res, rej) => {
             const r = d.transaction(this.hrefStore, 'readwrite')
                 .objectStore(this.hrefStore)
                 .delete(k)

@@ -83,9 +83,10 @@ Gives the packages URL (Ex. `http://localhost:3000/fs/usr/apps/org.nebulaservice
 Returns the packages manifest
 
 ## Scoped KV
-The `xen.KV` class lets apps/libs use their own scoped KV storage. It has the exact same API as `xen.settings`
+The `xen.kv` library lets apps/libs have there own scoped KV. It has the exact same API as `xen.settings`
 ```js
-const kv = new parent.xen.KV(location.href); // REQUIRED
+const mod = await xen.packages.import('xen.kv');
+const kv = new mod.KV(location.href); // REQUIRED
 await kv.set('a', 'b');
 await kv.get('a'); // 'b'
 

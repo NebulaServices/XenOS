@@ -93,7 +93,8 @@ copy_app "org.nebulaservices.files"
 copy_app "org.nebulaservices.browser"
 copy_app "org.nebulaservices.processmanager"
 copy_app "org.nebulaservices.terminal"
-copy_app "xen.runtime"  
+copy_app "xen.runtime"
+copy_app "xen.kv"
 
 Copy-Item -Recurse ./apps/ ./build/apps/
 
