@@ -25,8 +25,33 @@ importScripts(
     "/libs/uv/uv.sw.js"
 );
 
-self.addEventListener("install", (event) => {
-    event.waitUntil(preCache());
+async function checkBs() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open("xen-shared", 1);
+
+        req.onsuccess = (e: Event) => {
+            const db = (e.target as IDBOpenDBRequest).result;
+            const tx = db.transaction("opts", "readonly");
+            const store = tx.objectStore("opts");
+            const req = store.get("bootstrap-fs");
+
+            req.onsuccess = () => {
+                resolve(req.result ? req.result.value : null);
+            };
+
+            req.onerror = () => reject(req.error);
+        };
+
+        req.onerror = () => reject(req.error);
+    });
+}
+
+self.addEventListener("install", async (event) => {
+    try {
+        const s = await checkBs();
+        if (s != 'false') event.waitUntil(preCache());
+    } catch { }
+
     self.skipWaiting();
 });
 
@@ -184,7 +209,11 @@ self.addEventListener("fetch", (event) => {
                 const response = await fetch(localPath);
                 if (!response.ok) return response;
 
-                await download(localPath, response.clone());
+                try {
+                    const s = await checkBs();
+                    if (s != 'false') await download(localPath, response.clone());
+                } catch { }
+
                 return response;
             }
         })()

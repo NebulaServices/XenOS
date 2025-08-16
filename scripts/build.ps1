@@ -57,14 +57,17 @@ Move-Item ./wisp-client-js/dist/* ./build/libs/wisp-client-js/
 success "Built source code (Including transport & wisp-client-js)"
 section "Copying node_modules dependencies"
 
-function copy_nm {
-    param(
-        [string]$in,
-        [string]$out
-    )
+function CopyNm {
+	[CmdletBinding()]
 
-    New-Item -ItemType Directory -Force "./build/$out" | Out-Null
-    Copy-Item -Recurse "./node_modules/$in/*" "./build/$out/"
+	param(
+		[string]$In,
+		[string]$Out
+	)
+
+	New-Item -ItemType Directory -Force "./build/$Out" | Out-Null;
+	Copy-Item -Recurse "./node_modules/$In/*" "./build/$Out/";`
+	Get-ChildItem -Path "./build/$Out" -Recurse -Include '*.map' | Remove-Item -Force;
 }
 
 copy_nm "@titaniumnetwork-dev/ultraviolet/dist" "libs/uv"

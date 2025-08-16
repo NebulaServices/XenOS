@@ -28,7 +28,7 @@ async function install(type: 'apps' | 'libs') {
     }
 }
 
-async function update() {
+export async function update() {
     const splash = (window as any).bootSplash;
     if (splash) {
         splash.updateSubtext("Downloading resources... (depending on your internet, this could take a while)");
@@ -36,17 +36,6 @@ async function update() {
     
     await install('apps');
     await install('libs');
-}
-
-export async function oobe() {
-    if (!window.xen.settings.get('oobe')) {
-        await update();
-
-        window.xen.settings.set('oobe', true);
-        window.xen.settings.set('build-cache', window.xen.version.build);
-    
-        location.reload();
-    }
 }
 
 export async function updater() {

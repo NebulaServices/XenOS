@@ -32,8 +32,7 @@ export class TaskBar {
         batteryModule?: HTMLDivElement;
     } = {} as any;
     private current: Map<string, Window> = new Map();
-    private packageManager: PackageManager;
-    private appLauncher: AppLauncher;
+    public appLauncher: AppLauncher;
     private batteryManager: any = null;
     private timeInterval: number | null = null;
     private calendar: Calendar;
@@ -42,8 +41,6 @@ export class TaskBar {
     private pinned: PinnedTaskBarEntry[] = [];
 
     constructor() {
-        this.packageManager = window.xen.packages;
-
         this.el.taskbar = document.createElement('div');
         this.el.windowList = document.createElement('div');
         this.el.launcherBtn = document.createElement('div');
@@ -51,16 +48,15 @@ export class TaskBar {
         this.el.timeModule = document.createElement('div');
 
         this.appLauncher = new AppLauncher(
-            this.packageManager,
             this.el.launcherBtn,
             this.el.taskbar,
         );
 
         this.calendar = new Calendar();
-        this.systray = window.xen.systray;
     }
 
     public init() {
+        this.systray = window.xen.systray;
         this.setupEls();
         this.initBattery();
         this.initTime();
@@ -76,7 +72,7 @@ export class TaskBar {
                 try {
                     const manifest = await window.xen.packages.getManifest(entry.appId);
                     const iconPath = location.origin + '/fs/usr/apps/' + entry.appId + '/' + manifest.icon;
-                    
+
                     this.pinned.push({
                         ...entry,
                         icon: iconPath,
@@ -108,13 +104,13 @@ export class TaskBar {
 
     private async pin(entry: TaskBarEntry): Promise<void> {
         const appId = this.getAppId(entry.url);
-        
+
         if (this.pinned.some(p => p.appId === appId)) return;
 
         try {
             const manifest = await window.xen.packages.getManifest(appId);
             const iconPath = location.origin + '/fs/usr/apps/' + appId + '/' + manifest.icon;
-            
+
             const pinnedEntry: PinnedTaskBarEntry = {
                 itemId: `pinned-${appId}`,
                 instanceId: null,
@@ -344,7 +340,7 @@ export class TaskBar {
         });
 
         this.pinned.forEach(pinnedEntry => {
-            const openWindow = Array.from(window.xen.wm.windows).find(win => 
+            const openWindow = Array.from(window.xen.wm.windows).find(win =>
                 this.getAppId(win.props.url) === pinnedEntry.appId && win.props.display
             );
 
@@ -537,43 +533,43 @@ export class TaskBar {
         });
     }
 
-private async handleClick(
-    instanceId: string | null,
-    appId: string,
-    title: string,
-    icon?: string,
-): Promise<void> {
-    let instance = instanceId ? this.current.get(instanceId) : undefined;
+    private async handleClick(
+        instanceId: string | null,
+        appId: string,
+        title: string,
+        icon?: string,
+    ): Promise<void> {
+        let instance = instanceId ? this.current.get(instanceId) : undefined;
 
-    if (!instance) {
-        for (const win of window.xen.wm.windows) {
-            if (this.getAppId(win.props.url) === this.getAppId(appId)) {
-                instance = win;
-                break;
+        if (!instance) {
+            for (const win of window.xen.wm.windows) {
+                if (this.getAppId(win.props.url) === this.getAppId(appId)) {
+                    instance = win;
+                    break;
+                }
             }
         }
-    }
 
-    if (instance) {
-        if (instance.isFocused && !instance.isMinimized) {
-            instance.minimize();
-        } else {
-            instance.focus();
-
-            if (instance.isMinimized) {
+        if (instance) {
+            if (instance.isFocused && !instance.isMinimized) {
                 instance.minimize();
+            } else {
+                instance.focus();
+
+                if (instance.isMinimized) {
+                    instance.minimize();
+                }
+            }
+        } else {
+            const realAppId = this.getAppId(appId);
+
+            if (this.isPinned(realAppId)) {
+                await window.xen.packages.open(realAppId);
+            } else {
+                window.xen.wm.create({ url: appId, title, icon });
             }
         }
-    } else {
-        const realAppId = this.getAppId(appId);
-
-        if (this.isPinned(realAppId)) {
-            await window.xen.packages.open(realAppId);
-        } else {
-            window.xen.wm.create({ url: appId, title, icon });
-        }
     }
-}
 
     public onWindowCreated = (): void => {
         setTimeout(() => {

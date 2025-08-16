@@ -62,5 +62,11 @@ XenOS now boostraps the FS.
 - XenOS now has a UNIX-like shell and terminal app!
     - For more info check docs
 
-# `v1.1.9`
-Migrate `xen.KV` to a library
+## `v1.1.9`
+Migrated `xen.KV` to a library
+
+## `v1.2.0`
+- Boot process heavily improved
+- If you visit a XenOS instance with `?bootstrap-fs=false`, the FS wont be bootstrapped. This only applies if you are visiting a site you haven't already visited
+    - E.g. `https://xen-os.dev/?bootstrap-fs=false`
+- Source maps are no longer included in the bundle

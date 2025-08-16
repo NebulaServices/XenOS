@@ -1,6 +1,5 @@
 import { LibcurlClient } from "./apis/LibcurlClient";
 import { XenFS } from "./apis/files/XenFS";
-import { oobe } from "./core/update";
 import { WindowManager } from "./ui/apis/WindowManager";
 import { ContextMenu } from "./ui/apis/ContextMenu";
 import { TaskBar } from "./ui/components/TaskBar";
@@ -24,7 +23,6 @@ export class Xen {
     public settings: typeof settings;
     public fs: XenFS;
     public net: LibcurlClient;
-    public boot: typeof oobe;
     public wm: WindowManager;
     public process: ProcessManager;
     public packages: PackageManager;
@@ -53,10 +51,9 @@ export class Xen {
         this.settings = settings;
         this.fs = new XenFS();
         this.net = new LibcurlClient();
-        this.boot = oobe;
         this.wm = new WindowManager();
         this.contextMenu = new ContextMenu();
-        this.taskBar = null as TaskBar;
+        this.taskBar = new TaskBar();
         this.notifications = new Notifications();
         this.wallpaper = new Wallpaper();
         this.packages = new PackageManager();
@@ -83,31 +80,15 @@ export class Xen {
         prefix: 'XenOS',
         codename: 'Nightcord',
         major: 1,
-        minor: 1,
-        patch: 9,
+        minor: 2,
+        patch: 0,
+        channel: 'Canary',
         build: '',
         pretty: ''
     };
 
     async init() {
         this.version.build += `${(await (await fetch('/uuid')).text()).split('\n')[0]}`;
-        this.version.pretty = `${this.version.prefix} ${this.version.codename} v${this.version.major}.${this.version.minor}.${this.version.patch} (${this.version.build})`;
-
-        this.taskBar = new TaskBar();
-        this.taskBar.init();
-        this.taskBar.create();
-
-        this.wm.onCreated = () => this.taskBar.onWindowCreated();
-        this.wm.onClosed = () => this.taskBar.onWindowClosed();
-
-        document.addEventListener('contextmenu', function (e) {
-            e.preventDefault();
-        });
-
-        if (await this.fs.exists('/temp')) {
-            await this.fs.rm('/temp');
-        }
-
-        this.repos.init();
+        this.version.pretty = `${this.version.prefix} ${this.version.codename} v${this.version.major}.${this.version.minor}.${this.version.patch} ${this.version.channel} (${this.version.build})`;
     }
 }
