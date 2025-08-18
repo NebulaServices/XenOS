@@ -1,57 +1,19 @@
+import { FileSystem, FileEntryInfo, FileStat } from "./FileSystem";
 import JSZip from "jszip";
 import mime from "mime";
 
-interface FileEntryInfo {
-    name: string;
-    isFile: boolean;
-    isDirectory: boolean;
-}
-
-interface FileStat {
-    name: string;
-    size: number;
-    isDirectory: boolean;
-    isFile: boolean;
-    lastModified: Date;
-    mime: string | null;
-}
-
-export class XenFS {
-    private cwd: string = "/";
+export class XenFS extends FileSystem {
     private root: FileSystemDirectoryHandle;
     public mounts: Map<string, FileSystemDirectoryHandle> = new Map();
     private zip: JSZip;
 
     constructor() {
+        super();
         this.zip = new JSZip();
     }
 
     async init(): Promise<void> {
         this.root = await navigator.storage.getDirectory();
-    }
-
-    public normalizePath(path: string, cwd?: string): string {
-        if (cwd) this.cwd = cwd;
-        if (!path) return this.cwd;
-        if (path.startsWith("~")) path = "/usr" + path.slice(1);
-        if (!path.startsWith("/")) path = this.cwd + "/" + path;
-
-        const parts = path.split("/").filter(Boolean);
-        const stack: string[] = [];
-
-        for (const part of parts) {
-            if (part === "." || part === "") continue;
-            if (part === "..") {
-                if (stack.length > 0) stack.pop();
-            } else {
-                stack.push(part);
-            }
-        }
-
-        let normalized = "/" + stack.join("/");
-        if (normalized === "//") normalized = "/";
-
-        return normalized;
     }
 
     private splitPath(path: string): string[] {

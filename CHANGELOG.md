@@ -70,3 +70,6 @@ Migrated `xen.KV` to a library
 - If you visit a XenOS instance with `?bootstrap-fs=false`, the FS wont be bootstrapped. This only applies if you are visiting a site you haven't already visited
     - E.g. `https://xen-os.dev/?bootstrap-fs=false`
 - Source maps are no longer included in the bundle
+- XenOS now has virtual file systems!
+    - This means developrs can now create their own file systems and use them in XenOS. If you have ever used programs that mount cloud storage as a local drive (e.g. Google Drive), thats like this.
+    - For more information, check the docs

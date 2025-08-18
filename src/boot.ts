@@ -45,7 +45,7 @@ async function setupXen() {
     window.xen = xen;
 
     await window.xen.net.init();
-    await window.xen.fs.init();
+    await window.xen.vfs.init();
     window.xen.repos.init();
     await window.xen.init();
 
