@@ -394,63 +394,6 @@ class ExampleFS {
     }
 }
 
-class ExampleVFS extends window.xen.VFS {
-    constructor() {
-        super();
-        this.fs = new ExampleFS();
-    }
-
-    normalizePath(path, cwd) {
-        return this.fs.normalizePath(path, cwd);
-    }
-
-    async mkdir(path) {
-        return this.fs.mkdir(path);
-    }
-
-    async list(path, recursive) {
-        return this.fs.list(path, recursive);
-    }
-
-    async rm(path) {
-        return this.fs.rm(path, true);
-    }
-
-    async write(path, content) {
-        return this.fs.write(path, content);
-    }
-
-    async read(path, format = 'text') {
-        return this.fs.read(path, format);
-    }
-
-    async exists(path) {
-        return this.fs.exists(path);
-    }
-
-    async pwd() {
-        return this.fs.pwd();
-    }
-
-    async cd(path) {
-        return this.fs.cd(path);
-    }
-
-    async copy(src, dest) {
-        return this.fs.copy(src, dest);
-    }
-
-    async move(src, dest) {
-        return this.fs.move(src, dest);
-    }
-
-    direct() {
-        return this.fs;
-    }
-}
-
 window.exampleFS = new ExampleFS();
-window.exampleVFS = new ExampleVFS();
-
-await window.xen.vfs.mountFS('/example', window.exampleVFS);
+await window.xen.vfs.mount('/example', window.exampleFS);
 ```

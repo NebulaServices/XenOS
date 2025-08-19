@@ -391,40 +391,6 @@ export class XenFS extends FileSystem {
         }
     }
 
-    async copy(src: string, dest: string): Promise<void> {
-        const handle = await this.resolveHandle(src);
-        const normalized = this.normalizePath(dest);
-
-        if (handle.kind === "file") {
-            const file = await (handle as FileSystemFileHandle).getFile();
-            await this.write(normalized, file);
-        } else if (handle.kind === "directory") {
-            await this.mkdir(normalized);
-            const entries = await this.list(this.normalizePath(src), true);
-
-            for (const entry of entries) {
-                const fullSrc = this.normalizePath(`${src}/${entry.name}`);
-                const fullDest = this.normalizePath(`${dest}/${entry.name}`);
-
-                if (entry.isFile) {
-                    const file = await (
-                        (await this.resolveHandle(
-                            fullSrc,
-                        )) as FileSystemFileHandle
-                    ).getFile();
-                    await this.write(fullDest, file);
-                } else if (entry.isDirectory) {
-                    await this.mkdir(fullDest);
-                }
-            }
-        }
-    }
-
-    async move(src: string, dest: string): Promise<void> {
-        await this.copy(src, dest);
-        await this.rm(src);
-    }
-
     async stat(path: string): Promise<FileStat> {
         const handle = await this.resolveHandle(path);
 
@@ -563,80 +529,6 @@ export class XenFS extends FileSystem {
             } else {
                 await this.mkdir(fullPath);
             }
-        }
-    }
-
-    async open(path: string, callback?: (path: string, url: string, mime: string) => void): Promise<void> {
-        const handle = await this.resolveHandle(path);
-
-        if (handle.kind === 'file') {
-            const file = await (handle as FileSystemFileHandle).getFile();
-            const url = URL.createObjectURL(file);
-            const mt = file.type || mime.getType(path) || 'application/octet-stream';
-
-            if (callback) {
-                callback(path, url, mt);
-                return;
-            }
-
-            if (
-                mt.startsWith('text/') || 
-                mt === 'application/json'
-            ) {
-                window.xen.packages.open('org.nebulaservices.texteditor', {
-                    file: path
-                });
-            }  else if (
-                mt.startsWith('image/')
-            ) {
-             window.xen.wm.create({
-                    title: 'Image Viewer',
-                    icon: '/assets/logo.svg',
-                    content: `
-                        <img 
-                            width="100%" 
-                            height="100%" 
-                            src="/fs${path}"
-                        >`
-                });
-            } else if (
-                mt.startsWith('video/')
-            ) {
-             window.xen.wm.create({
-                    title: 'Video Player',
-                    icon: '/assets/logo.svg',
-                    content: `
-                        <video
-                            width="100%"
-                            height="100%"
-                            controls
-                        >
-                            <source src="/fs${path}">
-                        </video>
-                    `
-                });
-            } else if (
-                mt.startsWith('audio/')
-            ) {
-             window.xen.wm.create({
-                    title: 'Music Player',
-                    icon: '/assets/logo.svg',
-                    content: `
-                        <audio controls>
-                            <source src="/fs${path}">
-                        </audio>
-                    `
-                });
-            } else {
-                window.xen.notifications.spawn({
-                    title: 'XenOS',
-                    description: 'This file type is unsupported :(',
-                    icon: '/assets/logo.svg',
-                    timeout: 2500
-                });
-            }
-        } else if (handle.kind === 'directory') {
-            throw new Error('Cannot call `open` method on directories');
         }
     }
 }

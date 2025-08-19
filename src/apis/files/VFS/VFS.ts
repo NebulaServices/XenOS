@@ -40,7 +40,7 @@ export class VFS extends FileSystem {
 
     private resolveMount(path: string): { fs: FileSystem; relativePath: string } {
         const normalized = this.normalizePath(path);
-        
+
         let bestMatch = "/";
         let bestLength = 1;
 
@@ -133,17 +133,13 @@ export class VFS extends FileSystem {
 
     async exists(path: string): Promise<boolean> {
         const normalized = this.normalizePath(path);
-        
+
         if (this.mounts.has(normalized)) {
             return true;
         }
 
         const { fs, relativePath } = this.resolveMount(path);
         return fs.exists(relativePath);
-    }
-
-    async pwd(): Promise<string> {
-        return this.cwd;
     }
 
     async cd(path: string): Promise<void> {
@@ -173,8 +169,7 @@ export class VFS extends FileSystem {
             return srcResolve.fs.copy(srcResolve.relativePath, destResolve.relativePath);
         }
 
-        const content = await srcResolve.fs.read(srcResolve.relativePath, "blob") as Blob;
-        return destResolve.fs.write(destResolve.relativePath, content);
+        return super.copy(src, dest);
     }
 
     async move(src: string, dest: string): Promise<void> {
@@ -185,8 +180,7 @@ export class VFS extends FileSystem {
             return srcResolve.fs.move(srcResolve.relativePath, destResolve.relativePath);
         }
 
-        await this.copy(src, dest);
-        await this.rm(src);
+        return super.move(src, dest);
     }
 
     async init?(): Promise<void> {
@@ -322,7 +316,7 @@ export class VFS extends FileSystem {
         if (this.rootFS.export) {
             return this.rootFS.export();
         }
-    
+
         throw new Error("Export not supported by RootFS");
     }
 
