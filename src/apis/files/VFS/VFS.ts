@@ -80,6 +80,10 @@ export class VFS extends FileSystem {
         return mounts;
     }
 
+    getRootFS(): FileSystem {
+        return this.rootFS;
+    }
+
     async mkdir(path: string): Promise<void> {
         const { fs, relativePath } = this.resolveMount(path);
         return fs.mkdir(relativePath);
@@ -139,7 +143,12 @@ export class VFS extends FileSystem {
         }
 
         const { fs, relativePath } = this.resolveMount(path);
-        return fs.exists(relativePath);
+
+        if (fs.exists) {
+            return fs.exists(relativePath);
+        }
+
+        return super.exists(relativePath);
     }
 
     async cd(path: string): Promise<void> {
@@ -183,13 +192,13 @@ export class VFS extends FileSystem {
         return super.move(src, dest);
     }
 
-    async init?(): Promise<void> {
+    async init(): Promise<void> {
         if (this.rootFS.init) {
             await this.rootFS.init();
         }
     }
 
-    async mount?(path: string): Promise<void> {
+    async mount(path: string): Promise<void> {
         const { fs, relativePath } = this.resolveMount(path);
 
         if (fs.mount) {
@@ -199,7 +208,7 @@ export class VFS extends FileSystem {
         throw new Error("Mount not supported by target FS");
     }
 
-    async unmount?(path: string): Promise<void> {
+    async unmount(path: string): Promise<void> {
         const { fs, relativePath } = this.resolveMount(path);
 
         if (fs.unmount) {
@@ -209,47 +218,37 @@ export class VFS extends FileSystem {
         throw new Error("Unmount not supported by target FS");
     }
 
-    async fetch?(url: string, path: string): Promise<void> {
+    async fetch(url: string, path: string): Promise<void> {
         const { fs, relativePath } = this.resolveMount(path);
 
         if (fs.fetch) {
             return fs.fetch(url, relativePath);
         }
 
-        throw new Error("Fetch not supported by target FS");
+        return super.fetch(url, path);
     }
 
-    async upload?(type: "file" | "directory", path: string): Promise<void> {
-        const { fs, relativePath } = this.resolveMount(path);
-
-        if (fs.upload) {
-            return fs.upload(type, relativePath);
-        }
-
-        throw new Error("Upload not supported by target FS");
-    }
-
-    async download?(path: string): Promise<void> {
+    async download(path: string): Promise<void> {
         const { fs, relativePath } = this.resolveMount(path);
 
         if (fs.download) {
             return fs.download(relativePath);
         }
 
-        throw new Error("Download not supported by target FS");
+        return super.download(path);
     }
 
-    async stat?(path: string): Promise<FileStat> {
+    async stat(path: string): Promise<FileStat> {
         const { fs, relativePath } = this.resolveMount(path);
 
         if (fs.stat) {
             return fs.stat(relativePath);
         }
 
-        throw new Error("Stat not supported by target FS");
+        return super.stat(path);
     }
 
-    async compress?(path: string, dest: string): Promise<void> {
+    async compress(path: string, dest: string): Promise<void> {
         const srcResolve = this.resolveMount(path);
         const destResolve = this.resolveMount(dest);
 
@@ -257,10 +256,10 @@ export class VFS extends FileSystem {
             return srcResolve.fs.compress(srcResolve.relativePath, destResolve.relativePath);
         }
 
-        throw new Error("Compress not supported or paths are on different filesystems");
+        return super.compress(path, dest);
     }
 
-    async decompress?(path: string, dest: string): Promise<void> {
+    async decompress(path: string, dest: string): Promise<void> {
         const srcResolve = this.resolveMount(path);
         const destResolve = this.resolveMount(dest);
 
@@ -268,7 +267,7 @@ export class VFS extends FileSystem {
             return srcResolve.fs.decompress(srcResolve.relativePath, destResolve.relativePath);
         }
 
-        throw new Error("Decompress not supported or paths are on different filesystems");
+        return super.decompress(path, dest);
     }
 
     async link?(src: string, dest: string): Promise<void> {
@@ -312,19 +311,29 @@ export class VFS extends FileSystem {
         this.cwd = "/";
     }
 
-    async export?(): Promise<void> {
+    async export(): Promise<void> {
         if (this.rootFS.export) {
             return this.rootFS.export();
         }
 
-        throw new Error("Export not supported by RootFS");
+        return super.export();
     }
 
-    async import?(): Promise<void> {
+    async import(): Promise<void> {
         if (this.rootFS.import) {
             return this.rootFS.import();
         }
 
-        throw new Error("Import not supported by RootFS");
+        return super.import();
+    }
+
+    async upload(type: "file" | "directory", path: string): Promise<void> {
+        const { fs: targetFS, relativePath } = this.resolveMount(path);
+
+        if (targetFS.upload) {
+            return targetFS.upload(type, relativePath);
+        }
+
+        return super.upload(type, relativePath);
     }
 }

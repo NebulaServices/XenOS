@@ -1,5 +1,5 @@
 # Virtual File Systems
-Virtual File Systems let developers create their own FSs in XenOS.
+Virtual File Systems let developers create their own FSs in XenOS
 
 ## Types
 ### `FileSystem`
@@ -12,25 +12,29 @@ export abstract class FileSystem {
     abstract rm(path: string): Promise<void>;
     abstract write(path: string, content: Blob | string | ArrayBuffer): Promise<void>;
     abstract read(path: string, format?: "text" | "arrayBuffer" | "uint8array" | "blob"): Promise<string | ArrayBuffer | Uint8Array | Blob>;
-    abstract exists(path: string): Promise<boolean>;
     abstract cd(path: string): Promise<void>;
 
-    // Optional methods
-    async init?(): Promise<void>;
+    // Optional methods existing implementations
+    async exists?(path: string): Promise<boolean>;
     async fetch?(url: string, path: string): Promise<void>;
-    async mount?(path: string): Promise<void>;
-    async unmount?(path: string): Promise<void>;
-    async upload?(type: "file" | "directory", path: string): Promise<void>;
     async download?(path: string): Promise<void>;
+    async upload?(type: "file" | "directory", path: string): Promise<void>;
     async stat?(path: string): Promise<FileStat>;
     async compress?(path: string, dest: string): Promise<void>;
     async decompress?(path: string, dest: string): Promise<void>;
+    async export?(): Promise<void>;
+    async import?(): Promise<void>;
+    
+    // Other optional methods
+    async init?(): Promise<void>; // You'll probably need this
     async link?(src: string, dest: string): Promise<void>;
     async unlink?(path: string): Promise<void>;
     async readlink?(path: string): Promise<string>;
+
+    // XenFS-specific methods
+    async mount?(path: string): Promise<void>;
+    async unmount?(path: string): Promise<void>;
     async wipe?(): Promise<void>;
-    async export?(): Promise<void>;
-    async import?(): Promise<void>;
 }
 ```
 
@@ -254,12 +258,7 @@ class ExampleFS extends window.xen.FileSystem {
         }
     }
 
-    async exists(path) {
-        const normPath = this.normalizePath(path);
-        return this.nodes.has(normPath);
-    }
-
-    async cd(path) {
+    async cd(path) { 
         const normPath = this.normalizePath(path);
         
         if (!this.nodes.has(normPath)) {

@@ -5,11 +5,9 @@ import mime from "mime";
 export class XenFS extends FileSystem {
     private root: FileSystemDirectoryHandle;
     public mounts: Map<string, FileSystemDirectoryHandle> = new Map();
-    private zip: JSZip;
 
     constructor() {
         super();
-        this.zip = new JSZip();
     }
 
     async init(): Promise<void> {
@@ -274,10 +272,6 @@ export class XenFS extends FileSystem {
         }
     }
 
-    async pwd(): Promise<string> {
-        return this.cwd;
-    }
-
     async cd(path: string): Promise<void> {
         const newPath = this.normalizePath(path);
         const handle = await this.resolveHandle(newPath);
@@ -341,7 +335,7 @@ export class XenFS extends FileSystem {
         }
     }
 
-    private async dirToZip(
+    private async handleToZip(
         handle: FileSystemDirectoryHandle,
         curr: string,
     ): Promise<void> {
@@ -351,7 +345,7 @@ export class XenFS extends FileSystem {
                 const file = await (entry as FileSystemFileHandle).getFile();
                 this.zip.file(path, file);
             } else if (entry.kind === "directory") {
-                await this.dirToZip(entry as FileSystemDirectoryHandle, path);
+                await this.handleToZip(entry as FileSystemDirectoryHandle, path);
             }
         }
     }
@@ -373,7 +367,7 @@ export class XenFS extends FileSystem {
             document.body.removeChild(a);
             URL.revokeObjectURL(a.href);
         } else if (handle.kind === "directory") {
-            await this.dirToZip(handle as FileSystemDirectoryHandle, fileName);
+            await this.handleToZip(handle as FileSystemDirectoryHandle, fileName);
 
             const content = await this.zip.generateAsync({ type: "blob" });
             const a = document.createElement("a");
@@ -420,7 +414,7 @@ export class XenFS extends FileSystem {
             const file = await (handle as FileSystemFileHandle).getFile();
             this.zip.file(handle.name, file);
         } else if (handle.kind === "directory") {
-            await this.dirToZip(handle as FileSystemDirectoryHandle, "");
+            await this.handleToZip(handle as FileSystemDirectoryHandle, "");
         }
 
         const content = await this.zip.generateAsync({ type: "blob" });
@@ -488,7 +482,7 @@ export class XenFS extends FileSystem {
     }
 
     async export(): Promise<void> {
-        await this.dirToZip(this.root, "");
+        await this.handleToZip(this.root, "");
 
         const content = await this.zip.generateAsync({ type: "blob" });
         const a = document.createElement("a");
