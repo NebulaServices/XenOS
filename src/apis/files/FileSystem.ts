@@ -106,12 +106,6 @@ export abstract class FileSystem {
         await this.rm(src);
     }
 
-    /*
-        TODO: currently the video/audio/etc. player works is by using the `/fs/` endpoint in the SW, 
-        however, this endpoint directly reads from OPFS as previously using comlink + `fs.read` caused some race conditions, 
-        so it does not work with any other FS that isn't XenFS.
-        Well technically it works with any OPFS-based FS but you can't have multiple OPFSs so :woman_shrugging:
-    */
     async open(path: string, callback?: (path: string, url: string, mime: string) => void): Promise<void> {
         console.log(path);
 
@@ -142,7 +136,10 @@ export abstract class FileSystem {
                             <img 
                                 width="100%" 
                                 height="100%" 
-                                src="/fs${path}"
+                                src="${url}"
+                                style="object-fit: contain;"
+                                onload="this.style.opacity = '1';"
+                                style="opacity: 0; transition: opacity 0.3s;"
                             >`
             });
         } else if (
@@ -156,8 +153,10 @@ export abstract class FileSystem {
                                 width="100%"
                                 height="100%"
                                 controls
+                                style="object-fit: contain;"
                             >
-                                <source src="/fs${path}">
+                                <source src="${url}" type="${mt}">
+                                Your browser does not support the video tag.
                             </video>
                         `
             });
@@ -168,9 +167,19 @@ export abstract class FileSystem {
                 title: 'Music Player',
                 icon: '/assets/logo.svg',
                 content: `
-                            <audio controls>
-                                <source src="/fs${path}">
-                            </audio>
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px;">
+                                <div style="margin-bottom: 20px; text-align: center;">
+                                    <h3 style="margin: 0; color: #333;">${path.split('/').pop()}</h3>
+                                </div>
+                                <audio 
+                                    controls 
+                                    style="width: 100%; max-width: 400px;"
+                                    preload="metadata"
+                                >
+                                    <source src="${url}" type="${mt}">
+                                    Your browser does not support the audio tag.
+                                </audio>
+                            </div>
                         `
             });
         } else {
