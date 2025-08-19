@@ -13,7 +13,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+      with:
+        submodules: recursive
+        
     - name: Install pnpm
       uses: pnpm/action-setup@v2
       with:
@@ -73,7 +75,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+      with:
+        submodules: recursive
+        
     - name: Install pnpm
       uses: pnpm/action-setup@v2
       with:
