@@ -1,57 +1,17 @@
+import { FileSystem, FileEntryInfo, FileStat } from "./FileSystem";
 import JSZip from "jszip";
 import mime from "mime";
 
-interface FileEntryInfo {
-    name: string;
-    isFile: boolean;
-    isDirectory: boolean;
-}
-
-interface FileStat {
-    name: string;
-    size: number;
-    isDirectory: boolean;
-    isFile: boolean;
-    lastModified: Date;
-    mime: string | null;
-}
-
-export class XenFS {
-    private cwd: string = "/";
+export class XenFS extends FileSystem {
     private root: FileSystemDirectoryHandle;
     public mounts: Map<string, FileSystemDirectoryHandle> = new Map();
-    private zip: JSZip;
 
     constructor() {
-        this.zip = new JSZip();
+        super();
     }
 
     async init(): Promise<void> {
         this.root = await navigator.storage.getDirectory();
-    }
-
-    public normalizePath(path: string, cwd?: string): string {
-        if (cwd) this.cwd = cwd;
-        if (!path) return this.cwd;
-        if (path.startsWith("~")) path = "/usr" + path.slice(1);
-        if (!path.startsWith("/")) path = this.cwd + "/" + path;
-
-        const parts = path.split("/").filter(Boolean);
-        const stack: string[] = [];
-
-        for (const part of parts) {
-            if (part === "." || part === "") continue;
-            if (part === "..") {
-                if (stack.length > 0) stack.pop();
-            } else {
-                stack.push(part);
-            }
-        }
-
-        let normalized = "/" + stack.join("/");
-        if (normalized === "//") normalized = "/";
-
-        return normalized;
     }
 
     private splitPath(path: string): string[] {
@@ -312,10 +272,6 @@ export class XenFS {
         }
     }
 
-    async pwd(): Promise<string> {
-        return this.cwd;
-    }
-
     async cd(path: string): Promise<void> {
         const newPath = this.normalizePath(path);
         const handle = await this.resolveHandle(newPath);
@@ -379,7 +335,7 @@ export class XenFS {
         }
     }
 
-    private async dirToZip(
+    private async handleToZip(
         handle: FileSystemDirectoryHandle,
         curr: string,
     ): Promise<void> {
@@ -389,7 +345,7 @@ export class XenFS {
                 const file = await (entry as FileSystemFileHandle).getFile();
                 this.zip.file(path, file);
             } else if (entry.kind === "directory") {
-                await this.dirToZip(entry as FileSystemDirectoryHandle, path);
+                await this.handleToZip(entry as FileSystemDirectoryHandle, path);
             }
         }
     }
@@ -411,7 +367,7 @@ export class XenFS {
             document.body.removeChild(a);
             URL.revokeObjectURL(a.href);
         } else if (handle.kind === "directory") {
-            await this.dirToZip(handle as FileSystemDirectoryHandle, fileName);
+            await this.handleToZip(handle as FileSystemDirectoryHandle, fileName);
 
             const content = await this.zip.generateAsync({ type: "blob" });
             const a = document.createElement("a");
@@ -427,40 +383,6 @@ export class XenFS {
         } else {
             throw new Error(`Cannot download ${path}`);
         }
-    }
-
-    async copy(src: string, dest: string): Promise<void> {
-        const handle = await this.resolveHandle(src);
-        const normalized = this.normalizePath(dest);
-
-        if (handle.kind === "file") {
-            const file = await (handle as FileSystemFileHandle).getFile();
-            await this.write(normalized, file);
-        } else if (handle.kind === "directory") {
-            await this.mkdir(normalized);
-            const entries = await this.list(this.normalizePath(src), true);
-
-            for (const entry of entries) {
-                const fullSrc = this.normalizePath(`${src}/${entry.name}`);
-                const fullDest = this.normalizePath(`${dest}/${entry.name}`);
-
-                if (entry.isFile) {
-                    const file = await (
-                        (await this.resolveHandle(
-                            fullSrc,
-                        )) as FileSystemFileHandle
-                    ).getFile();
-                    await this.write(fullDest, file);
-                } else if (entry.isDirectory) {
-                    await this.mkdir(fullDest);
-                }
-            }
-        }
-    }
-
-    async move(src: string, dest: string): Promise<void> {
-        await this.copy(src, dest);
-        await this.rm(src);
     }
 
     async stat(path: string): Promise<FileStat> {
@@ -492,7 +414,7 @@ export class XenFS {
             const file = await (handle as FileSystemFileHandle).getFile();
             this.zip.file(handle.name, file);
         } else if (handle.kind === "directory") {
-            await this.dirToZip(handle as FileSystemDirectoryHandle, "");
+            await this.handleToZip(handle as FileSystemDirectoryHandle, "");
         }
 
         const content = await this.zip.generateAsync({ type: "blob" });
@@ -560,7 +482,7 @@ export class XenFS {
     }
 
     async export(): Promise<void> {
-        await this.dirToZip(this.root, "");
+        await this.handleToZip(this.root, "");
 
         const content = await this.zip.generateAsync({ type: "blob" });
         const a = document.createElement("a");
@@ -601,80 +523,6 @@ export class XenFS {
             } else {
                 await this.mkdir(fullPath);
             }
-        }
-    }
-
-    async open(path: string, callback?: (path: string, url: string, mime: string) => void): Promise<void> {
-        const handle = await this.resolveHandle(path);
-
-        if (handle.kind === 'file') {
-            const file = await (handle as FileSystemFileHandle).getFile();
-            const url = URL.createObjectURL(file);
-            const mt = file.type || mime.getType(path) || 'application/octet-stream';
-
-            if (callback) {
-                callback(path, url, mt);
-                return;
-            }
-
-            if (
-                mt.startsWith('text/') || 
-                mt === 'application/json'
-            ) {
-                window.xen.packages.open('org.nebulaservices.texteditor', {
-                    file: path
-                });
-            }  else if (
-                mt.startsWith('image/')
-            ) {
-             window.xen.wm.create({
-                    title: 'Image Viewer',
-                    icon: '/assets/logo.svg',
-                    content: `
-                        <img 
-                            width="100%" 
-                            height="100%" 
-                            src="/fs${path}"
-                        >`
-                });
-            } else if (
-                mt.startsWith('video/')
-            ) {
-             window.xen.wm.create({
-                    title: 'Video Player',
-                    icon: '/assets/logo.svg',
-                    content: `
-                        <video
-                            width="100%"
-                            height="100%"
-                            controls
-                        >
-                            <source src="/fs${path}">
-                        </video>
-                    `
-                });
-            } else if (
-                mt.startsWith('audio/')
-            ) {
-             window.xen.wm.create({
-                    title: 'Music Player',
-                    icon: '/assets/logo.svg',
-                    content: `
-                        <audio controls>
-                            <source src="/fs${path}">
-                        </audio>
-                    `
-                });
-            } else {
-                window.xen.notifications.spawn({
-                    title: 'XenOS',
-                    description: 'This file type is unsupported :(',
-                    icon: '/assets/logo.svg',
-                    timeout: 2500
-                });
-            }
-        } else if (handle.kind === 'directory') {
-            throw new Error('Cannot call `open` method on directories');
         }
     }
 }

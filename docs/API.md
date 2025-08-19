@@ -89,7 +89,7 @@ await xen.dialog.prompt({
 ```
 
 ## `xen.fs`
-API for interacting with XenOSes FS based on OPFS
+API for interacting with XenOSes FS(s)
 
 ### Types
 ```ts
@@ -550,6 +550,22 @@ xen.systray.register(opts: SystrayOpts);
 
 ### `xen.systray.unregister(id: string)`
 Allows you to remove a systray given an ID
+
+## `xen.vfs`
+XenOSes Virtual File System manager-
+- For types see [here](./VFS.md)
+
+### `await xen.vfs.init();`
+initializes the VFS, setting up the RootFS
+
+### `await xen.vfs.mount(path: string, fs: FileSystem)`
+Mounts a VFS at `path` given a instance of a `FileSystem` class
+
+### `await xen.vfs.unmount(path: string)`
+Unmounts a VFS at `path`
+
+### `xen.vfs.mounts()`
+Returns all VFS mounts as an array
 
 ## `xen.wallpaper`
 API for interfacing with the wallpaper. All wallpapers are stored in `/usr/wallpapers` in the FS

@@ -1,4 +1,4 @@
-import { XenFS } from "./XenFS";
+import { VFS } from "../../apis/files/VFS/VFS";
 
 interface FilePickerResult {
     path: string | string[];
@@ -13,7 +13,7 @@ interface FilePickerOptions {
 }
 
 export class FilePicker {
-    private fs: XenFS;
+    private fs: VFS;
     private currentPath: string = "/";
     private selectedFiles: Set<string> = new Set();
     private options: FilePickerOptions;

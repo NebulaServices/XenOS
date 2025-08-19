@@ -44,6 +44,7 @@ export async function sdp() {
             name,
             async getFile() {
                 const blob = await fs.read(path, 'blob');
+                //@ts-ignore
                 return new File([blob], name, { type: (blob as Blob).type || '' });
             }
         }

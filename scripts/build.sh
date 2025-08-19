@@ -67,6 +67,14 @@ function copy_nm() {
 
     mkdir -p "./build/$out"
     cp -r "./node_modules/$in/"* "./build/$out/"
+
+    shopt -s globstar nullglob
+
+    for f in "./build/$out"/**/*.map; do
+        rm -f "$f"
+    done
+
+    shopt -u globstar nullglob
 }
 
 copy_nm "@titaniumnetwork-dev/ultraviolet/dist" "libs/uv"

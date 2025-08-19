@@ -15,7 +15,6 @@ export class AppLauncher {
         searchInput: HTMLInputElement;
         grid: HTMLDivElement;
     };
-
     private isVisible = false;
     private apps: Manifest[] = [];
     private appOrder: string[] = [];
@@ -26,9 +25,9 @@ export class AppLauncher {
         dragOffset: { x: 0, y: 0 },
         placeholder: null,
     };
+    private packageManager: PackageManager
 
     constructor(
-        private packageManager: PackageManager,
         private launcher: HTMLElement,
         private taskbar: HTMLElement,
     ) {
@@ -38,7 +37,10 @@ export class AppLauncher {
             searchInput: document.createElement('input'),
             grid: document.createElement('div'),
         };
+    }
 
+    public init() {
+        this.packageManager = window.xen.packages;
         this.setup();
         this.loadAppOrder();
         this.initGlobalShortcut();

@@ -22,6 +22,36 @@ class Main {
         this.setupContextMenus();
         await this.loadMounts();
         await this.navigateTo('/usr');
+        this.setupAutoRefresh();
+    }
+
+    setupAutoRefresh() {
+        this.mountRefreshInterval = setInterval(async () => {
+            try {
+                await this.loadMounts();
+            } catch (error) {
+                console.warn('Failed to refresh mounts:', error);
+            }
+        }, 2000);
+
+        window.addEventListener('storage', () => {
+            this.loadMounts();
+        });
+
+        window.addEventListener('focus', () => {
+            this.loadMounts();
+        });
+
+        window.addEventListener('beforeunload', () => {
+            this.cleanup();
+        });
+    }
+
+    cleanup() {
+        if (this.mountRefreshInterval) {
+            clearInterval(this.mountRefreshInterval);
+            this.mountRefreshInterval = null;
+        }
     }
 
     setupEventListeners() {
@@ -104,12 +134,46 @@ class Main {
         const mountsList = document.querySelector('.mounts-list');
         mountsList.innerHTML = '';
 
-        for (const [path, handle] of this.fs.mounts.entries()) {
+        const allMounts = new Map();
+        
+        const vfsMounts = this.fs.getMounts ? this.fs.getMounts() : [];
+        for (const mount of vfsMounts) {
+            allMounts.set(mount.path, {
+                path: mount.path,
+                type: 'VFS',
+                fs: mount.fs
+            });
+        }
+
+        try {
+            const rootFS = this.fs.getRootFS ? this.fs.getRootFS() : null;
+            if (rootFS && rootFS.mounts) {
+                for (const [xenPath, handle] of rootFS.mounts.entries()) {
+                    if (!allMounts.has(xenPath)) {
+                        allMounts.set(xenPath, {
+                            path: xenPath,
+                            type: 'XenFS',
+                            handle: handle
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            console.log('Could not access XenFS mounts:', error);
+        }
+
+        for (const [path, mountInfo] of allMounts) {
             const mountItem = document.createElement('div');
             mountItem.className = 'mount-item';
+            
+            const icon = mountInfo.type === 'VFS' ? 'fas fa-folder-tree' : 'fas fa-hdd';
+            
             mountItem.innerHTML = `
-                <i class="fas fa-hdd"></i>
-                <span>${path}</span>
+                <div>
+                    <i class="${icon}"></i>
+                    <span>${path}</span>
+                </div>
+                <small class="mount-type">${mountInfo.type}</small>
             `;
 
             mountItem.addEventListener('click', () => {
@@ -119,6 +183,37 @@ class Main {
                 mountItem.classList.add('active');
             });
 
+            const contextMenuOptions = {
+                root: [
+                    {
+                        title: 'Open',
+                        onClick: () => {
+                            this.navigateTo(path);
+                        }
+                    },
+                    {
+                        title: 'Export',
+                        onClick: () => {
+                            this.exportMount(path);
+                        }
+                    }
+                ]
+            };
+
+            if (path !== '/') {
+                contextMenuOptions.root.push({
+                    title: 'Unmount',
+                    onClick: () => {
+                        if (mountInfo.type === 'VFS') {
+                            this.unmountFS(path);
+                        } else {
+                            this.unmountXenFS(path);
+                        }
+                    }
+                });
+            }
+
+            this.contextMenu.attach(mountItem, contextMenuOptions);
             mountsList.appendChild(mountItem);
         }
     }
@@ -131,11 +226,6 @@ class Main {
             try {
                 await this.fs.mount(path);
                 await this.loadMounts();
-                this.notifications.spawn({
-                    title: 'Mount Added',
-                    description: `Successfully mounted to ${path}`,
-                    icon: '/assets/logo.svg'
-                });
             } catch (error) {
                 this.notifications.spawn({
                     title: 'Mount Failed',
@@ -786,18 +876,8 @@ class Main {
 
     async uploadFile() {
         try {
-            const [fileHandle] = await window.showOpenFilePicker();
-            const file = await fileHandle.getFile();
-            const filePath = `${this.currentPath}/${file.name}`;
-
-            await this.fs.write(filePath, file);
+            await this.fs.upload('file', this.currentPath);
             await this.refresh();
-
-            this.notifications.spawn({
-                title: 'Upload Successful',
-                description: `Uploaded ${file.name}`,
-                icon: '/assets/logo.svg'
-            });
         } catch (error) {
             if (error.name !== 'AbortError') {
                 this.notifications.spawn({
@@ -811,19 +891,8 @@ class Main {
 
     async uploadFolder() {
         try {
-            const dirHandle = await window.showDirectoryPicker();
-            const folderPath = `${this.currentPath}/${dirHandle.name}`;
-
-            await this.fs.mkdir(folderPath);
-
-            await this.uploadDirectoryContents(dirHandle, folderPath);
+            await this.fs.upload('directory', this.currentPath);
             await this.refresh();
-
-            this.notifications.spawn({
-                title: 'Upload Successful',
-                description: `Uploaded folder ${dirHandle.name}`,
-                icon: '/assets/logo.svg'
-            });
         } catch (error) {
             if (error.name !== 'AbortError') {
                 this.notifications.spawn({
@@ -831,20 +900,6 @@ class Main {
                     description: error.message,
                     icon: '/assets/logo.svg'
                 });
-            }
-        }
-    }
-
-    async uploadDirectoryContents(dirHandle, targetPath) {
-        for await (const entry of dirHandle.values()) {
-            const entryPath = `${targetPath}/${entry.name}`;
-
-            if (entry.kind === 'file') {
-                const file = await entry.getFile();
-                await this.fs.write(entryPath, file);
-            } else if (entry.kind === 'directory') {
-                await this.fs.mkdir(entryPath);
-                await this.uploadDirectoryContents(entry, entryPath);
             }
         }
     }
@@ -890,12 +945,6 @@ class Main {
             }
             this.selectedItems.clear();
             await this.refresh();
-
-            this.notifications.spawn({
-                title: 'Delete Successful',
-                description: `Deleted ${entries.length} item(s)`,
-                icon: '/assets/logo.svg'
-            });
         } catch (error) {
             this.notifications.spawn({
                 title: 'Delete Failed',
@@ -971,6 +1020,68 @@ class Main {
             operation: 'cut',
             sourcePath: this.currentPath
         };
+    }
+
+    async exportMount(mountPath) {
+        try {
+            const mounts = this.fs.getMounts ? this.fs.getMounts() : [];
+            const mount = mounts.find(m => m.path === mountPath);
+            
+            if (mount && mount.fs && mount.fs.export) {
+                await mount.fs.export();
+            } else {
+                await this.fs.export();
+            }
+        } catch (error) {
+            this.notifications.spawn({
+                title: 'Export Failed',
+                description: error.message,
+                icon: '/assets/logo.svg'
+            });
+        }
+    }
+
+    async unmountFS(mountPath) {
+        try {
+            await this.fs.unmountFS(mountPath);
+            await this.loadMounts();
+
+            if (this.currentPath.startsWith(mountPath)) {
+                await this.navigateTo('/');
+            }
+        } catch (error) {
+            console.error('VFS unmount error:', error);
+            this.notifications.spawn({
+                title: 'Unmount Failed',
+                description: error.message,
+                icon: '/assets/logo.svg'
+            });
+        }
+    }
+
+    async unmountXenFS(mountPath) {
+        try {
+            const rootFS = this.fs.getRootFS ? this.fs.getRootFS() : null;
+
+            if (rootFS && rootFS.unmount) {
+                await rootFS.unmount(mountPath);
+            } else {
+                throw new Error('XenFS unmount not available');
+            }
+
+            await this.loadMounts();
+            
+            if (this.currentPath.startsWith(mountPath)) {
+                await this.navigateTo('/');
+            }
+        } catch (error) {
+            console.error('XenFS unmount error:', error);
+            this.notifications.spawn({
+                title: 'Unmount Failed',
+                description: error.message,
+                icon: '/assets/logo.svg'
+            });
+        }
     }
 
     showLoading(show) {

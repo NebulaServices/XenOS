@@ -48,7 +48,7 @@ pnpm start # or npm start
 ```
 
 ## Documentation
-Documentation about XenOS can be found [here!](https://github.com/NebulaServices/XenOS/tree/main/docs)
+Documentation about XenOS can be found [here!](./docs/README.md)
 
 ## Whats Left?
 You can view the projects TODO [here](https://github.com/NebulaServices/XenOS/blob/main/TODO.md)

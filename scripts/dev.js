@@ -9,7 +9,7 @@ import http from 'http';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const server = http.createServer(app);
-const port = 4853;
+const port = 1543;
 const buildPath = join(__dirname, '..', 'build');
 
 let building = false;

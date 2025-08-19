@@ -1,10 +1,40 @@
 import { Xen } from "./Xen";
 import { XenTransport } from "./core/Transport";
-import { oobe } from "./core/update";
+import { update } from "./core/update";
 import { bootSplash } from "./ui/bootSplash";
 import { initSw } from "./sw/register-sw";
 
-async function setupDeps() {
+async function parseArgs() {
+    if (localStorage.getItem('checked') === 'true') {
+        return;
+    }
+
+    const args = new URLSearchParams(window.location.search);
+
+    if (args.get('bootstrap-fs') == 'false') {
+        const req = indexedDB.open('xen-shared', 1);
+
+        req.onupgradeneeded = (e: IDBVersionChangeEvent) => {
+            const db = (e.target as IDBOpenDBRequest).result;
+
+            if (!db.objectStoreNames.contains("opts")) {
+                db.createObjectStore("opts", { keyPath: "key" });
+            }
+        };
+
+        req.onsuccess = (e: Event) => {
+            const db = (e.target as IDBOpenDBRequest).result;
+            const tx = db.transaction("opts", "readwrite");
+            const store = tx.objectStore("opts");
+
+            store.put({ key: "bootstrap-fs", value: "false" });
+        };
+
+        localStorage.setItem('checked', 'true');
+    }
+}
+
+async function setupXen() {
     const ComlinkPath = '/libs/comlink/esm/comlink.min.mjs';
 
     //@ts-ignore
@@ -15,16 +45,53 @@ async function setupDeps() {
     window.xen = xen;
 
     await window.xen.net.init();
-    await window.xen.fs.init();
+    await window.xen.vfs.init();
+    window.xen.repos.init();
     await window.xen.init();
-
-    await oobe();
 
     window.shared = {};
     window.shared.xen = window.xen;
 }
 
-async function taskbar() {
+async function isOobe() {
+    if (!window.xen.settings.get('oobe')) {
+        await update();
+
+        window.xen.settings.set('oobe', true);
+        window.xen.settings.set('build-cache', window.xen.version.build);
+
+        location.reload();
+    }
+}
+
+async function createSw() {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (reg) {
+        await reg.unregister();
+    }
+    await initSw();
+}
+
+function createTransport() {
+    const connection = new window.BareMux.BareMuxConnection('/libs/bare-mux/worker.js');
+    //@ts-ignore
+    connection.setRemoteTransport(new XenTransport(), 'XenTransport');
+}
+
+async function uiInit() {
+    window.xen.wallpaper.set();
+
+    window.addEventListener('resize', () => {
+        window.xen.wm.handleWindowResize();
+    });
+
+    window.xen.taskBar.init();
+    window.xen.taskBar.create();
+    window.xen.taskBar.appLauncher.init();
+
+    window.xen.wm.onCreated = () => window.xen.taskBar.onWindowCreated();
+    window.xen.wm.onClosed = () => window.xen.taskBar.onWindowClosed();
+
     await window.xen.taskBar.loadPinnedEntries();
     window.xen.taskBar.render();
 }
@@ -33,28 +100,17 @@ window.addEventListener('load', async () => {
     const splash = bootSplash();
     (window as any).bootSplash = splash;
 
-    await setupDeps();
-
-    const reg = await navigator.serviceWorker.getRegistration();
-    if (reg) {
-        await reg.unregister();
-    }
-    await initSw();
-
-    window.xen.wallpaper.set();
-
-    await window.xen.boot();
-
-    window.addEventListener('resize', () => {
-        window.xen.wm.handleWindowResize();
-    });
-
-    const connection = new window.BareMux.BareMuxConnection('/libs/bare-mux/worker.js');
-    //@ts-ignore
-    connection.setRemoteTransport(new XenTransport(), 'XenTransport');
-
-    await taskbar();
+    parseArgs();
+    await setupXen();
+    await isOobe();
+    await createSw();
+    createTransport();
     await window.xen.initSystem();
+    await uiInit();
+
+    document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+    });
 
     setTimeout(() => {
         splash.element.style.opacity = "0";

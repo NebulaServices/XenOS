@@ -1,6 +1,7 @@
 import { LibcurlClient } from "./apis/LibcurlClient";
-import { XenFS } from "./apis/files/XenFS";
-import { oobe } from "./core/update";
+import { VFSManager } from "./apis/files/VFS/VFSManager";
+import { VFS } from "./apis/files/VFS/VFS";
+import { FileSystem } from "./apis/files/FileSystem";
 import { WindowManager } from "./ui/apis/WindowManager";
 import { ContextMenu } from "./ui/apis/ContextMenu";
 import { TaskBar } from "./ui/components/TaskBar";
@@ -14,100 +15,56 @@ import { init } from "./core/init";
 import { getPolicy, setPolicy } from "./apis/policy/policy";
 import { Dialog } from "./ui/apis/Dialog";
 import { Systray } from "./ui/apis/Systray";
-import { FilePicker } from "./apis/files/FilePicker";
+import { FilePicker } from "./ui/apis/FilePicker";
 import { sofp, sdp } from "./apis/files/polyfill";
 import { updater } from "./core/update";
 import { platform } from "./apis/platform";
 import { XenShell } from "./apis/shell/XenShell";
 
 export class Xen {
-    public settings: typeof settings;
-    public fs: XenFS;
-    public net: LibcurlClient;
-    public boot: typeof oobe;
-    public wm: WindowManager;
-    public process: ProcessManager;
-    public packages: PackageManager;
-    public repos: RepoStore;
-    public contextMenu: ContextMenu;
-    public taskBar: TaskBar;
-    public notifications: Notifications;
-    public wallpaper: Wallpaper;
-    public initSystem: typeof init;
-    public policy: {
-        get: typeof getPolicy,
-        set: typeof setPolicy
+    public settings: typeof settings = settings;
+    public vfs: VFSManager = new VFSManager();
+    public fs: VFS = this.vfs.vfs;
+    public VFS: typeof VFS = VFS;
+    public FileSystem: typeof FileSystem = FileSystem;
+    public net: LibcurlClient = new LibcurlClient();
+    public wm: WindowManager = new WindowManager();
+    public process: ProcessManager = new ProcessManager();
+    public packages: PackageManager = new PackageManager();
+    public repos: RepoStore = new RepoStore();
+    public contextMenu: ContextMenu = new ContextMenu();
+    public taskBar: TaskBar = new TaskBar();
+    public notifications: Notifications = new Notifications();
+    public wallpaper: Wallpaper = new Wallpaper();;
+    public initSystem: typeof init = init;
+    public policy = {
+        get: getPolicy,
+        set: setPolicy
     }
-    public dialog: Dialog;
-    public systray: Systray;
-    public FilePicker: typeof FilePicker;
-    public polyfill: {
-        sofp: typeof sofp;
-        sdp: typeof sdp;
-    }
-    public update: typeof updater;
-    public platform: typeof platform;
-    public shell: typeof XenShell;
-
-    constructor() {
-        this.settings = settings;
-        this.fs = new XenFS();
-        this.net = new LibcurlClient();
-        this.boot = oobe;
-        this.wm = new WindowManager();
-        this.contextMenu = new ContextMenu();
-        this.taskBar = null as TaskBar;
-        this.notifications = new Notifications();
-        this.wallpaper = new Wallpaper();
-        this.packages = new PackageManager();
-        this.process = new ProcessManager();
-        this.repos = new RepoStore();
-        this.initSystem = init;
-        this.policy = {
-            get: getPolicy,
-            set: setPolicy
-        };
-        this.dialog = new Dialog();
-        this.systray = new Systray();
-        this.FilePicker = FilePicker;
-        this.polyfill = {
-            sofp: sofp,
-            sdp: sdp
-        };
-        this.update = updater;
-        this.platform = platform;
-        this.shell = XenShell;
-    }
+    public dialog: Dialog = new Dialog();
+    public systray: Systray = new Systray();
+    public FilePicker: typeof FilePicker = FilePicker;
+    public polyfill = {
+        sofp: sofp,
+        sdp: sdp
+    };
+    public update: typeof updater = updater;
+    public platform: typeof platform = platform;
+    public shell: typeof XenShell = XenShell;
 
     public version = {
         prefix: 'XenOS',
         codename: 'Nightcord',
         major: 1,
-        minor: 1,
-        patch: 9,
+        minor: 2,
+        patch: 0,
+        channel: 'Stable',
         build: '',
         pretty: ''
     };
 
     async init() {
         this.version.build += `${(await (await fetch('/uuid')).text()).split('\n')[0]}`;
-        this.version.pretty = `${this.version.prefix} ${this.version.codename} v${this.version.major}.${this.version.minor}.${this.version.patch} (${this.version.build})`;
-
-        this.taskBar = new TaskBar();
-        this.taskBar.init();
-        this.taskBar.create();
-
-        this.wm.onCreated = () => this.taskBar.onWindowCreated();
-        this.wm.onClosed = () => this.taskBar.onWindowClosed();
-
-        document.addEventListener('contextmenu', function (e) {
-            e.preventDefault();
-        });
-
-        if (await this.fs.exists('/temp')) {
-            await this.fs.rm('/temp');
-        }
-
-        this.repos.init();
+        this.version.pretty = `${this.version.prefix} ${this.version.codename} v${this.version.major}.${this.version.minor}.${this.version.patch} ${this.version.channel} (${this.version.build})`;
     }
 }

@@ -25,8 +25,58 @@ importScripts(
     "/libs/uv/uv.sw.js"
 );
 
+async function checkBs() {
+    return new Promise((resolve) => {
+        const req = indexedDB.open("xen-shared", 1);
+
+        req.onupgradeneeded = (e: IDBVersionChangeEvent) => {
+            const db = (e.target as IDBOpenDBRequest).result;
+
+            if (!db.objectStoreNames.contains("opts")) {
+                db.createObjectStore("opts", { keyPath: "key" });
+            }
+        };
+
+        req.onsuccess = (e: Event) => {
+            const db = (e.target as IDBOpenDBRequest).result;
+
+            try {
+                const tx = db.transaction("opts", "readonly");
+                const store = tx.objectStore("opts");
+                const req = store.get("bootstrap-fs");
+
+                req.onsuccess = () => {
+                    resolve(req.result ? req.result.value : null);
+                };
+
+                req.onerror = () => {
+                    resolve(null);
+                };
+            } catch (error) {
+                resolve(null);
+            }
+        };
+
+        req.onerror = () => {
+            resolve(null);
+        };
+    });
+}
+
 self.addEventListener("install", (event) => {
-    event.waitUntil(preCache());
+    event.waitUntil(
+        (async () => {
+            try {
+                const s = await checkBs();
+                if (s != 'false') {
+                    await preCache();
+                }
+            } catch (err) {
+                console.warn('Bootstrap check or preCache failed:', err);
+            }
+        })()
+    );
+
     self.skipWaiting();
 });
 
@@ -184,7 +234,13 @@ self.addEventListener("fetch", (event) => {
                 const response = await fetch(localPath);
                 if (!response.ok) return response;
 
-                await download(localPath, response.clone());
+                try {
+                    const s = await checkBs();
+                    if (s != 'false') await download(localPath, response.clone());
+                } catch (err) {
+                    console.warn('Bootstrap check or download failed:', err);
+                }
+
                 return response;
             }
         })()
