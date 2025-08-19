@@ -26,31 +26,56 @@ importScripts(
 );
 
 async function checkBs() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const req = indexedDB.open("xen-shared", 1);
+
+        req.onupgradeneeded = (e: IDBVersionChangeEvent) => {
+            const db = (e.target as IDBOpenDBRequest).result;
+
+            if (!db.objectStoreNames.contains("opts")) {
+                db.createObjectStore("opts", { keyPath: "key" });
+            }
+        };
 
         req.onsuccess = (e: Event) => {
             const db = (e.target as IDBOpenDBRequest).result;
-            const tx = db.transaction("opts", "readonly");
-            const store = tx.objectStore("opts");
-            const req = store.get("bootstrap-fs");
 
-            req.onsuccess = () => {
-                resolve(req.result ? req.result.value : null);
-            };
+            try {
+                const tx = db.transaction("opts", "readonly");
+                const store = tx.objectStore("opts");
+                const req = store.get("bootstrap-fs");
 
-            req.onerror = () => reject(req.error);
+                req.onsuccess = () => {
+                    resolve(req.result ? req.result.value : null);
+                };
+
+                req.onerror = () => {
+                    resolve(null);
+                };
+            } catch (error) {
+                resolve(null);
+            }
         };
 
-        req.onerror = () => reject(req.error);
+        req.onerror = () => {
+            resolve(null);
+        };
     });
 }
 
-self.addEventListener("install", async (event) => {
-    try {
-        const s = await checkBs();
-        if (s != 'false') event.waitUntil(preCache());
-    } catch { }
+self.addEventListener("install", (event) => {
+    event.waitUntil(
+        (async () => {
+            try {
+                const s = await checkBs();
+                if (s != 'false') {
+                    await preCache();
+                }
+            } catch (err) {
+                console.warn('Bootstrap check or preCache failed:', err);
+            }
+        })()
+    );
 
     self.skipWaiting();
 });
@@ -212,7 +237,9 @@ self.addEventListener("fetch", (event) => {
                 try {
                     const s = await checkBs();
                     if (s != 'false') await download(localPath, response.clone());
-                } catch { }
+                } catch (err) {
+                    console.warn('Bootstrap check or download failed:', err);
+                }
 
                 return response;
             }

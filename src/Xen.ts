@@ -1,6 +1,7 @@
 import { LibcurlClient } from "./apis/LibcurlClient";
 import { VFSManager } from "./apis/files/VFS/VFSManager";
 import { VFS } from "./apis/files/VFS/VFS";
+import { FileSystem } from "./apis/files/FileSystem";
 import { WindowManager } from "./ui/apis/WindowManager";
 import { ContextMenu } from "./ui/apis/ContextMenu";
 import { TaskBar } from "./ui/components/TaskBar";
@@ -25,6 +26,7 @@ export class Xen {
     public vfs: VFSManager = new VFSManager();
     public fs: VFS = this.vfs.vfs;
     public VFS: typeof VFS = VFS;
+    public FileSystem: typeof FileSystem = FileSystem;
     public net: LibcurlClient = new LibcurlClient();
     public wm: WindowManager = new WindowManager();
     public process: ProcessManager = new ProcessManager();
@@ -35,31 +37,20 @@ export class Xen {
     public notifications: Notifications = new Notifications();
     public wallpaper: Wallpaper = new Wallpaper();;
     public initSystem: typeof init = init;
-    public policy: {
-        get: typeof getPolicy,
-        set: typeof setPolicy
+    public policy = {
+        get: getPolicy,
+        set: setPolicy
     }
     public dialog: Dialog = new Dialog();
     public systray: Systray = new Systray();
     public FilePicker: typeof FilePicker = FilePicker;
-    public polyfill: {
-        sofp: typeof sofp;
-        sdp: typeof sdp;
-    }
+    public polyfill = {
+        sofp: sofp,
+        sdp: sdp
+    };
     public update: typeof updater = updater;
     public platform: typeof platform = platform;
     public shell: typeof XenShell = XenShell;
-
-    constructor() {
-        this.policy = {
-            get: getPolicy,
-            set: setPolicy
-        };
-        this.polyfill = {
-            sofp: sofp,
-            sdp: sdp
-        };
-    }
 
     public version = {
         prefix: 'XenOS',
