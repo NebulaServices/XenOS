@@ -551,8 +551,36 @@ xen.systray.register(opts: SystrayOpts);
 ### `xen.systray.unregister(id: string)`
 Allows you to remove a systray given an ID
 
+## `xen.uri`
+URI API
+
+### `xen.uri.register('id', (data) => {})`
+Registers a URI
+```js
+// Registers a URI that opens a URL (e.g. wm://https://example.com)
+xen.uri.register('wm', (url) => {
+    xen.wm.create({
+        url: url
+    });
+});
+```
+
+### `xen.uri.handle(uri: string)`
+"Handles" a URI, example:
+```js
+xen.uri.handle('wm://https://exmaple.com');
+// Or if you want to use a URI in an app:
+    // <a href="#" onclick="parent.xen.uri.handle('wm://https://example.com');">Test</a>
+```
+
+### `xen.uri.unregister(id: string)`
+Removes a URI
+```js
+xen.uri.unregister('wm');
+```
+
 ## `xen.vfs`
-XenOSes Virtual File System manager-
+XenOSes Virtual File System manager
 - For types see [here](./VFS.md)
 
 ### `await xen.vfs.init();`

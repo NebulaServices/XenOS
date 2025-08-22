@@ -73,3 +73,10 @@ Migrated `xen.KV` to a library
 - XenOS now has virtual file systems!
     - This means developrs can now create their own file systems and use them in XenOS. If you have ever used programs that mount cloud storage as a local drive (e.g. Google Drive), thats like this.
     - For more information, check the docs
+
+## `v1.2.1`
+- URI API
+- `?debug=true` bootflag
+    - Will open up an inspect window to XenOS on boot
+- Added a button to the process manager to debug apps (WiP)
+- Fixed update bug when `?bootstrap-fs=false`

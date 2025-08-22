@@ -39,7 +39,10 @@ export async function update() {
 }
 
 export async function updater() {
-    await window.xen.fs.rm('/system');
+    if (await window.xen.fs.exists('/system')) {
+        await window.xen.fs.rm('/system');
+    }
+
     await update();
 
     window.xen.settings.set('build-cache', window.xen.version.build);

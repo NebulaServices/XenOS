@@ -20,6 +20,40 @@ class TaskManager {
         this.refreshInterval = setInterval(() => this.refresh(), 2000);
     }
 
+    showDebugInfo() {
+        /*
+        let wID = 0;
+
+        parent.xen.wm.windows.forEach((win, index) => {
+            if (win.el.content.contentWindow.location.href === location.href) {
+                wID = index;
+                return;
+            }
+        });
+
+        const win = parent.xen.wm.windows[wID].el.content;
+        const tWin = parent.xen.wm.create({ url: 'https://example.com' });
+
+        tWin.el.content.addEventListener('load', () => {
+            win.contentWindow.ChiiDevtoolsIframe = tWin.el.content;
+
+            const script = document.createElement('script');
+            script.src = '/chii/target.js';
+            script.setAttribute('embedded', 'true');
+
+            script.onload = () => {
+                window.addEventListener('message', (ev) => {
+                    if (ev.source !== win.contentWindow) {
+                        win.contentWindow.postMessage(ev.data, ev.origin);
+                    }
+                });
+            };
+
+            win.contentDocument.body.appendChild(script);
+        });
+        */
+       alert('wip');
+    }
     formatMemory(bytes) {
         if (!bytes) return 'N/A';
         if (bytes < 1024) return `${bytes} B`;
@@ -66,14 +100,14 @@ class TaskManager {
                 <div>Process Manager not available</div>
             </div>
         `;
-        
+
         document.getElementById('processCount').textContent = '0 processes';
         document.getElementById('totalMemory').textContent = '0 KB total';
     }
 
     renderProcesses(processes) {
         const tbody = document.getElementById('processTable');
-        
+
         if (processes.length === 0) {
             tbody.innerHTML = `
                 <div class="empty-state">
@@ -102,6 +136,12 @@ class TaskManager {
                     >
                         <i class="fas fa-times"></i>
                     </button>
+                    <button 
+                        class="debug-btn" 
+                        onclick="taskManager.showDebugInfo(${proc.pid})"
+                    >
+                        <i class="fas fa-bug"></i>
+                    </button>
                 </div>
             </div>
         `).join('');
@@ -111,10 +151,10 @@ class TaskManager {
         const running = processes.filter(p => p.status === 'running').length;
         const total = processes.length;
         const totalMem = processes.reduce((sum, p) => sum + (p.memory || 0), 0);
-        
-        document.getElementById('processCount').textContent = 
+
+        document.getElementById('processCount').textContent =
             `${total} process${total !== 1 ? 'es' : ''} (${running} running)`;
-        document.getElementById('totalMemory').textContent = 
+        document.getElementById('totalMemory').textContent =
             `${this.formatMemory(totalMem)} total`;
     }
 

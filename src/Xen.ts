@@ -20,6 +20,7 @@ import { sofp, sdp } from "./apis/files/polyfill";
 import { updater } from "./core/update";
 import { platform } from "./apis/platform";
 import { XenShell } from "./apis/shell/XenShell";
+import { URI } from "./apis/URI";
 
 export class Xen {
     public settings: typeof settings = settings;
@@ -51,6 +52,7 @@ export class Xen {
     public update: typeof updater = updater;
     public platform: typeof platform = platform;
     public shell: typeof XenShell = XenShell;
+    public uri: URI = new URI();
 
     public version = {
         prefix: 'XenOS',

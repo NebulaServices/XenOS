@@ -1,5 +1,4 @@
 import { Window } from './Window';
-import { PackageManager } from '../../apis/packages/PackageManager';
 import { AppLauncher } from './AppLauncher';
 import { Calendar } from './Calendar';
 import { Systray } from '../apis/Systray';

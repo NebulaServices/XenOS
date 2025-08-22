@@ -73,6 +73,7 @@ export class Runtime {
 
         try {
             const code = await window.xen.fs.read(path, 'text');
+            //@ts-ignore
             const blob = new Blob([code], { type: 'application/javascript' });
             const blobUrl = URL.createObjectURL(blob);
 

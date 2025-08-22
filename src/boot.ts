@@ -4,12 +4,18 @@ import { update } from "./core/update";
 import { bootSplash } from "./ui/bootSplash";
 import { initSw } from "./sw/register-sw";
 
+let DEBUG: boolean = false;
+
 async function parseArgs() {
+    const args = new URLSearchParams(window.location.search);
+
+    if (args.get('debug') === 'true') {
+        DEBUG = true;
+    }
+
     if (localStorage.getItem('checked') === 'true') {
         return;
     }
-
-    const args = new URLSearchParams(window.location.search);
 
     if (args.get('bootstrap-fs') == 'false') {
         const req = indexedDB.open('xen-shared', 1);
@@ -118,4 +124,19 @@ window.addEventListener('load', async () => {
             splash.element.remove();
         });
     }, 600);
+
+    if (DEBUG == true) {
+        //@ts-ignore
+        window.ChiiDevtoolsIframe = window.xen.wm.create({ url: 'https://example.com' }).el.content;
+
+        const pm = window.postMessage;
+        window.postMessage = (msg, origin) => {
+            pm.call(window, msg, origin);
+        };
+
+        const script = document.createElement('script');
+        script.src = '/chii/target.js';
+        script.setAttribute('embedded', 'true');
+        document.body.appendChild(script);
+    }
 });
