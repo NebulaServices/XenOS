@@ -1,4 +1,5 @@
-import { LibcurlClient } from "./apis/LibcurlClient";
+import { LibcurlClient } from "./apis/networking/LibcurlClient";
+import { P2PClient } from "./apis/networking/P2PClient";
 import { VFSManager } from "./apis/files/VFS/VFSManager";
 import { VFS } from "./apis/files/VFS/VFS";
 import { FileSystem } from "./apis/files/FileSystem";
@@ -29,6 +30,7 @@ export class Xen {
     public VFS: typeof VFS = VFS;
     public FileSystem: typeof FileSystem = FileSystem;
     public net: LibcurlClient = new LibcurlClient();
+    public p2p: P2PClient = new P2PClient();
     public wm: WindowManager = new WindowManager();
     public process: ProcessManager = new ProcessManager();
     public packages: PackageManager = new PackageManager();
@@ -58,8 +60,8 @@ export class Xen {
         prefix: 'XenOS',
         codename: 'Nightcord',
         major: 1,
-        minor: 2,
-        patch: 1,
+        minor: 3,
+        patch: 0,
         channel: 'Beta',
         build: '',
         pretty: ''

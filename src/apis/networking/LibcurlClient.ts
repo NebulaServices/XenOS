@@ -1,4 +1,4 @@
-import { networkHandler } from "./policy/handler";
+import { networkHandler } from "../policy/handler";
 
 type RequestInterceptor = (request: Request) => Promise<Request | Response> | Request | Response;
 type ResponseInterceptor = (response: Response) => Promise<Response> | Response;
@@ -26,10 +26,7 @@ export class LibcurlClient {
         },
     };
 
-    // public HTTPSession: any;
-    public WebSocket: any;
-    // public CurlWebSocket: any;
-    // public TLSSocket: any;
+    public WebSocket: WebSocket;
     public setUrl: (url: string) => void;
 
     public wisp = {
@@ -49,17 +46,14 @@ export class LibcurlClient {
         libcurl: null as any,
     };
 
-    private session: any;
-
     private requestInterceptors: RequestInterceptor[] = [];
     private responseInterceptors: ResponseInterceptor[] = [];
 
     private wispUrl: string;
 
-    constructor() { }
-
     public async init() {
         this.wispUrl = window.xen.settings.get('wisp-url');
+
         if (!this.wispUrl) {
             window.xen.settings.set('wisp-url', (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
             this.wispUrl = window.xen.settings.get('wisp-url');
@@ -68,24 +62,15 @@ export class LibcurlClient {
         const lcModule = await import(this.paths.lcJs);
         this.direct.libcurl = lcModule.libcurl;
         await this.direct.libcurl.load_wasm(this.paths.lcWasm);
-        console.log('[LC] js + wasm loaded');
+
 
         this.direct.wisp = await import(this.paths.wisp);
         this.wisp.wispConn = new this.direct.wisp.WispConnection(this.wispUrl);
 
-        /*document.addEventListener("libcurl_load", () => {*/
-            this.direct.libcurl.set_websocket(this.wispUrl);
-            console.log('[LC] set url + transport');
+        this.direct.libcurl.set_websocket(this.wispUrl);
 
-            // this.HTTPSession = this.direct.libcurl.HTTPSession;
-            this.WebSocket = this.direct.libcurl.WebSocket;
-            // this.CurlWebSocket = this.direct.libcurl.CurlWebSocket;
-            // this.TLSSocket = this.direct.libcurl.TLSSocket;
-
-            this.setUrl = this.direct.libcurl.set_websocket;
-
-            this.session = new this.direct.libcurl.HTTPSession();
-        /*});*/
+        this.WebSocket = this.direct.libcurl.WebSocket
+        this.setUrl = this.direct.libcurl.set_websocket;
 
         this.wisp.wispConn.addEventListener("open", () => {
             this.wisp.createStream = (...args) => this.wisp.wispConn.create_stream(...args);
@@ -150,7 +135,31 @@ export class LibcurlClient {
             }
         }
 
-        let response = await this.session.fetch(requestObject, options);
+        if (this.isP2PUrl(urlObject)) {
+            const peerId = urlObject.hostname;
+            let port: number = Number(urlObject.port);
+
+            if (!port) {
+                if (urlObject.protocol === "http:") {
+                    port = 80;
+                } else if (urlObject.protocol === "https:") {
+                    port = 443;
+                }
+            }
+
+            const p2pUrl = `${urlObject.protocol}//${urlObject.hostname}:${port}${urlObject.pathname}${urlObject.search}${urlObject.hash}`;
+
+            if (window.xen?.p2p?.fetch) {
+                return window.xen.p2p.fetch(peerId, p2pUrl, options);
+            } else {
+                return new Response("P2P client not available", {
+                    status: 503,
+                    statusText: "Service Unavailable",
+                });
+            }
+        }
+
+        let response = await this.direct.libcurl.fetch(requestObject, options);
 
         for (const interceptor of this.responseInterceptors) {
             response = await Promise.resolve(interceptor(response));
@@ -181,5 +190,16 @@ export class LibcurlClient {
         u = __uv$config.decodeUrl(u);
 
         return u;
+    }
+
+    private isP2PUrl(urlObject: URL): boolean {
+        const hostname = urlObject.hostname;
+
+        return (
+            hostname !== 'localhost' &&
+            !/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) && // Not IPv4
+            !/^[0-9a-f:]+$/i.test(hostname) && // Not IPv6
+            /^[a-z0-9]{9}$/i.test(hostname) // 9c Peer ID format
+        );
     }
 }

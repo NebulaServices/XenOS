@@ -1,0 +1,13 @@
+{
+    "id": "org.nebulaservices.firewall",
+    "version": "1.0.0",
+    "type": "app",
+    "source": "index.html",
+    "title": "Firewall",
+    "icon": "logo.svg",
+    "maintainer": {
+        "name": "Nebula Services",
+        "email": "contact@nebulaservices.org",
+        "website": "https://nebulaservices.org"
+    }
+}

@@ -80,3 +80,9 @@ Migrated `xen.KV` to a library
     - Will open up an inspect window to XenOS on boot
 - Added a button to the process manager to debug apps (WiP)
 - Fixed update bug when `?bootstrap-fs=false`
+
+## `v1.3.0`
+- There is now a P2P API that allows for port forwarding!
+- Fixed the VSCode icon
+- Moved xen official repos to GitHub pages for CI/CD
+- Firewall app

@@ -3,6 +3,7 @@ import { watch } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'url';
 import wisp from 'wisp-server-node';
+import p2p from './p2p.js';
 import express from 'express';
 import http from 'http';
 
@@ -84,6 +85,16 @@ app.use(express.static(buildPath));
 server.on('upgrade', (req, socket, head) => {
     if (req.url.endsWith('/wisp/')) {
         wisp.routeRequest(req, socket, head);
+    } else if (req.url.endsWith('/p2p/')) {
+        p2p.routeRequest({
+            request: req,
+            socket: socket,
+            head: head,
+            conf: {
+                logging: true,
+                blockedIps: []
+            }
+        });
     }
 });
 

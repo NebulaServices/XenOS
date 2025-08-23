@@ -280,6 +280,61 @@ interface NotificationOpts {
 xen.notifications.spawn(opts: NotificationOpts)`
 ```
 
+## `xen.p2p`
+API for creating port forwards using XenOSes P2P system
+
+### Types
+```ts
+/*
+    Online = Connected to P2P network
+    Offline = Isn't ^
+*/
+export type Status = 'online' | 'offline';
+
+export interface Peer {
+    id: string; // Your peer ID
+    ports: Array<{ port: number; description?: string }>; // Array of objects that contain the port you forwarded and optionally a description
+}
+```
+
+### `xen.p2p.setStatus(status: Status)`
+Updates your status
+
+### `xen.p2p.setUrl(url: string)`
+Sets your signaling URL
+
+### `xen.p2p.forward(port: number, desc?: string)`
+Forwards a given port and optionally sets a description
+
+### `xen.p2p.unforward(port: number)`
+Unforwards a port
+
+### `xen.p2p.getPeers(): Peer[]`
+Returns an array of peer objects for all online peers
+
+### Example
+```ts
+// Client 1:
+await xen.net.loopback.set(80, () => { return new Response('Hello, World!') });
+xen.p2p.forward(80, 'demo server');
+
+// Client 2:
+xen.p2p.getPeers();
+/*
+[{
+    0: 
+        id: "3tu1w9yng"
+        ports: [{
+            0:
+                port: 80
+                description: 'demo server'
+        }]
+]}
+*/
+
+await (await xen.net.fetch('http://3tu1w9yng')).text(); // 'Hello, World!'
+```
+
 ## `xen.packages`
 API for interacting with packages
 

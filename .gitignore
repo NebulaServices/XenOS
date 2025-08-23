@@ -5,3 +5,4 @@ dist-transport/
 apps/
 build/
 .vscode/
+p2p.json

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firewall</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="top-bar">
+            <div class="peer-info">
+                <span class="peer-label">Peer ID:</span>
+                <span class="peer-id" id="peerId">[PEER ID]</span>
+            </div>
+            <div class="status-section">
+                <span class="status-label">Status:</span>
+                <div class="status-indicator">
+                    <span class="status-text" id="statusText">OFFLINE</span>
+                    <label class="switch">
+                        <input type="checkbox" id="statusToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-users"></i> Connected Peers</h3>
+                    <button class="refresh-btn" id="refreshPeers">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="peers-list" id="peersList">
+                    <div class="empty-state">
+                        <i class="fas fa-users-slash"></i>
+                        <p>No peers connected</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-network-wired"></i> Your Ports</h3>
+                </div>
+                <div class="ports-list" id="portsList">
+                    <div class="empty-state">
+                        <i class="fas fa-plug"></i>
+                        <p>No ports forwarded</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
